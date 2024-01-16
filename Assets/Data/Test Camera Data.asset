@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 238b9476b20129a43a2419f6d0d5f4ce, type: 3}
+  m_Name: Test Camera Data
+  m_EditorClassIdentifier: 
+  _distanceSpeed: 15
+  _distance: 5
+  _distanceEase: 0.2
+  _distanceLimit: {x: 2.5, y: 5}
+  _yawSpeed: 6
+  _startYaw: 0.5
+  _yawEase: 0.3
+  _pitchSpeed: 18
+  _startPitch: 0.2
+  _pitchEase: 0.5
+  _pitchAngleLimits: {x: 10, y: 40}

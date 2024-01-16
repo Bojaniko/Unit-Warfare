@@ -1,0 +1,214 @@
+{
+    "name": "Default Input",
+    "maps": [
+        {
+            "name": "Touch",
+            "id": "2f8e3215-8055-40fa-b65d-204d7b206176",
+            "actions": [
+                {
+                    "name": "Position",
+                    "type": "Value",
+                    "id": "2f8fb282-c142-4815-8291-5999b9502027",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Touch",
+                    "type": "Button",
+                    "id": "4047ca8c-939a-4f40-8ce4-825b9b4576b5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PintchTouchOne",
+                    "type": "Button",
+                    "id": "fc5556de-9dea-406f-a793-dd685e47e1e5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PintchTouchTwo",
+                    "type": "Button",
+                    "id": "3df85f45-4b28-42ee-b296-91b21ae28c92",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PintchPositionOne",
+                    "type": "Value",
+                    "id": "bd8649d9-ca71-484a-9ee9-80b4c34482bb",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "PintchPositionTwo",
+                    "type": "Value",
+                    "id": "ea0ae3ff-82f5-44fb-8977-3626567c0e8e",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "MoveTouch",
+                    "type": "Button",
+                    "id": "55a38487-5a26-4400-a099-9b223c85b0bc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9337e4a0-c086-49dd-a0bf-85ab92ea00d7",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "95e3a30a-a3d2-497f-b825-990f19ffd44b",
+                    "path": "<Touchscreen>/primaryTouch/press",
+                    "interactions": "Tap",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "Touch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0c691901-4ed9-45ac-9971-b595c4ba2811",
+                    "path": "<Touchscreen>/touch1/press",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "PintchTouchTwo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "23c4a999-1b8c-4cc8-bfb8-106df121a1f4",
+                    "path": "<Touchscreen>/touch0/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "PintchPositionOne",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "efaee00b-3c26-4bb3-825d-3601b645c169",
+                    "path": "<Touchscreen>/touch1/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "PintchPositionTwo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5e1948bc-7a6e-4ada-9502-69455f876210",
+                    "path": "<Touchscreen>/touch0/press",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "PintchTouchOne",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ee17a6d2-926b-45bf-80ba-c1de6749de34",
+                    "path": "<Touchscreen>/primaryTouch/press",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "MoveTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "8cb10bed-7eb8-4e47-bb20-bd15c9eac04b",
+            "actions": [
+                {
+                    "name": "Point",
+                    "type": "PassThrough",
+                    "id": "13c27674-06e4-46c1-b70a-dda30918336f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "ad5115b0-b794-4c3a-8413-f586f4ae2876",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b437c778-99b1-41b2-804d-abd5faac746c",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "76455ed0-0e9e-4e90-bed3-d2ac6651d63d",
+                    "path": "<Touchscreen>/primaryTouch/press",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "TouchScheme",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "TouchScheme",
+            "bindingGroup": "TouchScheme",
+            "devices": [
+                {
+                    "devicePath": "<Touchscreen>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

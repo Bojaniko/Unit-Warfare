@@ -1,0 +1,17 @@
+{
+    "name": "UW.AI",
+    "rootNamespace": "UnitWarfare.AI",
+    "references": [
+        "GUID:07f93d16adf9e2b4697274e8bb146f9f",
+        "GUID:095271f01559e904080ad808f8acca6a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

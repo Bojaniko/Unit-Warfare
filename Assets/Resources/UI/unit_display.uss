@@ -1,0 +1,47 @@
+.value_wrapper {
+    flex-direction: row;
+    padding-left: 6px;
+    padding-right: 3px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background-color: rgba(202, 202, 202, 0.85);
+    width: 100%;
+    justify-content: space-between;
+    border-left-color: rgb(202, 202, 202);
+    border-right-color: rgb(202, 202, 202);
+    border-top-color: rgb(202, 202, 202);
+    border-bottom-color: rgb(202, 202, 202);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.value_image {
+    height: 25px;
+    width: 25px;
+}
+
+.value_wrapper_wrapper {
+    height: 100%;
+    width: 50%;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.value {
+    padding-left: 10px;
+    -unity-font: url('project://database/Assets/Graphics/Cairo-VariableFont_slnt,wght.ttf?fileID=12800000&guid=a3a034fd3d2b7ec45b5ae363ef1bf949&type=3#Cairo-VariableFont_slnt,wght');
+    -unity-font-definition: url('project://database/Assets/Graphics/Cairo-VariableFont_slnt,wght%20SDF.asset?fileID=11400000&guid=6c97ecb73de76714ca166c6ad5ec4df4&type=2#Cairo-VariableFont_slnt,wght SDF');
+    -unity-text-align: middle-right;
+    padding-right: 5px;
+    color: rgb(36, 36, 36);
+    position: absolute;
+    font-size: 30%;
+    -unity-font-style: bold;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.38);
+}

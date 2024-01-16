@@ -1,0 +1,88 @@
+.selected_command {
+    background-color: rgb(165, 202, 153);
+    color: rgb(0, 0, 0);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(0, 171, 23);
+    border-right-color: rgb(0, 171, 23);
+    border-top-color: rgb(0, 171, 23);
+    border-bottom-color: rgb(0, 171, 23);
+}
+
+.selection_item_button:active {
+    background-color: rgb(195, 195, 195);
+}
+
+.selection_item {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 5px;
+}
+
+.selected_item_image {
+    width: 100px;
+    height: 100%;
+    background-image: url('project://database/Packages/com.unity.collab-proxy/Editor/PlasticSCM/Assets/Images/buttonssosigningoogle.png?fileID=2800000&guid=f09eae8c0ea04254b90c5386a034a225&type=3#buttonssosigningoogle');
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.selected_item_label {
+    font-size: 14px;
+}
+
+.selected_item_info {
+    padding-left: 5px;
+}
+
+.selection_commands {
+    width: 25%;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.option_container {
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.mesh_window {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.selection_scroll_view {
+    width: 100%;
+    height: 225px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(123, 123, 123);
+    border-right-color: rgb(123, 123, 123);
+    border-top-color: rgb(123, 123, 123);
+    border-bottom-color: rgb(123, 123, 123);
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+}

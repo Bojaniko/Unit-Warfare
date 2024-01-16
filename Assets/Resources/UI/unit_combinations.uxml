@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:ListView focusable="false" picking-mode="Ignore" view-data-key="_combinations" binding-path="_combinations" virtualization-method="DynamicHeight" show-foldout-header="true" show-add-remove-footer="true" header-title="Combinations" show-border="true" show-alternating-row-backgrounds="ContentOnly" />
+</ui:UXML>

@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="container" picking-mode="Ignore" usage-hints="GroupTransform" style="margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
+        <ui:VisualElement name="unit_selectors" picking-mode="Ignore" style="border-bottom-width: 1px; border-left-color: rgb(113, 113, 113); border-right-color: rgb(113, 113, 113); border-top-color: rgb(113, 113, 113); border-bottom-color: rgb(113, 113, 113); padding-bottom: 2px; margin-left: 2px; margin-right: 2px;">
+            <ui:DropdownField label="Unit #1" index="0" name="unit_one_selector" />
+            <ui:DropdownField label="Unit #2" index="0" name="unit_two_selector" style="align-items: auto;" />
+        </ui:VisualElement>
+        <ui:DropdownField label="Result" index="0" name="unit_result" style="margin-top: 4px; margin-right: 4px; margin-left: 15px;" />
+    </ui:VisualElement>
+</ui:UXML>

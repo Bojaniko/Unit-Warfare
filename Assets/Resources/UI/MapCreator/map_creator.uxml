@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Resources/UI/MapCreator/map_creator.uss?fileID=7433441132597879392&amp;guid=ce35791f814a48e41b240821dc71eb26&amp;type=3#map_creator" />
+    <ui:VisualElement name="root">
+        <ui:Label text="Map Creator" display-tooltip-when-elided="true" name="title" style="font-size: 24px; -unity-text-align: upper-center; margin-bottom: 3px;" />
+        <uie:ObjectField label="Data" allow-scene-objects="false" type="UnitWarfare.Tools.MapCreatorData, UW.Tools" name="data_field" binding-path="_data" style="justify-content: flex-start;" />
+        <ui:VisualElement name="data_container" />
+        <ui:VisualElement name="options" style="flex-direction: row; justify-content: center; background-color: rgb(123, 123, 123); padding-top: 2px; padding-bottom: 2px; margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px;">
+            <ui:Button text="Territories" display-tooltip-when-elided="true" name="option_territory" focusable="false" />
+            <ui:Button text="Units" display-tooltip-when-elided="true" name="option_units" focusable="false" />
+            <ui:Button text="Ownership" display-tooltip-when-elided="true" name="option_ownership" focusable="false" />
+        </ui:VisualElement>
+        <ui:VisualElement name="territories_container" class="option_container" style="flex-direction: column; flex-wrap: nowrap; -unity-text-align: middle-center;">
+            <ui:GroupBox name="territory_controls" tabindex="0" style="flex-direction: row; width: 100%; padding-left: 0; padding-bottom: 3px; padding-top: 3px; margin-bottom: 0; margin-top: 0; margin-right: 0; margin-left: 0; padding-right: 0; justify-content: center;">
+                <ui:Button text="Add" display-tooltip-when-elided="true" name="territory_add" focusable="false" class="selection_commands" />
+                <ui:Button text="Remove" display-tooltip-when-elided="true" name="territory_remove" tabindex="1" focusable="false" class="selection_commands" />
+                <ui:Button text="Paint" display-tooltip-when-elided="true" name="territory_paint" focusable="false" class="selection_commands" />
+            </ui:GroupBox>
+            <uie:EnumField label="Add Mode" name="add_options" include-obsolete-values="false" type="UnitWarfare.Tools.AddModes, UW.Tools" />
+            <uie:EnumField label="Remove Mode" name="remove_options" include-obsolete-values="false" type="UnitWarfare.Tools.RemoveModes, UW.Tools" />
+            <ui:Button text="Paint Selection" display-tooltip-when-elided="true" name="territory_paint_selection" style="left: 25%; width: 50%;" />
+            <ui:ScrollView name="territory_types" class="selection_scroll_view" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ownership_container" class="option_container">
+            <uie:EnumField label="Select owner" value="NEUTRAL" name="owner_options" type="UnitWarfare.Territories.TerritoryOwnerType, UW.Territory" />
+            <ui:Button text="Set Owner" display-tooltip-when-elided="true" enable-rich-text="true" name="owner_change_button" style="width: 50%;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="units_container" class="option_container">
+            <ui:VisualElement name="units_controls" style="flex-direction: row; width: 100%; justify-content: center; padding-bottom: 3px; padding-top: 3px;">
+                <ui:Button text="Create" display-tooltip-when-elided="true" name="unit_create" class="selection_commands" />
+                <ui:Button text="Update" display-tooltip-when-elided="true" name="unit_update" class="selection_commands" />
+                <ui:Button text="Remove" display-tooltip-when-elided="true" name="unit_remove" />
+            </ui:VisualElement>
+            <ui:ScrollView name="unit_types" class="selection_scroll_view" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

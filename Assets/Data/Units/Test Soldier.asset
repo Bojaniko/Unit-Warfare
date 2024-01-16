@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd99734a8c2d3684fb0326b5ac97610b, type: 3}
+  m_Name: Test Soldier
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 2066626413622888762, guid: 45d3ee81cb9d47c4c91c3b28dc062ed7, type: 3}
+  _displayName: Soldier
+  _displayTexture: {fileID: 2800000, guid: 62a1e83c52b22c144a1b088f70a9b9dc, type: 3}
+  _health: 2
+  _shield: 1
+  _attack: 3
+  _speed: 0.5

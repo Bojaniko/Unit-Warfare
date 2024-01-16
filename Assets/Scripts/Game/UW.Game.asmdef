@@ -1,0 +1,22 @@
+{
+    "name": "UW.Game",
+    "rootNamespace": "UnitWarfare.Game",
+    "references": [
+        "GUID:236e9969a409c0244ae26ae061ac882b",
+        "GUID:d7658539702c69e48bc0a00889f8333e",
+        "GUID:07f93d16adf9e2b4697274e8bb146f9f",
+        "GUID:6933d37d02d4e2f4aacc26ddf8d31db6",
+        "GUID:4018dfed96eceb642aac8a642101a557",
+        "GUID:3d4334f7ad50d324cae335b3b9bb3eee",
+        "GUID:4f726559cc3421f4b99d0b3985ee84a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

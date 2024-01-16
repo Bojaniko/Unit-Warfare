@@ -1,0 +1,22 @@
+{
+    "name": "UW.Players",
+    "rootNamespace": "UnitWarfare.Players",
+    "references": [
+        "GUID:07f93d16adf9e2b4697274e8bb146f9f",
+        "GUID:236e9969a409c0244ae26ae061ac882b",
+        "GUID:3d4334f7ad50d324cae335b3b9bb3eee",
+        "GUID:4018dfed96eceb642aac8a642101a557",
+        "GUID:608cd6c4e5554e94880408a7e9ccb8fb",
+        "GUID:4f726559cc3421f4b99d0b3985ee84a4",
+        "GUID:1dc264749d3dcaf4b89232a5a0432ab8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

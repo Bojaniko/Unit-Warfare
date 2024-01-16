@@ -1,0 +1,20 @@
+{
+    "name": "UW.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4f726559cc3421f4b99d0b3985ee84a4",
+        "GUID:1dc264749d3dcaf4b89232a5a0432ab8",
+        "GUID:07f93d16adf9e2b4697274e8bb146f9f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "Android"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

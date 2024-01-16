@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b9112054bf42f947a1e1ba1ede25412, type: 3}
+  m_Name: Test Game
+  m_EditorClassIdentifier: 
+  _unitsData: {fileID: 11400000, guid: a112ad8df6194e943b865668402c906f, type: 2}
+  _cameraData: {fileID: 11400000, guid: 81052963f56102e4cb8b9022b829df63, type: 2}
+  _inputData: {fileID: 11400000, guid: c9c28d2f360518949a8ea9dcb620486e, type: 2}
+  _matchData: {fileID: 11400000, guid: 9188cdcdee28b684cb132a3c7a9713aa, type: 2}
+  _mapData: {fileID: 11400000, guid: 082a4d52212a5ec4987908653210a0ca, type: 2}

@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/MapCreator/map_creator.uss?fileID=7433441132597879392&amp;guid=ce35791f814a48e41b240821dc71eb26&amp;type=3#map_creator" />
+    <ui:Button display-tooltip-when-elided="true" focusable="false" name="selection_item" class="selection_item_button selection_item" style="flex-direction: row; margin-top: 0; margin-right: 0; margin-left: 0; padding-left: 3px; padding-right: 3px; padding-top: 3px; padding-bottom: 3px;">
+        <ui:VisualElement name="item_image" picking-mode="Ignore" class="selected_item_image">
+            <ui:IMGUIContainer name="item_mesh" class="mesh_window" style="width: 100%; height: 100%;" />
+            <ui:VisualElement name="item_image_selection" style="position: absolute; background-image: url(&apos;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=7433338533053954386&amp;guid=dd805f3cf229b5041ab37f1bd9289c6d&amp;type=3#check@2x&apos;); width: 20px; height: 20px; background-color: rgb(26, 255, 0); -unity-background-image-tint-color: rgb(0, 0, 0); bottom: 5px; right: 5px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="item_info" picking-mode="Ignore" class="selected_item_info">
+            <ui:Label text="Item no. 1" display-tooltip-when-elided="true" name="item_label" picking-mode="Ignore" class="selected_item_label" style="padding-left: 10px;" />
+            <ui:Label text="Health: " display-tooltip-when-elided="true" name="item_health" style="color: rgb(15, 156, 15); -unity-text-align: middle-left;" />
+            <ui:Label text="Shield: " display-tooltip-when-elided="true" name="item_shield" style="color: rgb(0, 0, 255); -unity-text-align: middle-left;" />
+            <ui:Label text="Attack: " display-tooltip-when-elided="true" name="item_attack" style="color: rgb(255, 0, 0); -unity-text-align: middle-left;" />
+        </ui:VisualElement>
+    </ui:Button>
+</ui:UXML>
