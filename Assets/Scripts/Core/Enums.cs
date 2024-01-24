@@ -58,6 +58,7 @@ namespace UnitWarfare.Core.Enums
         TEAMPLAY,
         COWARDICE,
         CONQUERING,
-        EXPANDIONARY
+        EXPANDIONARY,
+        SCOUTING
     }
 }

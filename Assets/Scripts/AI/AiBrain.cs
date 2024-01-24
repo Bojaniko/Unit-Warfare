@@ -53,7 +53,17 @@ namespace UnitWarfare.AI
             for (int i = 0; i < outcomes.Length; i++)
                 features[i] = outcomes[i].Feature;
 
-            AiBrainFeature finalOutcomeFeature = _probability.GetOutcome(features);
+            AiBrainFeature finalOutcomeFeature;
+            try
+            {
+                finalOutcomeFeature = _probability.GetOutcome(features);
+            }
+            catch
+            {
+                foreach (AiBrainFeature f in features)
+                    Debug.Log($"error feature is {f}");
+                finalOutcomeFeature = AiBrainFeature.AGRESSIVE;
+            }
             List<BrainFeatureHandler.Outcome> finalOutcomes = new();
             foreach (BrainFeatureHandler.Outcome outcome in outcomes)
             {
@@ -66,12 +76,14 @@ namespace UnitWarfare.AI
                 commandOutcome = finalOutcomes[0].Command;
                 Debug.Log($"Ai brain output feature is {finalOutcomes[0].Feature}");
             }
-            else
+            else if (finalOutcomes.Count > 1)
             {
                 int rand = Random.Range(0, finalOutcomes.Count);
                 commandOutcome = finalOutcomes[rand].Command;
                 Debug.Log($"Ai brain output feature is {finalOutcomes[rand].Feature}");
             }
+            else if (finalOutcomes.Count == 0)
+                commandOutcome = commands[0];
 
             if (commandOutcome != null)
             {

@@ -88,6 +88,15 @@ namespace UnitWarfare.AI
                 return new(false, Mode.UNALTER);
             };
             _featureResponses.Add(new(expandionary, AiBrainFeature.EXPANDIONARY));
+
+            // ### SCOUTING ### \\
+            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> scouting = (unit, command) =>
+            {
+                if (command.Order.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner))
+                    return new(true, Mode.REDUCE);
+                return new(false, Mode.UNALTER);
+            };
+            _featureResponses.Add(new(scouting, AiBrainFeature.SCOUTING));
         }
 
         public override Outcome[] GetOutcomes(IUnit unit, IUnitCommand[] commands)
