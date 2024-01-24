@@ -5,14 +5,13 @@ using UnityEngine;
 using UnitWarfare.AI;
 using UnitWarfare.Units;
 using UnitWarfare.Core.Enums;
-using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players
 {
     public class PlayerComputer : Player
     {
         private readonly AiBrainData _aiData;
-        private readonly AiBrain _activeUnitBrain;
+        private readonly AiBrain<ActiveBrainFeatureHandler> _activeUnitBrain;
         private readonly IUnitsHandler _unitsHandler;
 
         private IUnit[] _currentUnits;
@@ -24,50 +23,36 @@ namespace UnitWarfare.Players
 
             _unitsHandler = units_handler;
 
-            AiBrainFeature[] activeUnitFeatures = new[]
-            {
-                AiBrainFeature.AGRESSIVE,
-                AiBrainFeature.PASSIVE,
-                AiBrainFeature.CONQUERING,
-                AiBrainFeature.TEAMPLAY,
-                AiBrainFeature.COWARDICE
-            };
-            _activeUnitBrain = new AiBrain(ExtractBrainFeatures(_aiData.BrainFeatures, activeUnitFeatures), _aiData.ReductionFactor, _aiData.NormalizationStep);
+            AiBrain<ActiveBrainFeatureHandler>.Config config = new(ai_data.ReductionFactor, ai_data.IncreasionAmount, ai_data.NormalizationStep);
+            _activeUnitBrain = new AiBrain<ActiveBrainFeatureHandler>(_aiData.BrainFeatures, config);
         }
 
         private Coroutine _unitsRoutine;
+
+        public override event PlayerEventHandler OnExplicitMoveEnd;
 
         private IEnumerator UnitsRoutine()
         {
             foreach (IUnit unit in _currentUnits)
             {
-                IActiveUnit activeUnit = unit as IActiveUnit;
-                if (activeUnit != null)
+                IUnitCommand[] commands = _unitsHandler.InteractionsHandler.GenerateCommands(unit);
+                if (unit is IActiveUnit)
                 {
-                    yield return ActiveUnitMoveHandler(activeUnit);
+                    IUnitCommand command = _activeUnitBrain.GetOutcome(unit, commands);
+                    if (command == null)
+                        continue;
+                    unit.StartCommand(command);
+                    yield return new WaitUntil(() => { return !unit.IsCommandActive; });
                     continue;
                 }
-                Debug.Log("Not active unit");
             }
-        }
-
-        private IEnumerator ActiveUnitMoveHandler(IActiveUnit unit)
-        {
-            bool enemyTerritoryAvailable = false;
-            bool enemyOccupiedTerritoryAvailable = false;
-            bool retreatableTerritoryAvailable = false;
-            bool joinableAllyTerritoryAvailable = false;
-
-            foreach (Territory t in unit.OccupiedTerritory.NeighborTerritories)
-            {
-                
-            }
-
-            yield return null;
+            Debug.Log("Ended all unit moves");
+            OnExplicitMoveEnd?.Invoke(this);
         }
 
         protected override void OnActiveTurn()
         {
+            Debug.Log("Computer player's turn.");
             _currentUnits = _unitsHandler.GetUnitsForOwner(this);
             _unitsRoutine = emb.StartCoroutine(UnitsRoutine());
         }
@@ -79,20 +64,6 @@ namespace UnitWarfare.Players
                 emb.StopCoroutine(_unitsRoutine);
                 _unitsRoutine = null;
             }
-        }
-
-        private BrainFeature[] ExtractBrainFeatures(BrainFeature[] features, AiBrainFeature[] extracted_features)
-        {
-            List<BrainFeature> extracted = new();
-            foreach (BrainFeature bf in features)
-            {
-                foreach (AiBrainFeature f in extracted_features)
-                {
-                    if (bf.Feature.Equals(f))
-                        extracted.Add(bf);
-                }
-            }
-            return extracted.ToArray();
         }
     }
 }

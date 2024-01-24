@@ -16,12 +16,14 @@ MonoBehaviour:
   - _feature: 0
     _weight: 8
   - _feature: 1
-    _weight: 5
+    _weight: 1
   - _feature: 2
-    _weight: 2
-  - _feature: 3
     _weight: 3
+  - _feature: 3
+    _weight: 2
   - _feature: 4
     _weight: 6
-  _reductionFactor: 0.5
-  _normalizationStep: 0.25
+  - _feature: 5
+    _weight: 3
+  _reductionFactor: 0.2
+  _normalizationStep: 0.1

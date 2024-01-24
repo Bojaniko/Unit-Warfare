@@ -11,5 +11,7 @@ namespace UnitWarfare.Players
         {
 
         }
+
+        public override event PlayerEventHandler OnExplicitMoveEnd;
     }
 }

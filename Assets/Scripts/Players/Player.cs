@@ -37,12 +37,14 @@ namespace UnitWarfare.Players
         /// </summary>
         public bool IsActive => _isActive;
 
-        public UnitInteractions InteractionsHandler => throw new System.NotImplementedException();
-
         protected EncapsulatedMonoBehaviour emb;
 
         public event IUnitTeamManager.UnitManagerEventHandler OnRoundStarted;
         public event IUnitTeamManager.UnitManagerEventHandler OnRoundEnded;
+
+        public delegate void PlayerEventHandler(Player player);
+
+        public abstract event PlayerEventHandler OnExplicitMoveEnd;
 
         protected Player(PlayerData data, ref ActivePlayerEventHandler active_player_event)
         {

@@ -80,8 +80,11 @@ namespace UnitWarfare.Units
 
         // ##### COMMANDS ##### \\
 
+        public abstract event IUnit.Command OnCommandStart;
+        public abstract event IUnit.Command OnCommandEnd;
         public abstract void StartCommand(IUnitCommand command);
         public abstract IUnitCommand CurrentCommand { get; }
+        public abstract bool IsCommandActive { get; }
 
         // ##### INITIALIZATION ##### \\
 
@@ -102,16 +105,18 @@ namespace UnitWarfare.Units
 
             manager.OnRoundStarted += () => _moveAvailable = true;
 
+            _owner = start_territory.Owner.OwnerIdentification;
+
             _occupiedTerritory = start_territory;
             _occupiedTerritory.Occupy(this);
-
-            _owner = _occupiedTerritory.Owner.OwnerIdentification;
         }
 
         // ##### MONO BEHAVIOUR ##### \\
 
         protected UnitEMB _emb;
         public UnitEMB EMB => _emb;
+
+        public int HealthPercentage => throw new System.NotImplementedException();
     }
 
     public class UnitEMB : EncapsulatedMonoBehaviour

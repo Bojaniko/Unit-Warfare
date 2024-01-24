@@ -19,6 +19,7 @@ namespace UnitWarfare.Units
          * public void Deselect();
          */
 
+        public bool IsCommandActive { get; }
         public IUnitCommand CurrentCommand { get; }
         public void StartCommand(IUnitCommand command);
 
@@ -28,10 +29,15 @@ namespace UnitWarfare.Units
 
         public void Damage(int amount);
         public int Health { get; }
+        public int HealthPercentage { get; }
         public int Shield { get; }
         public int Attack { get; }
 
         public void DestroyUnit();
         public event UnitsEventHandler OnDestroy;
+
+        public delegate void Command(IUnit unit, IUnitCommand command);
+        public event Command OnCommandStart;
+        public event Command OnCommandEnd;
     }
 }

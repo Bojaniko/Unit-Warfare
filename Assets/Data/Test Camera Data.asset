@@ -16,10 +16,10 @@ MonoBehaviour:
   _distance: 5
   _distanceEase: 0.2
   _distanceLimit: {x: 2.5, y: 5}
-  _yawSpeed: 6
+  _yawSpeed: 4.5
   _startYaw: 0.5
   _yawEase: 0.3
-  _pitchSpeed: 18
+  _pitchSpeed: 14
   _startPitch: 0.2
   _pitchEase: 0.5
   _pitchAngleLimits: {x: 10, y: 40}

@@ -18,5 +18,8 @@ namespace UnitWarfare.Units
             _target = target;
             _orderValue = (int)((object)_order);
         }
+
+        public override string ToString() =>
+            $"Command order is {_order}.";
     }
 }

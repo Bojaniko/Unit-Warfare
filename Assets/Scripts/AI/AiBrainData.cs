@@ -4,6 +4,7 @@ using UnityEngine;
 
 using UnitWarfare.Core.Enums;
 
+
 namespace UnitWarfare.AI
 {
     [CreateAssetMenu(menuName = "AI/Brain")]
@@ -12,8 +13,11 @@ namespace UnitWarfare.AI
         [SerializeField] private BrainFeature[] _features;
         public BrainFeature[] BrainFeatures => _features;
 
-        [SerializeField] private float _reductionFactor = 0.5f;
+        [SerializeField, Range(0f, 1f)] private float _reductionFactor = 0.5f;
         public float ReductionFactor => 1f - _reductionFactor;
+
+        [SerializeField, Range(0f, 10f)] private float _increasionAmount = 0.5f;
+        public float IncreasionAmount => _increasionAmount;
 
         [SerializeField] private float _normalizationStep = 0.25f;
         public float NormalizationStep => _normalizationStep;

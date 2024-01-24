@@ -29,21 +29,26 @@ namespace UnitWarfare.Units
             _routines[3] = new(CancelCommandRoutine, ActiveCommandOrder.CANCEL);
         }
 
+        private bool _commandActive = false;
+        public override bool IsCommandActive => _commandActive;
         private UnitCommand<ActiveCommandOrder> _currentCommand;
         public override IUnitCommand CurrentCommand => _currentCommand;
-        UnitCommand<ActiveCommandOrder> IActiveUnit.CurrentCommand => _currentCommand;
 
         protected abstract override void OnDestroyed();
 
         public override void StartCommand(IUnitCommand command)
         {
-            if (command is UnitCommand<ActiveCommandOrder>)
-                StartCommand(command as UnitCommand<ActiveCommandOrder>);
+            if (_currentCommand != null)
+                return;
+            StartCommand(command as UnitCommand<ActiveCommandOrder>);
         }
 
         private void StartCommand(UnitCommand<ActiveCommandOrder> command)
         {
-            if (_currentCommand != null)
+            if (command == null)
+                return;
+
+            if (!MoveAvailable)
                 return;
 
             ActiveCommandRoutine routine = null;
@@ -60,28 +65,30 @@ namespace UnitWarfare.Units
                 return;
 
             MoveAvailable = false;
+            _commandActive = true;
             _currentCommand = command;
             _emb.StartCoroutine(CommandRoutine(routine));
         }
 
         private IEnumerator CommandRoutine(ActiveCommandRoutine command_routine)
         {
+            OnCommandStart?.Invoke(this, CurrentCommand);
             yield return command_routine.RoutineDelegate.Invoke();
+            OnCommandEnd?.Invoke(this, CurrentCommand);
+            _commandActive = false;
             _currentCommand = null;
         }
 
-        public abstract event UnitAttack OnAttack;
-        public abstract event UnitMove OnMove;
-        public abstract event UnitJoin OnJoin;
+        public override event IUnit.Command OnCommandStart;
+        public override event IUnit.Command OnCommandEnd;
+
+        public abstract event IActiveUnit.Command OnAttack;
+        public abstract event IActiveUnit.Command OnMove;
+        public abstract event IActiveUnit.Command OnJoin;
 
         protected abstract IEnumerator AttackCommandRoutine();
         protected abstract IEnumerator MoveCommandRoutine();
         protected abstract IEnumerator JoinCommandRoutine();
         protected abstract IEnumerator CancelCommandRoutine();
-
-        void IActiveUnit.StartCommand(UnitCommand<ActiveCommandOrder> command)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

@@ -3,7 +3,9 @@
     "rootNamespace": "UnitWarfare.AI",
     "references": [
         "GUID:07f93d16adf9e2b4697274e8bb146f9f",
-        "GUID:095271f01559e904080ad808f8acca6a"
+        "GUID:095271f01559e904080ad808f8acca6a",
+        "GUID:4f726559cc3421f4b99d0b3985ee84a4",
+        "GUID:236e9969a409c0244ae26ae061ac882b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

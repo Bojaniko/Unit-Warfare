@@ -67,8 +67,7 @@ namespace UnitWarfare.Units
                 _units.Add(u);
                 _identifiers.Add(i, u);
 
-                if (u is IActiveUnit)
-                    InitActiveUnit(u as IActiveUnit);
+                InitUnit(u);
             }
         }
 
@@ -102,34 +101,55 @@ namespace UnitWarfare.Units
         private readonly UnitInteractions _interactions;
         public UnitInteractions InteractionsHandler => _interactions;
 
+        public bool UnitExecutingCommand => _unitsExecutingCommands.Count > 0;
+        public bool HasMovableUnits(PlayerIdentification owner)
+        {
+            foreach (IUnit unit in _units)
+            {
+                if (unit.Owner.Equals(owner) && unit.MoveAvailable)
+                    return true;
+            }
+            return false;
+        }
+
         // ##### ACTIVE UNITS ##### \\
 
         private void InitActiveUnit(IActiveUnit unit)
         {
+            if (unit == null)
+                return;
             unit.OnAttack += HandleActiveUnitAttack;
             unit.OnMove += HandleActiveUnitMove;
             unit.OnJoin += HandleActiveUnitJoin;
-            (unit as IUnit).OnDestroy += HandleUnitDestroy;
         }
 
-        private void HandleActiveUnitAttack(IActiveUnit attacking_unit, IUnit target_unit)
+        private void HandleActiveUnitDestroyed(IActiveUnit unit)
         {
-            target_unit.Damage(((IUnit)attacking_unit).Attack);
+            if (unit == null)
+                return;
+            unit.OnAttack -= HandleActiveUnitAttack;
+            unit.OnMove -= HandleActiveUnitMove;
+            unit.OnJoin -= HandleActiveUnitJoin;
         }
 
-        private void HandleActiveUnitMove(IActiveUnit moving_unit, Territory target_territory)
+        private void HandleActiveUnitAttack(IActiveUnit unit, UnitTarget target)
         {
-            ((IUnit)moving_unit).OccupiedTerritory.Deocuppy();
-            ((IUnit)moving_unit).SetOccupiedTerritory(target_territory);
-            target_territory.Occupy((ITerritoryOccupant)moving_unit);
+            target.Unit.Damage(unit.Attack);
         }
 
-        private void HandleActiveUnitJoin(IActiveUnit joining_unit, IActiveUnit target_unit)
+        private void HandleActiveUnitMove(IActiveUnit unit, UnitTarget target)
         {
-            System.Type result = _interactions.CombinationsManager.GetResult(joining_unit.GetType(), target_unit.GetType());
-            Territory territory = target_unit.OccupiedTerritory;
-            joining_unit.DestroyUnit();
-            target_unit.DestroyUnit();
+            unit.OccupiedTerritory.Deocuppy();
+            unit.SetOccupiedTerritory(target.Territory);
+            target.Territory.Occupy(unit);
+        }
+
+        private void HandleActiveUnitJoin(IActiveUnit unit, UnitTarget target)
+        {
+            System.Type result = _interactions.CombinationsManager.GetResult(unit.GetType(), target.Unit.GetType());
+            Territory territory = target.Territory;
+            unit.DestroyUnit();
+            target.Unit.DestroyUnit();
             CreateActiveUnit(result, territory);
         }
 
@@ -155,21 +175,68 @@ namespace UnitWarfare.Units
             InitActiveUnit((IActiveUnit)new_unit);
         }
 
+        private bool HandleActiveUnitCommandStart(IActiveUnit unit, UnitCommand<ActiveCommandOrder> command)
+        {
+            if (unit == null || command == null)
+                return false;
+            if (command.Order.Equals(ActiveCommandOrder.MOVE))
+                command.Target.Territory.SetInteractable(false);
+            return true;
+        }
+
+        private bool HandleActiveUnitCommandEnd(IActiveUnit unit, UnitCommand<ActiveCommandOrder> command)
+        {
+            if (unit == null || command == null)
+                return false;
+            if (command.Order.Equals(ActiveCommandOrder.MOVE))
+                command.Target.Territory.SetInteractable(true);
+            return true;
+        }
+
         // ##### UNITS ##### \\
+
+        private List<IUnit> _unitsExecutingCommands;
+
+        private void InitUnit(IUnit unit)
+        {
+            _unitsExecutingCommands = new();
+
+            unit.OnDestroy += HandleUnitDestroy;
+            unit.OnCommandStart += HandleUnitCommandStart;
+            unit.OnCommandEnd += HandleUnitCommandEnd;
+
+            InitActiveUnit(unit as IActiveUnit);
+        }
 
         private void HandleUnitDestroy(IUnit unit)
         {
-            unit.OnDestroy -= HandleUnitDestroy;
+            _unitsExecutingCommands.Remove(unit);
 
-            IActiveUnit au = unit as IActiveUnit;
-            if (au != null)
-            {
-                au.OnAttack -= HandleActiveUnitAttack;
-                au.OnMove -= HandleActiveUnitMove;
-                au.OnJoin -= HandleActiveUnitJoin;
-            }
+            unit.OnDestroy -= HandleUnitDestroy;
+            unit.OnCommandStart -= HandleUnitCommandStart;
+            unit.OnCommandEnd -= HandleUnitCommandEnd;
+
+            unit.OccupiedTerritory.Deocuppy();
+
+            HandleActiveUnitDestroyed(unit as IActiveUnit);
 
             _units.Remove(unit);
+        }
+
+        private void HandleUnitCommandStart(IUnit unit, IUnitCommand command)
+        {
+            _unitsExecutingCommands.Add(unit);
+
+            if (HandleActiveUnitCommandStart(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>))
+                return;
+        }
+
+        private void HandleUnitCommandEnd(IUnit unit, IUnitCommand command)
+        {
+            _unitsExecutingCommands.Remove(unit);
+
+            if (HandleActiveUnitCommandEnd(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>))
+                return;
         }
 
         // ##### IDENTIFIERS ##### \\

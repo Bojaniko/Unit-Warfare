@@ -82,9 +82,13 @@ namespace UnitWarfare.Players
 
         private InputHandler _input;
 
+        private UnitsHandler _unitsHandler;
+
         protected override void Initialize()
         {
             _input = gameStateHandler.GetHandler<InputHandler>();
+
+            _unitsHandler = gameStateHandler.GetHandler<UnitsHandler>();
 
             PlayerLocal.Config localConfig = new(_input.TapInput,
                 gameStateHandler.GetHandler<CameraHandler>().MainCamera,
@@ -92,7 +96,17 @@ namespace UnitWarfare.Players
                 gameStateHandler.GetHandler<UnitsHandler>());
             _playerOne = new PlayerLocal(localConfig, _playersData.PlayerOneData, ref OnActivePlayerChanged);
 
+            _playerOne.OnExplicitMoveEnd += (Player player) =>
+            {
+                SwitchActivePlayer();
+            };
+
             _playerTwo = new PlayerComputer(gameStateHandler.GetHandler<UnitsHandler>(), _playersData.Match.AiData, _playersData.PlayerTwoData, ref OnActivePlayerChanged);
+
+            _playerTwo.OnExplicitMoveEnd += (Player player) =>
+            {
+                SwitchActivePlayer();
+            };
 
             _neutralPlayer = new PlayerNeutral(_playersData.NeutralPlayerData, ref OnActivePlayerChanged);
 
@@ -107,7 +121,16 @@ namespace UnitWarfare.Players
         private void Resume()
         {
             OnActivePlayerChanged?.Invoke(_playerOne);
-            //coroutine_mainLoop = StartCoroutine(MainPlayersLoop());
+            StartPlayerTimer();
+        }
+
+        protected override void OnUpdate()
+        {
+            if (_unitsHandler.UnitExecutingCommand)
+                return;
+            if (_playerOne.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.PLAYER)
+                || _playerTwo.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.OTHER_PLAYER))
+                SwitchActivePlayer();
         }
 
         // ##### COROUTINES ##### \\
@@ -116,15 +139,29 @@ namespace UnitWarfare.Players
 
         private IEnumerator MainPlayersLoop()
         {
-            OnActivePlayerChanged?.Invoke(_playerOne);
-
             yield return new WaitForSeconds(_playersData.Match.MaxTurnDuration);
 
-            OnActivePlayerChanged?.Invoke(_playerTwo);
+            Debug.Log("Switching player");
 
-            yield return new WaitForSeconds(_playersData.Match.MaxTurnDuration);
+            SwitchActivePlayer();
+        }
 
-            yield return MainPlayersLoop();
+        private void StartPlayerTimer()
+        {
+            if (coroutine_mainLoop != null)
+                StopCoroutine(coroutine_mainLoop);
+            coroutine_mainLoop = StartCoroutine(MainPlayersLoop());
+        }
+
+        private void SwitchActivePlayer()
+        {
+            if (_playerOne.IsActive)
+                OnActivePlayerChanged?.Invoke(_playerTwo);
+            else if (_playerTwo.IsActive)
+                OnActivePlayerChanged?.Invoke(_playerOne);
+            else
+                OnActivePlayerChanged?.Invoke(_playerOne);
+            StartPlayerTimer();
         }
         
         public PlayersHandler(PlayersGameData players_data, IGameStateHandler game_state_handler)

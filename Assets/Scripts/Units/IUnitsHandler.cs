@@ -8,5 +8,7 @@ namespace UnitWarfare.Units
         public IUnit[] GetUnitsForOwner(ITerritoryOwner owner);
         public IUnit[] GetUnitsForOwnerType(PlayerIdentification owner);
         public UnitInteractions InteractionsHandler { get; }
+
+        public bool UnitExecutingCommand { get; }
     }
 }

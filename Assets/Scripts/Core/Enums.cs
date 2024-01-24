@@ -57,6 +57,7 @@ namespace UnitWarfare.Core.Enums
         PASSIVE,
         TEAMPLAY,
         COWARDICE,
-        CONQUERING
+        CONQUERING,
+        EXPANDIONARY
     }
 }

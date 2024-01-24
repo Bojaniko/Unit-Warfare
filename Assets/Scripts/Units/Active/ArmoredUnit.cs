@@ -13,9 +13,9 @@ namespace UnitWarfare.Units
 
         }
 
-        public override event UnitAttack OnAttack;
-        public override event UnitMove OnMove;
-        public override event UnitJoin OnJoin;
+        public override event IActiveUnit.Command OnAttack;
+        public override event IActiveUnit.Command OnMove;
+        public override event IActiveUnit.Command OnJoin;
 
         protected override IEnumerator AttackCommandRoutine()
         {

@@ -17,30 +17,45 @@ namespace UnitWarfare.Units
 
         public IUnitCommand[] GenerateCommands(IUnit unit)
         {
-            List<IUnitCommand> _commands = new();
+            List<IUnitCommand> commands = new();
             foreach (Territory t in unit.OccupiedTerritory.NeighborTerritories)
             {
                 UnitTarget target = new(t);
                 IUnitCommand command = GenerateCommand(unit, target);
                 if (command != null)
-                    _commands.Add(command);
+                    commands.Add(command);
             }
-            return _commands.ToArray();
+            return commands.ToArray();
         }
 
         public IUnitCommand GenerateCommand(IUnit unit, UnitTarget target)
         {
+            if (unit.CurrentCommand != null)
+                return null;
+            if (target.Unit != null && target.Unit.CurrentCommand != null)
+                return null;
             if (target.Territory == null)
+                return null;
+            if (!target.Territory.Interactable)
                 return null;
             if (!unit.OccupiedTerritory.IsNeighbor(target.Territory))
                 return null;
+
+
             if (unit is IActiveUnit)
-                return GenerateActiveCommand(unit as IActiveUnit, target);
+            {
+                UnitCommand<ActiveCommandOrder> command = GenerateActiveCommand(unit as IActiveUnit, target);
+                UnityEngine.Debug.Log($"{unit} command is {command.ToString()}");
+                return command;
+            }
+
             return null;
         }
 
         private UnitCommand<ActiveCommandOrder> GenerateActiveCommand(IActiveUnit unit, UnitTarget target)
         {
+            if (unit.OccupiedTerritory.Equals(target.Territory))
+                UnityEngine.Debug.Log("Same territory");
             if (target.Unit == null)
                 return new UnitCommand<ActiveCommandOrder>(ActiveCommandOrder.MOVE, target);
             else

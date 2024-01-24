@@ -4,87 +4,108 @@ using Studio28.Probability;
 
 using UnityEngine;
 
+using UnitWarfare.Units;
 using UnitWarfare.Core.Enums;
 
 namespace UnitWarfare.AI
 {
-    public class AiBrain
+    public class AiBrain<FeatureHandler> where FeatureHandler : BrainFeatureHandler, new()
     {
+        public record Config(float Reduction, float Increasion, float Normalization);
+
         private readonly WeightedProbability<AiBrainFeature> _probability;
         private readonly List<BrainFeature> _features;
-        private readonly List<BrainFeature> _reducedFeatures;
 
-        private readonly float _reduction;
-        private readonly float _normalization;
 
-        public AiBrain(BrainFeature[] features, float reduction, float normalization)
+        private readonly Config _config;
+
+        private readonly FeatureHandler _featureHandler;
+
+        public AiBrain(BrainFeature[] features, Config config)
         {
-            _reduction = Mathf.Clamp(reduction, 0f, 1f);
-            _normalization = Mathf.Clamp(normalization, 0f, 1f);
+            _config = new(Mathf.Clamp(config.Reduction, 0f, 1f),
+                Mathf.Clamp(config.Increasion, 0f, 10f),
+                Mathf.Clamp(config.Normalization, 0f, 1f));
+
+            _featureHandler = new();
 
             _features = new(features);
-            _reducedFeatures = new();
             Dictionary<AiBrainFeature, float> factors = new();
             foreach (BrainFeature feature in _features)
                 factors.Add(feature.Feature, feature.Weight);
             _probability = new(factors);
         }
 
-        public AiBrainFeature GetOutcome()
+        public IUnitCommand GetOutcome(IUnit unit, IUnitCommand[] commands)
         {
-            AiBrainFeature outcome = _probability.GetOutcome();
+            if (unit == null)
+                return null;
+            if (commands.Length == 0)
+                return null;
+            if (commands.Length == 1)
+                return commands[0];
 
-            NormalizeReducedFeatures();
-            ReduceFeature(outcome);
+            IUnitCommand commandOutcome = null;
 
-            return outcome;
-        }
+            BrainFeatureHandler.Outcome[] outcomes = _featureHandler.GetOutcomes(unit, commands);
 
-        public void DisableFeature(AiBrainFeature feature)
-        {
-            foreach (BrainFeature f in _reducedFeatures.ToArray())
+            AiBrainFeature[] features = new AiBrainFeature[outcomes.Length];
+            for (int i = 0; i < outcomes.Length; i++)
+                features[i] = outcomes[i].Feature;
+
+            AiBrainFeature finalOutcomeFeature = _probability.GetOutcome(features);
+            List<BrainFeatureHandler.Outcome> finalOutcomes = new();
+            foreach (BrainFeatureHandler.Outcome outcome in outcomes)
             {
-                if (f.Feature.Equals(feature))
-                {
-                    _reducedFeatures.Remove(f);
-                    break;
-                }
+                if (outcome.Feature.Equals(finalOutcomeFeature))
+                    finalOutcomes.Add(outcome);
             }
-            _probability.SetWeightFactor(feature, 0);
-        }
 
-        public void EnableFeature(AiBrainFeature feature)
-        {
-            if (_probability.GetWeightValue(feature) != 0f)
-                return;
-            foreach (BrainFeature f in _features)
+            if (finalOutcomes.Count == 1)
             {
-                if (f.Feature.Equals(feature))
-                {
-                    _probability.SetWeightFactor(feature, f.Weight);
-                    return;
-                }
+                commandOutcome = finalOutcomes[0].Command;
+                Debug.Log($"Ai brain output feature is {finalOutcomes[0].Feature}");
             }
+            else
+            {
+                int rand = Random.Range(0, finalOutcomes.Count);
+                commandOutcome = finalOutcomes[rand].Command;
+                Debug.Log($"Ai brain output feature is {finalOutcomes[rand].Feature}");
+            }
+
+            if (commandOutcome != null)
+            {
+                ModifyFeatureProbability(finalOutcomes[0].Feature, finalOutcomes[0].Mode);
+                NormalizeFeatures();
+                Debug.Log($"Command outcome is {commandOutcome.ToString()}.");
+                return commandOutcome;
+            }
+            NormalizeFeatures();
+            return commands[0];
         }
 
-        private void NormalizeReducedFeatures()
+        private void NormalizeFeatures()
         {
-            if (_reducedFeatures.Count == 0)
-                return;
-            foreach (BrainFeature feature in _reducedFeatures.ToArray())
+            foreach (BrainFeature feature in _features.ToArray())
             {
                 float current = _probability.GetWeightValue(feature.Feature);
-                current += _normalization;
-                if (current >= feature.Weight)
+                if (current < feature.Weight)
                 {
-                    current = feature.Weight;
-                    _reducedFeatures.Remove(feature);
+                    current += _config.Normalization;
+                    if (current > feature.Weight)
+                        current = feature.Weight;
+                }
+                else if (current > feature.Weight)
+                {
+                    current -= _config.Normalization;
+                    if (current < feature.Weight)
+                        current = feature.Weight;
                 }
                 _probability.SetWeightFactor(feature.Feature, current);
             }
         }
 
-        private void ReduceFeature(AiBrainFeature outcome)
+        private void ModifyFeatureProbability(AiBrainFeature outcome, BrainFeatureHandler.Mode mode)
         {
             BrainFeature targetFeature = null;
             foreach (BrainFeature feature in _features)
@@ -92,10 +113,37 @@ namespace UnitWarfare.AI
                 if (feature.Feature.Equals(outcome))
                     targetFeature = feature;
             }
-            if (targetFeature != null && !_reducedFeatures.Contains(targetFeature))
+            if (targetFeature == null)
+                return;
+
+            float weight;
+            switch (mode)
             {
-                _reducedFeatures.Add(targetFeature);
-                _probability.SetWeightFactor(targetFeature.Feature, targetFeature.Weight * _reduction);
+                case BrainFeatureHandler.Mode.REDUCE:
+                    weight = _probability.GetWeightValue(targetFeature.Feature);
+                    if (weight >= targetFeature.Weight)
+                    {
+                        weight *= _config.Reduction;
+                        _probability.SetWeightFactor(targetFeature.Feature, weight);
+                    }
+                    break;
+
+                case BrainFeatureHandler.Mode.INCREASE:
+                    weight = _probability.GetWeightValue(targetFeature.Feature);
+                    if (weight <= targetFeature.Weight)
+                    {
+                        weight = Mathf.Clamp(weight + _config.Increasion, 0f, 10f);
+                        _probability.SetWeightFactor(targetFeature.Feature, weight);
+                    }
+                    break;
+
+                case BrainFeatureHandler.Mode.MAXIMIZE:
+                    _probability.SetWeightFactor(targetFeature.Feature, 10f);
+                    break;
+
+                case BrainFeatureHandler.Mode.MINIMIZE:
+                    _probability.SetWeightFactor(targetFeature.Feature, 0f);
+                    break;
             }
         }
     }

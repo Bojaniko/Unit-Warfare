@@ -26,6 +26,11 @@ namespace UnitWarfare.Units
 
         public static IUnit GenerateUnit(Territory territory, UnitData data, Transform unit_container, IUnitTeamManager unit_manager)
         {
+            _ = territory ?? throw new System.ArgumentException("Generated unit requires a Territory object.");
+            _ = data ?? throw new System.ArgumentException("Generated unit requires a UnitData object.");
+            _ = unit_container ?? throw new System.ArgumentException("Generated unit requires a global gameobject container for all units.");
+            _ = unit_manager ?? throw new System.ArgumentException("Generated unit requires an IUnitTeamManager object.");
+
             GameObject go = GameObject.Instantiate(data.Prefab, territory.EMB.transform.position, Quaternion.identity, unit_container);
             foreach (System.Type t in _unitTypes)
             {

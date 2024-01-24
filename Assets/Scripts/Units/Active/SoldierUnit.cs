@@ -1,7 +1,6 @@
 using System.Collections;
 
 using UnityEngine;
-using UnityEngine.AI;
 
 using UnitWarfare.Territories;
 
@@ -28,12 +27,11 @@ namespace UnitWarfare.Units
 
         protected override IEnumerator AttackCommandRoutine()
         {
-            OnAttack?.Invoke(this, CurrentCommand.Target.Unit);
+            OnAttack?.Invoke(this, CurrentCommand.Target);
 
             return null;
         }
 
-        // TODO: TERRITORY NOT AVAILABLE WHEN BEING MOVED TO
         protected override IEnumerator MoveCommandRoutine()
         {
             _emb.transform.LookAt(CurrentCommand.Target.Territory.EMB.transform);
@@ -47,12 +45,12 @@ namespace UnitWarfare.Units
             _animator.SetBool("walking", false);
             _animator.Play("IDLE");
 
-            OnMove?.Invoke(this, CurrentCommand.Target.Territory);
+            OnMove?.Invoke(this, CurrentCommand.Target);
         }
 
         protected override IEnumerator JoinCommandRoutine()
         {
-            OnJoin?.Invoke(this, (IActiveUnit)CurrentCommand.Target.Unit);
+            OnJoin?.Invoke(this, CurrentCommand.Target);
 
             return null;
         }
@@ -74,8 +72,8 @@ namespace UnitWarfare.Units
             yield return new WaitForSeconds(0.2f);
         }
 
-        public override event UnitAttack OnAttack;
-        public override event UnitMove OnMove;
-        public override event UnitJoin OnJoin;
+        public override event IActiveUnit.Command OnAttack;
+        public override event IActiveUnit.Command OnMove;
+        public override event IActiveUnit.Command OnJoin;
     }
 }

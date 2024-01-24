@@ -25,6 +25,8 @@ namespace UnitWarfare.Territories
 
         public Territory(MapColorScheme color_scheme, TerritoryIdentifier identifier, ITerritoryHandler handler)
         {
+            _interactable = true;
+
             _colorScheme = color_scheme;
 
             _emb = new(this, identifier.gameObject);
@@ -44,6 +46,11 @@ namespace UnitWarfare.Territories
                     GetNeighborTerritories();
             };
         }
+
+        private bool _interactable;
+        public bool Interactable => _interactable;
+        public void SetInteractable(bool interactable) =>
+            _interactable = interactable;
 
         // ##### OCCUPATION ##### \\
 
@@ -194,12 +201,12 @@ namespace UnitWarfare.Territories
 
         // ##### SURROUNDING TERRITORIES ##### \\
 
-        private List<Territory> _neighborTerritories;
-        public Territory[] NeighborTerritories => _neighborTerritories.ToArray();
+        private Territory[] _neighborTerritories;
+        public Territory[] NeighborTerritories => _neighborTerritories;
 
         private void GetNeighborTerritories()
         {
-            _neighborTerritories = new();
+            List<Territory> neighborTerritories = new();
 
             int layerMask = LayerMask.GetMask("Territory");
 
@@ -209,8 +216,11 @@ namespace UnitWarfare.Territories
             foreach (Collider c in hits)
             {
                 TerritoryEMB t = (TerritoryEMB)c.transform.parent.GetComponent<TerritoryEMB.EMB>().Encapsulator;
-                _neighborTerritories.Add(t.Territory);
+                if (t.Territory.Equals(this))
+                    continue;
+                neighborTerritories.Add(t.Territory);
             }
+            _neighborTerritories = neighborTerritories.ToArray();
         }
 
         public bool IsNeighbor(Territory other_territory)
