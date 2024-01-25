@@ -16,8 +16,8 @@ namespace UnitWarfare.Players
 
         private IUnit[] _currentUnits;
 
-        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, ref ActivePlayerEventHandler active_player_handler)
-            : base(data, ref active_player_handler)
+        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, IPlayerHandler handler)
+            : base(data, handler)
         {
             _aiData = ai_data;
 
@@ -46,7 +46,6 @@ namespace UnitWarfare.Players
                     continue;
                 }
             }
-            Debug.Log("Ended all unit moves");
             OnExplicitMoveEnd?.Invoke(this);
         }
 

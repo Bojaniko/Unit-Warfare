@@ -1,9 +1,10 @@
-﻿namespace UnitWarfare.Units
+﻿
+
+namespace UnitWarfare.Units
 {
     public interface IUnitTeamManager
     {
-        public delegate void UnitManagerEventHandler();
-        public event UnitManagerEventHandler OnRoundStarted;
-        public event UnitManagerEventHandler OnRoundEnded;
+        public delegate void UnitOwnerEventHandler();
+        public event UnitOwnerEventHandler OnRoundStarted;
     }
 }

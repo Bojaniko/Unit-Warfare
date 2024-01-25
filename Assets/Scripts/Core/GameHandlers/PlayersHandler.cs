@@ -44,7 +44,7 @@ namespace UnitWarfare.Players
         PLAYER_TWO_TURN
     }
 
-    public class PlayersHandler : GameHandler
+    public class PlayersHandler : GameHandler, IPlayerHandler
     {
         // ##### PLAYERS DATA ##### \\
 
@@ -74,9 +74,7 @@ namespace UnitWarfare.Players
             }
         }
 
-        // ##### ??? ##### \\
-
-        private event ActivePlayerEventHandler OnActivePlayerChanged;
+        public event IPlayerHandler.PlayerEventHandler OnActivePlayerChanged;
 
         private StateMachine<PlayerHandlerState> _stateController;
 
@@ -94,21 +92,21 @@ namespace UnitWarfare.Players
                 gameStateHandler.GetHandler<CameraHandler>().MainCamera,
                 gameStateHandler.GetHandler<UIHandler>().GetUIHandler<UnitDisplay>(),
                 gameStateHandler.GetHandler<UnitsHandler>());
-            _playerOne = new PlayerLocal(localConfig, _playersData.PlayerOneData, ref OnActivePlayerChanged);
+            _playerOne = new PlayerLocal(localConfig, _playersData.PlayerOneData, this);
 
             _playerOne.OnExplicitMoveEnd += (Player player) =>
             {
                 SwitchActivePlayer();
             };
 
-            _playerTwo = new PlayerComputer(gameStateHandler.GetHandler<UnitsHandler>(), _playersData.Match.AiData, _playersData.PlayerTwoData, ref OnActivePlayerChanged);
+            _playerTwo = new PlayerComputer(gameStateHandler.GetHandler<UnitsHandler>(), _playersData.Match.AiData, _playersData.PlayerTwoData, this);
 
             _playerTwo.OnExplicitMoveEnd += (Player player) =>
             {
                 SwitchActivePlayer();
             };
 
-            _neutralPlayer = new PlayerNeutral(_playersData.NeutralPlayerData, ref OnActivePlayerChanged);
+            _neutralPlayer = new PlayerNeutral(_playersData.NeutralPlayerData, this);
 
             _stateController = new("Players Handler", PlayerHandlerState.LOADING);
         }

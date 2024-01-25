@@ -13,8 +13,8 @@ namespace UnitWarfare.Players
         public record Config(TapProcessor TapInput, CameraController MainCamera, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler);
         private readonly Config _config;
 
-        public PlayerLocal(Config config, PlayerData data, ref ActivePlayerEventHandler active_player_event)
-            : base(data, ref active_player_event)
+        public PlayerLocal(Config config, PlayerData data, IPlayerHandler handler)
+            : base(data, handler)
         {
             _config = config;
 

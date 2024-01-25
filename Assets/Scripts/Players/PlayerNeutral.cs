@@ -6,8 +6,8 @@ namespace UnitWarfare.Players
 {
     public class PlayerNeutral : Player
     {
-        public PlayerNeutral(PlayerData data, ref ActivePlayerEventHandler active_player_handler)
-            : base(data, ref active_player_handler)
+        public PlayerNeutral(PlayerData data, IPlayerHandler handler)
+            : base(data, handler)
         {
 
         }

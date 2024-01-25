@@ -15,8 +15,6 @@ namespace System.Runtime.CompilerServices
 
 namespace UnitWarfare.Players
 {
-    public delegate void ActivePlayerEventHandler(Player player);
-
     public abstract class Player : ITerritoryOwner, IUnitTeamManager
     {
         // ##### DATA ##### \\
@@ -39,36 +37,40 @@ namespace UnitWarfare.Players
 
         protected EncapsulatedMonoBehaviour emb;
 
-        public event IUnitTeamManager.UnitManagerEventHandler OnRoundStarted;
-        public event IUnitTeamManager.UnitManagerEventHandler OnRoundEnded;
-
         public delegate void PlayerEventHandler(Player player);
 
         public abstract event PlayerEventHandler OnExplicitMoveEnd;
 
-        protected Player(PlayerData data, ref ActivePlayerEventHandler active_player_event)
+        public event IUnitTeamManager.UnitOwnerEventHandler OnRoundStarted;
+
+        protected readonly IPlayerHandler handler;
+
+        protected Player(PlayerData data, IPlayerHandler handler)
         {
             _data = data;
             _isActive = false;
 
-            active_player_event += (player) =>
-            {
-                if (player.Equals(this))
-                {
-                    _isActive = true;
-                    OnActiveTurn();
-                    OnRoundStarted?.Invoke();
-                    return;
-                }
-                if (!_isActive)
-                    return;
-                OnInactiveTurn();
-                OnRoundEnded?.Invoke();
-                _isActive = false;
-            };
+            this.handler = handler;
+
+            handler.OnActivePlayerChanged += ActivePlayerHandler;
 
             emb = new(new(ToString()));
             emb.OnUpdate += OnUpdate;
+        }
+
+        private void ActivePlayerHandler(Player player)
+        {
+            if (player.Equals(this))
+            {
+                _isActive = true;
+                OnRoundStarted?.Invoke();
+                OnActiveTurn();
+                return;
+            }
+            if (!_isActive)
+                return;
+            OnInactiveTurn();
+            _isActive = false;
         }
 
         /// <summary>

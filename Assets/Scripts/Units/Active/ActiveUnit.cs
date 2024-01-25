@@ -30,13 +30,13 @@ namespace UnitWarfare.Units
         }
 
         private bool _commandActive = false;
-        public override bool IsCommandActive => _commandActive;
+        public override sealed bool IsCommandActive => _commandActive;
         private UnitCommand<ActiveCommandOrder> _currentCommand;
-        public override IUnitCommand CurrentCommand => _currentCommand;
+        public override sealed IUnitCommand CurrentCommand => _currentCommand;
 
         protected abstract override void OnDestroyed();
 
-        public override void StartCommand(IUnitCommand command)
+        public override sealed void StartCommand(IUnitCommand command)
         {
             if (_currentCommand != null)
                 return;
@@ -79,8 +79,8 @@ namespace UnitWarfare.Units
             _currentCommand = null;
         }
 
-        public override event IUnit.Command OnCommandStart;
-        public override event IUnit.Command OnCommandEnd;
+        public override sealed event IUnit.Command OnCommandStart;
+        public override sealed event IUnit.Command OnCommandEnd;
 
         public abstract event IActiveUnit.Command OnAttack;
         public abstract event IActiveUnit.Command OnMove;

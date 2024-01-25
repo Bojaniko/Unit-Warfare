@@ -54,8 +54,6 @@ namespace UnitWarfare.Units
 
         private UnitCommand<ActiveCommandOrder> GenerateActiveCommand(IActiveUnit unit, UnitTarget target)
         {
-            if (unit.OccupiedTerritory.Equals(target.Territory))
-                UnityEngine.Debug.Log("Same territory");
             if (target.Unit == null)
                 return new UnitCommand<ActiveCommandOrder>(ActiveCommandOrder.MOVE, target);
             else

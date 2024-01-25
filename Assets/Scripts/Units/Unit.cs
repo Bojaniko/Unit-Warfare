@@ -67,6 +67,7 @@ namespace UnitWarfare.Units
 
         public void Damage(int amount)
         {
+            Debug.Log($"Damage {amount}");
             amount -= _shield;
             if (amount < 0)
                 amount = 0;
@@ -103,7 +104,7 @@ namespace UnitWarfare.Units
             _health = data.Health;
             _shield = data.Shield;
 
-            manager.OnRoundStarted += () => _moveAvailable = true;
+            manager.OnRoundStarted += () => { _moveAvailable = true; };
 
             _owner = start_territory.Owner.OwnerIdentification;
 
