@@ -41,6 +41,9 @@ namespace UnitWarfare.Players
                     IUnitCommand command = _activeUnitBrain.GetOutcome(unit, commands);
                     if (command == null)
                         continue;
+
+
+
                     unit.StartCommand(command);
                     yield return new WaitUntil(() => { return !unit.IsCommandActive; });
                     continue;

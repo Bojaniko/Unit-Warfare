@@ -67,7 +67,6 @@ namespace UnitWarfare.Units
 
         public void Damage(int amount)
         {
-            Debug.Log($"Damage {amount}");
             amount -= _shield;
             if (amount < 0)
                 amount = 0;
