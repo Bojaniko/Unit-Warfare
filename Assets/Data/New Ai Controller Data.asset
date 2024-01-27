@@ -25,5 +25,8 @@ MonoBehaviour:
     _weight: 6
   - _feature: 5
     _weight: 3
+  - _feature: 6
+    _weight: 1
   _reductionFactor: 0.2
+  _increasionAmount: 0.5
   _normalizationStep: 0.1

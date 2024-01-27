@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:VisualElement name="container" picking-mode="Ignore" style="padding-bottom: 2px; padding-right: 2px; padding-left: 2px; margin-bottom: 4px;">
-        <ui:SliderInt picking-mode="Ignore" label="Feature" value="5" high-value="10" name="feature" show-input-field="true" focusable="false" />
+        <ui:SliderInt picking-mode="Ignore" label="Feature" value="5" high-value="10" name="feature" show-input-field="true" focusable="false" binding-path="_weight" />
     </ui:VisualElement>
 </ui:UXML>

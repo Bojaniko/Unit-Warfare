@@ -20,7 +20,6 @@ namespace UnitWarfare.AI
 
             SliderInt feature = root.Q<SliderInt>("feature");
             feature.label = System.Enum.GetValues(typeof(AiBrainFeature)).GetValue(property.FindPropertyRelative("_feature").intValue).ToString();
-            feature.bindingPath = "_weight";
 
             return root;
         }

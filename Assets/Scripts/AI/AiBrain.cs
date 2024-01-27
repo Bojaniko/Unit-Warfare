@@ -11,13 +11,12 @@ namespace UnitWarfare.AI
 {
     public class AiBrain<FeatureHandler> where FeatureHandler : BrainFeatureHandler, new()
     {
-        public record Memory(WeightedProbability<AiBrainFeature> Probability, List<IUnitCommand> CommandHistory);
+        public record Memory(WeightedProbability<AiBrainFeature> Probability);
         public record Config(float Reduction, float Increasion, float Normalization);
 
-        private readonly List<BrainFeature> _features;
-
-        private readonly Dictionary<IUnit, Memory> _memory;
+        private readonly BrainFeature[] _defaultFeatures;
         private readonly Dictionary<AiBrainFeature, float> _defaultFactors;
+        private readonly Dictionary<IUnit, Memory> _memory;
 
         private readonly Config _config;
 
@@ -30,13 +29,11 @@ namespace UnitWarfare.AI
                 Mathf.Clamp(config.Normalization, 0f, 1f));
 
             _featureHandler = new();
-
             _memory = new();
-
-            _features = new(features);
-            _defaultFactors = new();
-            foreach (BrainFeature feature in _features)
-                _defaultFactors.Add(feature.Feature, feature.Weight);
+            _defaultFeatures = features;
+            _defaultFactors = new(_defaultFeatures.Length);
+            foreach (BrainFeature f in _defaultFeatures)
+                _defaultFactors.Add(f.Feature, f.Weight);
         }
 
         public IUnitCommand GetOutcome(IUnit unit, IUnitCommand[] commands)
@@ -47,7 +44,6 @@ namespace UnitWarfare.AI
                 return null;
             if (commands.Length == 1)
                 return commands[0];
-
 
             Memory memory;
             try
@@ -65,17 +61,8 @@ namespace UnitWarfare.AI
             for (int i = 0; i < outcomes.Length; i++)
                 features[i] = outcomes[i].Feature;
 
-            AiBrainFeature finalOutcomeFeature;
-            try
-            {
-                finalOutcomeFeature = memory.Probability.GetOutcome(features);
-            }
-            catch
-            {
-                foreach (AiBrainFeature f in features)
-                    Debug.Log($"error feature is {f}");
-                finalOutcomeFeature = AiBrainFeature.AGRESSIVE;
-            }
+            AiBrainFeature finalOutcomeFeature = memory.Probability.GetOutcome(features);
+
             List<BrainFeatureHandler.Outcome> finalOutcomes = new();
             foreach (BrainFeatureHandler.Outcome outcome in outcomes)
             {
@@ -98,7 +85,7 @@ namespace UnitWarfare.AI
 
             if (finalOutcome != null)
             {
-                UpdateMemory(memory, finalOutcome.Feature, finalOutcome.Mode);
+                UpdateMemory(memory, finalOutcome);
                 Debug.Log($"Command outcome is {finalOutcome.Command}.");
                 return finalOutcome.Command;
             }
@@ -107,7 +94,7 @@ namespace UnitWarfare.AI
 
         private void RefreshMemory(Memory memory)
         {
-            foreach (BrainFeature feature in _features.ToArray())
+            foreach (BrainFeature feature in _defaultFeatures)
             {
                 float current = memory.Probability.GetWeightValue(feature.Feature);
                 if (current < feature.Weight)
@@ -126,12 +113,12 @@ namespace UnitWarfare.AI
             }
         }
 
-        private void UpdateMemory(Memory memory, AiBrainFeature outcome , BrainFeatureHandler.Mode mode)
+        private void UpdateMemory(Memory memory, BrainFeatureHandler.Outcome outcome)
         {
             RefreshMemory(memory);
 
             BrainFeature targetFeature = null;
-            foreach (BrainFeature feature in _features)
+            foreach (BrainFeature feature in _defaultFeatures)
             {
                 if (feature.Feature.Equals(outcome))
                     targetFeature = feature;
@@ -140,7 +127,7 @@ namespace UnitWarfare.AI
                 return;
 
             float weight;
-            switch (mode)
+            switch (outcome.Mode)
             {
                 case BrainFeatureHandler.Mode.REDUCE:
                     weight = memory.Probability.GetWeightValue(targetFeature.Feature);
@@ -172,7 +159,7 @@ namespace UnitWarfare.AI
 
         private Memory RegisterUnitToMemory(IUnit unit)
         {
-            Memory newMemory = new(new(_defaultFactors), new());
+            Memory newMemory = new(new(_defaultFactors));
             _memory.Add(unit, newMemory);
             unit.OnDestroy += ClearUnitFromMemory;
             return newMemory;
