@@ -12,24 +12,7 @@ namespace UnitWarfare.UI
     [CustomPropertyDrawer(typeof(UnitCombinations.Combination))]
     public class UnitCombinationPropertyDrawer : PropertyDrawer
     {
-        /*private static System.Type[] _unitTypes = GetUnitTypes();
-        private static System.Type[] GetUnitTypes()
-        {
-            List<System.Type> types = new();
-            foreach (System.Type t in typeof(IUnit).Assembly.GetTypes())
-            {
-                if (t.GetInterface("IUnit") == null)
-                    continue;
-                if (t.IsAbstract)
-                    continue;
-                if (t.IsInterface)
-                    continue;
-                types.Add(t);
-            }
-            return types.ToArray();
-        }*/
-
-        private const string path = "UI/unit_combinations_selector";
+        private const string PATH = "UI/unit_combinations_selector";
 
         private string[] _typeNames;
 
@@ -48,7 +31,7 @@ namespace UnitWarfare.UI
 
             GenerateTypeNames();
 
-            VisualTreeAsset vta = (VisualTreeAsset)Resources.Load(path);
+            VisualTreeAsset vta = (VisualTreeAsset)Resources.Load(PATH);
             VisualElement root = new();
             vta.CloneTree(root);
 

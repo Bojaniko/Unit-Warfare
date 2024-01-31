@@ -41,15 +41,25 @@ namespace UnitWarfare.Units
             if (!unit.OccupiedTerritory.IsNeighbor(target.Territory))
                 return null;
 
-
             if (unit is IActiveUnit)
             {
                 UnitCommand<ActiveCommandOrder> command = GenerateActiveCommand(unit as IActiveUnit, target);
-                UnityEngine.Debug.Log($"{unit} command is {command.ToString()}");
+                return command;
+            }
+            else if (unit is Antennae)
+            {
+                UnitCommand<AntennaeCommandOrder> command = GenerateAntennaeCommand(unit as Antennae, target);
                 return command;
             }
 
             return null;
+        }
+
+        private UnitCommand<AntennaeCommandOrder> GenerateAntennaeCommand(Antennae antennae, UnitTarget target)
+        {
+            if (target.Territory.Occupant == null && target.Territory.Owner.Equals(antennae.OccupiedTerritory.Owner))
+                return new UnitCommand<AntennaeCommandOrder>(AntennaeCommandOrder.GENERATE_UNIT, target);
+            return new UnitCommand<AntennaeCommandOrder>(AntennaeCommandOrder.CANCEL, target);
         }
 
         private UnitCommand<ActiveCommandOrder> GenerateActiveCommand(IActiveUnit unit, UnitTarget target)

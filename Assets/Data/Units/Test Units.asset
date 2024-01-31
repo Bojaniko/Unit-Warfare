@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d24d90a7bf331544b89bed25630d394c, type: 3}
   m_Name: Test Units
   m_EditorClassIdentifier: 
-  _combinations: {fileID: 11400000, guid: fdf4b65c7045b854e9467f54b1295e9e, type: 2}
-  _soldier: {fileID: 11400000, guid: ca2d082b29898c94ab8c36309593ad51, type: 2}
-  _armored: {fileID: 11400000, guid: b6db2bdb5f8cff74a80ef0aad56aedba, type: 2}
+  _combinations: {fileID: 0}
+  _soldier: {fileID: 0}
+  _armored: {fileID: 0}
+  _antennae: {fileID: 0}
+  _dataContainer: []

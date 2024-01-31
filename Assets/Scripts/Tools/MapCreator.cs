@@ -384,7 +384,7 @@ namespace UnitWarfare.Tools
         private void BindUnitsCommands()
         {
             _unitTypes = rootVisualElement.Q<ScrollView>("unit_types");
-            foreach (UnitData data in _data.UnitsData.GetAllData())
+            foreach (UnitData data in _data.UnitsData.AllData)
             {
                 if (data == null)
                     continue;
@@ -410,7 +410,7 @@ namespace UnitWarfare.Tools
                 _allUnits.Add(ui);
 
                 Undo.RegisterCreatedObjectUndo(ui.gameObject, ui.Data.DisplayName);
-                
+
                 switch (_selectedTerritories[0].Owner)
                 {
                     case PlayerIdentification.PLAYER:
@@ -426,6 +426,12 @@ namespace UnitWarfare.Tools
                         break;
                 }
             };
+
+            rootVisualElement.Q<Button>("unit_remove").clicked += () =>
+                {
+                    if (_selectedUnit != null)
+                        DestroyImmediate(_selectedUnit);
+                };
         }
 
         private void DisposeUnitMeshPreviews()

@@ -81,6 +81,8 @@ namespace UnitWarfare.Units
             List<IUnit> units = new();
             foreach (IUnit unit in _units)
             {
+                if (unit.IsDead)
+                    continue;
                 if (unit.OccupiedTerritory.Owner.Equals(owner))
                     units.Add(unit);
             }
@@ -92,6 +94,8 @@ namespace UnitWarfare.Units
             List<IUnit> units = new();
             foreach (IUnit unit in _units)
             {
+                if (unit.IsDead)
+                    continue;
                 if (unit.Owner.Equals(owner))
                     units.Add(unit);
             }
@@ -155,14 +159,14 @@ namespace UnitWarfare.Units
 
         private void CreateActiveUnit(System.Type unit_type, Territory territory)
         {
-            if (!unit_type.IsAssignableFrom(typeof(IActiveUnit)))
+            if (unit_type.GetInterface("IActiveUnit") == null)
                 return;
 
             UnitData data = null;
 
             foreach (PropertyInfo pi in typeof(UnitsData).GetProperties())
             {
-                if (pi.PropertyType.Equals(unit_type.GetGenericArguments()[0]))
+                if (pi.PropertyType.Equals(unit_type.BaseType.GetGenericArguments()[0]))
                     data = (UnitData)pi.GetValue(_data);
             }
 
@@ -171,26 +175,46 @@ namespace UnitWarfare.Units
 
             IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.OwnerIdentification);
             IUnit new_unit = UnitFactory.GenerateUnit(territory, data, c_units, unitManager);
-            _units.Add(new_unit);
-            InitActiveUnit((IActiveUnit)new_unit);
+            InitUnit(new_unit);
         }
 
-        private bool HandleActiveUnitCommandStart(IActiveUnit unit, UnitCommand<ActiveCommandOrder> command)
+        private void HandleActiveUnitCommandStart(IActiveUnit unit, UnitCommand<ActiveCommandOrder> command)
         {
             if (unit == null || command == null)
-                return false;
+                return;
             if (command.Order.Equals(ActiveCommandOrder.MOVE))
                 command.Target.Territory.SetInteractable(false);
-            return true;
         }
 
-        private bool HandleActiveUnitCommandEnd(IActiveUnit unit, UnitCommand<ActiveCommandOrder> command)
+        private void HandleActiveUnitCommandEnd(IActiveUnit unit, UnitCommand<ActiveCommandOrder> command)
         {
             if (unit == null || command == null)
-                return false;
+                return;
             if (command.Order.Equals(ActiveCommandOrder.MOVE))
                 command.Target.Territory.SetInteractable(true);
-            return true;
+        }
+
+        // ##### ANTENNAE ##### \\
+
+        private void InitAntennae(Antennae antennae)
+        {
+            if (antennae == null)
+                return;
+            antennae.OnReinforce += HandleAntennaeReinforcements;
+        }
+
+        private void HandleAntennaeReinforcements(Territory territory, SoldierData soldier_data)
+        {
+            IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.OwnerIdentification);
+            IUnit reinforcement = UnitFactory.GenerateUnit(territory, soldier_data, typeof(Recruit), c_units, unitManager);
+            InitUnit(reinforcement);
+        }
+
+        private void HandleAntennaeDestroyed(Antennae antennae)
+        {
+            if (antennae == null)
+                return;
+            antennae.OnReinforce -= HandleAntennaeReinforcements;
         }
 
         // ##### UNITS ##### \\
@@ -199,6 +223,8 @@ namespace UnitWarfare.Units
 
         private void InitUnit(IUnit unit)
         {
+            _units.Add(unit);
+
             _unitsExecutingCommands = new();
 
             unit.OnDestroy += HandleUnitDestroy;
@@ -206,6 +232,7 @@ namespace UnitWarfare.Units
             unit.OnCommandEnd += HandleUnitCommandEnd;
 
             InitActiveUnit(unit as IActiveUnit);
+            InitAntennae(unit as Antennae);
         }
 
         private void HandleUnitDestroy(IUnit unit)
@@ -219,6 +246,7 @@ namespace UnitWarfare.Units
             unit.OccupiedTerritory.Deocuppy();
 
             HandleActiveUnitDestroyed(unit as IActiveUnit);
+            HandleAntennaeDestroyed(unit as Antennae);
 
             _units.Remove(unit);
         }
@@ -227,16 +255,14 @@ namespace UnitWarfare.Units
         {
             _unitsExecutingCommands.Add(unit);
 
-            if (HandleActiveUnitCommandStart(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>))
-                return;
+            HandleActiveUnitCommandStart(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>);
         }
 
         private void HandleUnitCommandEnd(IUnit unit, IUnitCommand command)
         {
             _unitsExecutingCommands.Remove(unit);
 
-            if (HandleActiveUnitCommandEnd(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>))
-                return;
+            HandleActiveUnitCommandEnd(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>);
         }
 
         // ##### IDENTIFIERS ##### \\

@@ -46,5 +46,15 @@ namespace UnitWarfare.Units
         {
             throw new System.NotImplementedException();
         }
+
+        protected override bool CommandIsReady()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override IEnumerator DamagedRoutine()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

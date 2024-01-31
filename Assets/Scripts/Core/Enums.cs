@@ -15,6 +15,12 @@ namespace UnitWarfare.Core.Enums
         CANCEL
     }
 
+    public enum AntennaeCommandOrder
+    {
+        GENERATE_UNIT,
+        CANCEL
+    }
+
     public enum GameType
     {
         TEST,

@@ -65,6 +65,8 @@ namespace UnitWarfare.Units
         private readonly int _attack;
         public int Attack => _attack;
 
+        public bool IsDead => _health <= 0;
+
         public void Damage(int amount)
         {
             amount -= _shield;
@@ -76,7 +78,10 @@ namespace UnitWarfare.Units
                 _health = 0;
                 _emb.StartCoroutine(KillUnit());
             }
+            else _emb.StartCoroutine(DamagedRoutine());
         }
+
+        protected abstract IEnumerator DamagedRoutine();
 
         // ##### COMMANDS ##### \\
 
@@ -92,6 +97,8 @@ namespace UnitWarfare.Units
         UnitData IUnit.Data => Data;
         public D Data => _data;
 
+        protected readonly IUnitTeamManager manager;
+
         protected Unit(Territory start_territory, GameObject game_object, D data, IUnitTeamManager manager)
         {
             _data = data;
@@ -103,6 +110,7 @@ namespace UnitWarfare.Units
             _health = data.Health;
             _shield = data.Shield;
 
+            this.manager = manager;
             manager.OnRoundStarted += () => { _moveAvailable = true; };
 
             _owner = start_territory.Owner.OwnerIdentification;

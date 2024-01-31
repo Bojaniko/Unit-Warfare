@@ -38,7 +38,7 @@ namespace UnitWarfare.Units
 
         public override sealed void StartCommand(IUnitCommand command)
         {
-            if (_currentCommand != null)
+            if (IsCommandActive)
                 return;
             StartCommand(command as UnitCommand<ActiveCommandOrder>);
         }
@@ -50,6 +50,12 @@ namespace UnitWarfare.Units
 
             if (!MoveAvailable)
                 return;
+
+            if (command.Order.Equals(ActiveCommandOrder.CANCEL))
+            {
+                _emb.StartCoroutine(CancelCommandRoutine());
+                return;
+            }
 
             ActiveCommandRoutine routine = null;
             foreach (ActiveCommandRoutine r in _routines)
@@ -73,6 +79,7 @@ namespace UnitWarfare.Units
         private IEnumerator CommandRoutine(ActiveCommandRoutine command_routine)
         {
             OnCommandStart?.Invoke(this, CurrentCommand);
+            yield return new WaitUntil(CommandIsReady);
             yield return command_routine.RoutineDelegate.Invoke();
             OnCommandEnd?.Invoke(this, CurrentCommand);
             _commandActive = false;
@@ -90,5 +97,8 @@ namespace UnitWarfare.Units
         protected abstract IEnumerator MoveCommandRoutine();
         protected abstract IEnumerator JoinCommandRoutine();
         protected abstract IEnumerator CancelCommandRoutine();
+
+        protected abstract bool CommandIsReady();
+        protected override abstract IEnumerator DamagedRoutine();
     }
 }

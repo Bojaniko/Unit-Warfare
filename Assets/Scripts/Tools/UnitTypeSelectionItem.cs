@@ -48,12 +48,33 @@ namespace UnitWarfare.Tools
 
             if (_data.Prefab != null)
             {
-                _meshPreview = new(_data.Prefab.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh);
-                _meshContainer = item.Q<IMGUIContainer>("item_mesh");
-                _meshContainer.onGUIHandler += () =>
+                Mesh mesh = null;
+                foreach (Transform t in _data.Prefab.transform)
                 {
-                    _meshPreview.OnPreviewGUI(_meshContainer.contentRect, new GUIStyle());
-                };
+                    if (t.CompareTag("UnitModel"))
+                    {
+                        MeshFilter filter;
+                        if (t.TryGetComponent<MeshFilter>(out filter))
+                        {
+                            mesh = filter.sharedMesh;
+                        }
+                        SkinnedMeshRenderer smr;
+                        if (mesh == null && t.TryGetComponent<SkinnedMeshRenderer>(out smr))
+                        {
+                            mesh = smr.sharedMesh;
+                        }
+                    }
+                }
+
+                if (mesh != null)
+                {
+                    _meshPreview = new(mesh);
+                    _meshContainer = item.Q<IMGUIContainer>("item_mesh");
+                    _meshContainer.onGUIHandler += () =>
+                    {
+                        _meshPreview.OnPreviewGUI(_meshContainer.contentRect, new GUIStyle());
+                    };
+                }
             }
 
             item.Q<Label>("item_label").text = _data.DisplayName;

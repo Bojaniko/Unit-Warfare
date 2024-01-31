@@ -12,7 +12,20 @@ namespace UnitWarfare.Units
 
         private readonly Animator _animator;
 
-        private const string _walkSpeedMult = "walk_speed";
+        private const string WALK_SPEED_MULT = "walk_speed";
+
+        protected const string ANIMATION_NAME_DIE = "DIE";
+        protected const string ANIMATION_NAME_WALK = "WALK";
+        protected const string ANIMATION_NAME_IDLE = "IDLE";
+        protected const string ANIMATION_NAME_SHOOT = "SHOOT";
+        protected const string ANIMATION_NAME_SALUTE = "SALUTE";
+        protected const string ANIMATION_NAME_WOUNDED = "SHOT";
+
+        protected const string ANIMATOR_WALKING = "walking";
+        protected const string ANIMATOR_SHOOTING = "shooting";
+        protected const string ANIMATOR_SHOOT_MODE = "shoot_mode";
+
+        protected const int ANIMATION_VARIATIONS_SHOOT = 2;
 
         public SoldierUnit(Territory starting_territory, GameObject game_object, SoldierData data, IUnitTeamManager manager)
             : base(starting_territory, game_object, data, manager)
@@ -23,41 +36,59 @@ namespace UnitWarfare.Units
         }
 
         private float GetWalkSpeedMultiplier() =>
-            _animator.GetFloat(_walkSpeedMult);
+            _animator.GetFloat(WALK_SPEED_MULT);
 
         protected override IEnumerator AttackCommandRoutine()
         {
-            OnAttack?.Invoke(this, CurrentCommand.Target);
+            _emb.transform.LookAt(CurrentCommand.Target.Territory.EMB.transform);
 
-            return null;
+            int rand = Random.Range(0, ANIMATION_VARIATIONS_SHOOT);
+
+            _animator.SetInteger(ANIMATOR_SHOOT_MODE, rand);
+
+            _animator.SetBool(ANIMATOR_SHOOTING, true);
+            _animator.Play(ANIMATION_NAME_SHOOT, 0);
+
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
+
+            yield return new WaitForSeconds(0.2f);
+
+            OnAttack?.Invoke(this, CurrentCommand.Target);
+            _animator.SetBool(ANIMATOR_SHOOTING, false);
         }
 
         protected override IEnumerator MoveCommandRoutine()
         {
             _emb.transform.LookAt(CurrentCommand.Target.Territory.EMB.transform);
 
-            _animator.SetBool("walking", true);
+            _animator.SetBool(ANIMATOR_WALKING, true);
+            _animator.Play(ANIMATION_NAME_WALK, 0);
 
             _mover.MoveToDestination(CurrentCommand.Target.Territory.EMB.transform.position);
 
             yield return new WaitUntil(() => _mover.CurrentState.Equals(MoverState.WAITING));
 
-            _animator.SetBool("walking", false);
-            _animator.Play("IDLE");
+            _animator.SetBool(ANIMATOR_WALKING, false);
+            _animator.CrossFade(ANIMATION_NAME_IDLE, 0.1f, 0);
 
             OnMove?.Invoke(this, CurrentCommand.Target);
         }
 
         protected override IEnumerator JoinCommandRoutine()
         {
-            OnJoin?.Invoke(this, CurrentCommand.Target);
+            _emb.transform.LookAt(CurrentCommand.Target.Territory.EMB.transform);
 
-            return null;
+            _animator.Play(ANIMATION_NAME_SALUTE, 0);
+
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
+
+            OnJoin?.Invoke(this, CurrentCommand.Target);
         }
 
         protected override IEnumerator CancelCommandRoutine()
         {
-            return null;
+            Debug.Log("Cancelling soldier command");
+            yield return null;
         }
 
         protected override void OnDestroyed()
@@ -67,10 +98,20 @@ namespace UnitWarfare.Units
 
         protected override IEnumerator KillRoutine()
         {
-            Debug.Log("Killed");
+            _animator.Play(ANIMATION_NAME_DIE, 0);
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
         }
+
+        protected override IEnumerator DamagedRoutine()
+        {
+            _animator.Play(ANIMATION_NAME_WOUNDED, 0);
+
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
+        }
+
+        protected override bool CommandIsReady() =>
+            _animator.GetCurrentAnimatorStateInfo(0).IsName(ANIMATION_NAME_IDLE);
 
         public override event IActiveUnit.Command OnAttack;
         public override event IActiveUnit.Command OnMove;

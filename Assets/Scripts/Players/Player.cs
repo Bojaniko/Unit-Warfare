@@ -42,6 +42,7 @@ namespace UnitWarfare.Players
         public abstract event PlayerEventHandler OnExplicitMoveEnd;
 
         public event IUnitTeamManager.UnitOwnerEventHandler OnRoundStarted;
+        public event IUnitTeamManager.UnitOwnerEventHandler OnRoundEnded;
 
         protected readonly IPlayerHandler handler;
 
@@ -69,6 +70,7 @@ namespace UnitWarfare.Players
             }
             if (!_isActive)
                 return;
+            OnRoundEnded?.Invoke();
             OnInactiveTurn();
             _isActive = false;
         }

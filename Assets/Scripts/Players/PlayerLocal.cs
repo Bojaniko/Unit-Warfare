@@ -70,7 +70,6 @@ namespace UnitWarfare.Players
                 UnitTarget target = new(selection.Territory);
                 IUnitCommand command = _config.UnitsHandler.InteractionsHandler.GenerateCommand(_selection.Unit, target);
                 StartUnitCommand(_selection.Unit, command);
-                _selection.Unit.StartCommand(command);
                 ClearSelection();
                 return;
             }
@@ -89,7 +88,7 @@ namespace UnitWarfare.Players
 
             _selection.Territory.EnableSelection(Territory.SelectionType.ACTIVE);
 
-            IActiveUnit au = _selection.ActiveUnit;
+            IUnit au = _selection.Unit;
             if (au != null)
                 _config.UnitDisplay.DisplayUnit(new(au.Data.DisplayTexture, au.Data.DisplayName, au.Data.Attack, au.Data.Shield, au.Data.Health));
         }

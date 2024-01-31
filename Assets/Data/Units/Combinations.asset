@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Combinations
   m_EditorClassIdentifier: 
   _combinations:
-  - UnitOne: SoldierUnit
-    UnitTwo: SoldierUnit
+  - UnitOne: Recruit
+    UnitTwo: Recruit
     Result: SoldierUnit
   - UnitOne: SoldierUnit
     UnitTwo: SoldierUnit

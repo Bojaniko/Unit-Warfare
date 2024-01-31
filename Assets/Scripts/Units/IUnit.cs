@@ -32,6 +32,7 @@ namespace UnitWarfare.Units
         public int HealthPercentage { get; }
         public int Shield { get; }
         public int Attack { get; }
+        public bool IsDead { get; }
 
         public void DestroyUnit();
         public event UnitsEventHandler OnDestroy;
