@@ -9,7 +9,7 @@ using UnitWarfare.Core.Enums;
 
 namespace UnitWarfare.AI
 {
-    public class AiBrain<FeatureHandler> where FeatureHandler : BrainFeatureHandler, new()
+    public class AiBrain
     {
         public record Memory(WeightedProbability<AiBrainFeature> Probability);
         public record Config(float Reduction, float Increasion, float Normalization);
@@ -20,21 +20,49 @@ namespace UnitWarfare.AI
 
         private readonly Config _config;
 
-        private readonly FeatureHandler _featureHandler;
-
         public AiBrain(BrainFeature[] features, Config config)
         {
             _config = new(Mathf.Clamp(config.Reduction, 0f, 1f),
                 Mathf.Clamp(config.Increasion, 0f, 10f),
                 Mathf.Clamp(config.Normalization, 0f, 1f));
 
-            _featureHandler = new();
+            GenerateFeatureHandler();
+
             _memory = new();
             _defaultFeatures = features;
             _defaultFactors = new(_defaultFeatures.Length);
             foreach (BrainFeature f in _defaultFeatures)
                 _defaultFactors.Add(f.Feature, f.Weight);
         }
+
+        // ##### HANDLERS ##### \\
+
+        private BrainFeatureHandler[] _featureHandlers;
+
+        private void GenerateFeatureHandler()
+        {
+            List<BrainFeatureHandler> handlers = new();
+
+            foreach (System.Type handlerType in typeof(BrainFeatureHandler).Assembly.GetTypes())
+            {
+                if (handlerType.IsSubclassOf(typeof(BrainFeatureHandler)))
+                    handlers.Add((BrainFeatureHandler)System.Activator.CreateInstance(handlerType));
+            }
+            _featureHandlers = handlers.ToArray();
+        }
+
+        private BrainFeatureHandler.Outcome[] GetOutcomesForUnit(IUnit unit, IUnitCommand[] commands)
+        {
+            foreach (BrainFeatureHandler handler in _featureHandlers)
+            {
+                BrainFeatureHandler.Outcome[] outcomes = handler.GetOutcomes(unit, commands);
+                if (outcomes.Length != 0)
+                    return outcomes;
+            }
+            return new BrainFeatureHandler.Outcome[0];
+        }
+
+        // ##### OUTCOME ##### \\
 
         public IUnitCommand GetOutcome(IUnit unit, IUnitCommand[] commands)
         {
@@ -55,7 +83,7 @@ namespace UnitWarfare.AI
                 memory = _memory[unit];
             }
 
-            BrainFeatureHandler.Outcome[] outcomes = _featureHandler.GetOutcomes(unit, commands);
+            BrainFeatureHandler.Outcome[] outcomes = GetOutcomesForUnit(unit, commands);
 
             AiBrainFeature[] features = new AiBrainFeature[outcomes.Length];
             for (int i = 0; i < outcomes.Length; i++)
@@ -74,18 +102,17 @@ namespace UnitWarfare.AI
             if (finalOutcomes.Count == 1)
             {
                 finalOutcome = finalOutcomes[0];
-                Debug.Log($"Ai brain output feature is {finalOutcomes[0].Feature}");
             }
             else if (finalOutcomes.Count > 1)
             {
                 int rand = Random.Range(0, finalOutcomes.Count);
                 finalOutcome = finalOutcomes[rand];
-                Debug.Log($"Ai brain output feature is {finalOutcomes[rand].Feature}");
             }
 
             if (finalOutcome != null)
             {
                 UpdateMemory(memory, finalOutcome);
+                Debug.Log($"Ai brain output feature is {finalOutcome.Feature} for {unit}.");
                 Debug.Log($"Command outcome is {finalOutcome.Command}.");
                 return finalOutcome.Command;
             }

@@ -98,8 +98,10 @@ namespace UnitWarfare.Tools
 
         public void Dispose()
         {
-            _meshContainer.onGUIHandler = null;
-            _meshPreview.Dispose();
+            if (_meshContainer != null)
+                _meshContainer.onGUIHandler = null;
+            if (_meshPreview != null)
+                _meshPreview.Dispose();
         }
     }
 }

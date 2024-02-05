@@ -34,7 +34,7 @@ namespace UnitWarfare.Test
 
             _handler = new PlayersHandler(data, TestGameStateHandler.CreateInstance());
             TestGameStateHandler.Instance.RegisterGameHandler(_handler);
-            TestGameStateHandler.Instance.RegisterGameHandler(new UIHandler(TestGameStateHandler.Instance));
+            //TestGameStateHandler.Instance.RegisterGameHandler(new UIHandler(TestGameStateHandler.Instance));
             TestGameStateHandler.Instance.RegisterGameHandler(new InputHandler(_inputData, TestGameStateHandler.Instance));
             TestGameStateHandler.Instance.RegisterGameHandler(new CameraHandler(_cameraData, TestGameStateHandler.Instance));
 

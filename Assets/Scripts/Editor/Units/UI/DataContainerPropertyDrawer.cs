@@ -12,6 +12,7 @@ namespace UnitWarfare.Units
     [CustomPropertyDrawer(typeof(UnitsData.DataContainer))]
     public class DataContainerPropertyDrawer : PropertyDrawer
     {
+        private const string PROPERTY_NAME_UNIT = "Unit";
         private const string PROPERTY_NAME_TYPE = "Type";
         private const string PROPERTY_NAME_DATA = "Data";
 
@@ -20,7 +21,7 @@ namespace UnitWarfare.Units
             string typeName = property.FindPropertyRelative(PROPERTY_NAME_TYPE).stringValue;
             System.Type type = typeof(UnitsData).Assembly.GetType(typeName);
             ObjectField of = new();
-            of.label = type.Name;
+            of.label = property.FindPropertyRelative(PROPERTY_NAME_UNIT).stringValue;
             of.objectType = type;
             of.bindingPath = PROPERTY_NAME_DATA;
 

@@ -20,7 +20,7 @@ namespace UnitWarfare.Test
             TestGameStateHandler teg = TestGameStateHandler.CreateInstance();
 
             teg.RegisterGameHandler(new InputHandler(_inputData, teg));
-            teg.RegisterGameHandler(new UIHandler(teg));
+            //teg.RegisterGameHandler(new UIHandler(teg));
 
             teg.SetGameState(Core.Enums.GameState.LOADING);
 

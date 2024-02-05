@@ -25,6 +25,10 @@ namespace UnitWarfare.Units
                 if (command != null)
                     commands.Add(command);
             }
+
+            if (unit is Antennae)
+                commands.Add(new UnitCommand<AntennaeCommandOrder>(AntennaeCommandOrder.SKIP, new(unit.OccupiedTerritory)));
+
             return commands.ToArray();
         }
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+using UnitWarfare.UI;
 using UnitWarfare.Units;
 using UnitWarfare.Input;
 using UnitWarfare.Players;
@@ -25,5 +26,8 @@ namespace UnitWarfare.Game
 
         [SerializeField] MapData _mapData;
         public MapData MapData => _mapData;
+
+        [SerializeField] private UIData m_uiData;
+        public UIData UIData => m_uiData;
     }
 }

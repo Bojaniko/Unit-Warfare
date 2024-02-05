@@ -1,7 +1,6 @@
 using UnitWarfare.Territories;
 
 using System.ComponentModel;
-
 namespace System.Runtime.CompilerServices
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -12,7 +11,7 @@ namespace UnitWarfare.Units
 {
     public delegate void UnitsEventHandler(IUnit unit);
 
-    public interface IUnit : ITerritoryOccupant
+    public interface IUnit : ITerritoryOccupant, System.IComparable<IUnit>
     {
         /* TODO
          * public void Select();

@@ -38,7 +38,7 @@ namespace UnitWarfare.UI
             l_shield = _document.rootVisualElement.Q<Label>("shield_val");
             l_health = _document.rootVisualElement.Q<Label>("health_val");
 
-            _document.rootVisualElement.style.display = DisplayStyle.None;
+            HideDisplay();
         }
 
         public void DisplayUnit(UnitDisplayData unit_data)
@@ -53,12 +53,12 @@ namespace UnitWarfare.UI
             l_shield.text = $"{unit_data.Shield}";
             l_health.text = $"{unit_data.Health}";
 
-            _document.rootVisualElement.style.display = DisplayStyle.Flex;
+            _document.rootVisualElement.SetEnabled(true);
         }
 
         public void HideDisplay()
         {
-            _document.rootVisualElement.style.display = DisplayStyle.None;
+            _document.rootVisualElement.SetEnabled(false);
         }
     }
 }

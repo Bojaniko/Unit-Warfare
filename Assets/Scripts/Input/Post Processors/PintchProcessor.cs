@@ -34,7 +34,8 @@ namespace UnitWarfare.Input
 
 			c_camera = Camera.main;
 
-			EncapsulatedMonoBehaviour emb = new(new("PINTCH_PROCESSOR"));
+			GameObject go = new("INPUT_POST_PROCESSOR: PINTCH_PROCESSOR");
+			EncapsulatedMonoBehaviour emb = new(go);
 			emb.OnUpdate += OnUpdate;
 		}
 

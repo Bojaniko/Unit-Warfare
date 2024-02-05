@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b9112054bf42f947a1e1ba1ede25412, type: 3}
   m_Name: Test Game
   m_EditorClassIdentifier: 
-  _unitsData: {fileID: 11400000, guid: a112ad8df6194e943b865668402c906f, type: 2}
+  _unitsData: {fileID: 11400000, guid: de0355a4109802e41b069341e26c59e9, type: 2}
   _cameraData: {fileID: 11400000, guid: 81052963f56102e4cb8b9022b829df63, type: 2}
   _inputData: {fileID: 11400000, guid: c9c28d2f360518949a8ea9dcb620486e, type: 2}
   _matchData: {fileID: 11400000, guid: 9188cdcdee28b684cb132a3c7a9713aa, type: 2}
   _mapData: {fileID: 11400000, guid: 082a4d52212a5ec4987908653210a0ca, type: 2}
+  m_uiData: {fileID: 11400000, guid: 85f92898c4451e84bbe1a06d1fb3c0c8, type: 2}

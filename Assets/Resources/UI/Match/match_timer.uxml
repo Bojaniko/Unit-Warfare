@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Match/match_timer_style.uss?fileID=7433441132597879392&amp;guid=2403acb568f3c62489a2cb77064d825c&amp;type=3#match_timer_style" />
+    <ui:VisualElement name="root" style="width: 100%; height: 100px; flex-direction: row-reverse; justify-content: center; align-items: center;">
+        <ui:VisualElement name="player_name" style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 5px; height: 100%;">
+            <ui:Label tabindex="-1" text="pro_player_agent" parse-escape-sequences="true" display-tooltip-when-elided="true" name="name_label" style="-unity-font: url(&apos;project://database/Assets/Graphics/Cairo-VariableFont_slnt,wght.ttf?fileID=12800000&amp;guid=a3a034fd3d2b7ec45b5ae363ef1bf949&amp;type=3#Cairo-VariableFont_slnt,wght&apos;); -unity-font-definition: url(&apos;project://database/Assets/Graphics/Cairo-VariableFont_slnt,wght%20SDF.asset?fileID=11400000&amp;guid=6c97ecb73de76714ca166c6ad5ec4df4&amp;type=2#Cairo-VariableFont_slnt,wght SDF&apos;); font-size: 40px; padding-top: 0; padding-right: 30px; padding-bottom: 0; padding-left: 20px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; background-color: rgba(202, 202, 202, 0.85); border-top-left-radius: 0; border-top-right-radius: 40px; border-bottom-right-radius: 40px; border-bottom-left-radius: 0; height: 100%;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="wrapper" style="padding-top: 10px; padding-right: 5px; padding-bottom: 10px; padding-left: 5px;">
+            <ui:Button text="SKIP" parse-escape-sequences="true" display-tooltip-when-elided="true" name="skip" class="button" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="round_progress" style="width: 600px; height: 100%; padding-top: 10px; padding-right: 5px; padding-bottom: 10px; padding-left: 10px;">
+            <ui:VisualElement name="wrapper" style="background-color: rgba(202, 202, 202, 0.85); width: 100%; height: 100%; border-left-color: rgba(202, 202, 202, 0.85); border-right-color: rgba(202, 202, 202, 0.85); border-top-color: rgba(202, 202, 202, 0.85); border-bottom-color: rgba(202, 202, 202, 0.85); border-top-left-radius: 40px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 40px; flex-direction: row; padding-right: 10px; padding-left: 30px;">
+                <ui:Label tabindex="-1" text="1m50s" parse-escape-sequences="true" display-tooltip-when-elided="true" name="timer" style="-unity-font: url(&apos;project://database/Assets/Graphics/Cairo-VariableFont_slnt,wght.ttf?fileID=12800000&amp;guid=a3a034fd3d2b7ec45b5ae363ef1bf949&amp;type=3#Cairo-VariableFont_slnt,wght&apos;); -unity-font-definition: url(&apos;project://database/Assets/Graphics/Cairo-VariableFont_slnt,wght%20SDF.asset?fileID=11400000&amp;guid=6c97ecb73de76714ca166c6ad5ec4df4&amp;type=2#Cairo-VariableFont_slnt,wght SDF&apos;); font-size: 50%; -unity-text-align: middle-center; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 5px; padding-left: 0; width: 150px; overflow: hidden;" />
+                <ui:VisualElement name="wrapper" style="flex-grow: 1; padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">
+                    <ui:VisualElement name="progress_background" style="flex-grow: 1; background-color: rgba(13, 28, 34, 0.85);">
+                        <ui:VisualElement name="progress" style="position: absolute; width: 100%; height: 100%; background-color: rgba(233, 33, 0, 0.85);" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

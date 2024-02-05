@@ -9,10 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 072ef3d25a1f48f4886f740aa90945fa, type: 3}
-  m_Name: Combinations
+  m_Script: {fileID: 11500000, guid: 682c20a2f554f1147b990f4ce3cf7393, type: 3}
+  m_Name: Test UI
   m_EditorClassIdentifier: 
-  _combinations:
-  - UnitOne: Recruit
-    UnitTwo: Recruit
-    Result: SoldierUnit
+  m_panelSettings: {fileID: 11400000, guid: 9a3c0df89033057429e3372b9e074df5, type: 2}

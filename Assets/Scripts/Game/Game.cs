@@ -57,7 +57,7 @@ namespace UnitWarfare.Game
         {
             _gameHandlers = new();
 
-            UIHandler uiHandler = new(this);
+            UIHandler uiHandler = new(_gameData.UIData, this);
             _gameHandlers.Add(uiHandler);
 
             CameraHandler camHandler = new(_gameData.CameraData, this);

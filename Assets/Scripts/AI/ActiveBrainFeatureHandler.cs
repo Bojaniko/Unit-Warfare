@@ -8,28 +8,21 @@ namespace UnitWarfare.AI
 {
     public class ActiveBrainFeatureHandler : BrainFeatureHandler
     {
-        private List<FeatureResponsePrototype<IActiveUnit, UnitCommand<ActiveCommandOrder>>> _featureResponses;
-
-        public ActiveBrainFeatureHandler()
+        protected override FeatureResponsePrototype[] GenerateResponses()
         {
-            GenerateFeatures();
-        }
-
-        private void GenerateFeatures()
-        {
-            _featureResponses = new();
+            List<FeatureResponsePrototype> featureResponses = new();
 
             // ### AGRESSION ### \\
-            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> agression = (unit, command) =>
-                new(command.Order.Equals(ActiveCommandOrder.ATTACK), Mode.REDUCE);
-            _featureResponses.Add(new(agression, AiBrainFeature.AGRESSIVE));
+            System.Func<IUnit, IUnitCommand, FeatureResponse> agression = (unit, command) =>
+                new(command.OrderRef.Equals(ActiveCommandOrder.ATTACK), Mode.REDUCE);
+            featureResponses.Add(new(agression, AiBrainFeature.AGRESSIVE));
 
             // ### CONQUERING ### \\
-            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> conquering = (unit, command) =>
+            System.Func<IUnit, IUnitCommand, FeatureResponse> conquering = (unit, command) =>
             {
-                if (command.Order.Equals(ActiveCommandOrder.ATTACK))
+                if (command.OrderRef.Equals(ActiveCommandOrder.ATTACK))
                     return new(true, Mode.REDUCE);
-                if (command.Order.Equals(ActiveCommandOrder.MOVE))
+                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE))
                 {
                     if (!command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner) &&
                     !command.Target.Territory.Owner.OwnerIdentification.Equals(PlayerIdentification.NEUTRAL))
@@ -37,14 +30,14 @@ namespace UnitWarfare.AI
                 }
                 return new(false, Mode.UNALTER);
             };
-            _featureResponses.Add(new(conquering, AiBrainFeature.CONQUERING));
+            featureResponses.Add(new(conquering, AiBrainFeature.CONQUERING));
 
             // ### TEAMPLAY ### \\
-            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> teamplay = (unit, command) =>
+            System.Func<IUnit, IUnitCommand, FeatureResponse> teamplay = (unit, command) =>
             {
-                if (command.Order.Equals(ActiveCommandOrder.JOIN))
+                if (command.OrderRef.Equals(ActiveCommandOrder.JOIN))
                     return new(true, Mode.REDUCE);
-                if (command.Order.Equals(ActiveCommandOrder.MOVE))
+                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE))
                 {
                     if (command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner))
                     {
@@ -57,10 +50,10 @@ namespace UnitWarfare.AI
                 }
                 return new(false, Mode.UNALTER);
             };
-            _featureResponses.Add(new(teamplay, AiBrainFeature.TEAMPLAY));
+            featureResponses.Add(new(teamplay, AiBrainFeature.TEAMPLAY));
 
             // ### COWARDICE ### \\
-            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> cowardice = (unit, command) =>
+            System.Func<IUnit, IUnitCommand, FeatureResponse> cowardice = (unit, command) =>
             {
                 if (command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner))
                 {
@@ -78,49 +71,33 @@ namespace UnitWarfare.AI
                 }
                 return new(false, Mode.UNALTER);
             };
-            _featureResponses.Add(new(cowardice, AiBrainFeature.COWARDICE));
+            featureResponses.Add(new(cowardice, AiBrainFeature.COWARDICE));
 
             // ### EXPANDIONARY ### \\
-            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> expandionary = (unit, command) =>
+            System.Func<IUnit, IUnitCommand, FeatureResponse> expandionary = (unit, command) =>
             {
-                if (command.Order.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.OwnerIdentification.Equals(PlayerIdentification.NEUTRAL))
+                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.OwnerIdentification.Equals(PlayerIdentification.NEUTRAL))
                     return new(true, Mode.REDUCE);
                 return new(false, Mode.UNALTER);
             };
-            _featureResponses.Add(new(expandionary, AiBrainFeature.EXPANDIONARY));
+            featureResponses.Add(new(expandionary, AiBrainFeature.EXPANDIONARY));
 
             // ### SCOUTING ### \\
-            System.Func<IActiveUnit, UnitCommand<ActiveCommandOrder>, FeatureResponse> scouting = (unit, command) =>
+            System.Func<IUnit, IUnitCommand, FeatureResponse> scouting = (unit, command) =>
             {
-                if (command.Order.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner))
+                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner))
                     return new(true, Mode.REDUCE);
                 return new(false, Mode.UNALTER);
             };
-            _featureResponses.Add(new(scouting, AiBrainFeature.SCOUTING));
+            featureResponses.Add(new(scouting, AiBrainFeature.SCOUTING));
+
+            return featureResponses.ToArray();
         }
 
-        public override Outcome[] GetOutcomes(IUnit unit, IUnitCommand[] commands)
-        {
-            if (!(unit is IActiveUnit))
-                return new Outcome[0];
+        public override bool ValidateCommand(IUnitCommand command) =>
+            command is UnitCommand<ActiveCommandOrder>;
 
-            List<Outcome> outcomes = new();
-
-            foreach (IUnitCommand command in commands)
-            {
-                UnitCommand<ActiveCommandOrder> order = command as UnitCommand<ActiveCommandOrder>;
-                if (order == null)
-                    continue;
-
-                foreach (FeatureResponsePrototype<IActiveUnit, UnitCommand<ActiveCommandOrder>> responsePrototype in _featureResponses)
-                {
-                    FeatureResponse response = responsePrototype.GetResponse(unit as IActiveUnit, command as UnitCommand<ActiveCommandOrder>);
-                    if (response.Valid)
-                        outcomes.Add(new Outcome(command, responsePrototype.Feature, response.Mode));
-                }
-            }
-
-            return outcomes.ToArray();
-        }
+        public override bool ValidateUnit(IUnit unit) =>
+            unit is IActiveUnit;
     }
 }

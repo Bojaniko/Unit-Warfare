@@ -10,35 +10,90 @@ namespace UnitWarfare.UI
 {
     public class UIHandler : GameHandler
     {
-        private readonly Canvas _canvas;
-        private readonly EventSystem _eSystem;
+        private readonly UIData m_data;
+        public UIData Data => m_data;
+
+        private readonly Canvas c_canvas;
+        private readonly EventSystem c_eSystem;
 
         private List<IUserInterfaceHandler> _uiHandlers;
 
-        public UIHandler(IGameStateHandler game_state_handler) : base(game_state_handler)
-        {
-            _eSystem = GameObject.Find("EVENT_SYSTEM").GetComponent<EventSystem>();
-            if (_eSystem == null)
-                throw new UnityException("UIHandler requires the Scene to have a 'EVENT_SYSTEM' GameObject with a EventSystem componenet attached!");
+        private const string EVENT_SYSTEM_NAME = "EVENT_SYSTEM";
+        private const string CANVAS_NAME = "USER_INTERFACE";
 
-            _canvas = GameObject.Find("USER_INTERFACE").GetComponent<Canvas>();
-            if (_canvas == null)
-                throw new UnityException("UIHandler requires the Scene to have a 'USER_INTERFACE' GameObject with a Canvas component attached!");
+        public UIHandler(UIData data, IGameStateHandler game_state_handler) : base(game_state_handler)
+        {
+            m_data = data;
+
+            c_eSystem = GameObject.Find(EVENT_SYSTEM_NAME).GetComponent<EventSystem>();
+            if (c_eSystem == null)
+                throw new UnityException($"UIHandler requires the Scene to have a '{EVENT_SYSTEM_NAME}' GameObject with a EventSystem componenet attached!");
+
+            c_canvas = GameObject.Find(CANVAS_NAME).GetComponent<Canvas>();
+            if (c_canvas == null)
+                throw new UnityException($"UIHandler requires the Scene to have a '{CANVAS_NAME}' GameObject with a Canvas component attached!");
 
             _uiHandlers = new();
-            for (int i = 0; i < _canvas.transform.childCount; i++)
+            for (int i = 0; i < c_canvas.transform.childCount; i++)
             {
-                IUserInterfaceHandler handler = _canvas.transform.GetChild(i).GetComponent<IUserInterfaceHandler>();
+                IUserInterfaceHandler handler = c_canvas.transform.GetChild(i).GetComponent<IUserInterfaceHandler>();
                 if (handler != null)
                     _uiHandlers.Add(handler);
             }
+
+            InitializeComponents();
+        }
+
+        // ##### COMPONENTS ##### \\
+
+        private List<UIComponent> m_components;
+        public UIComponent[] Components => m_components.ToArray();
+
+        private void InitializeComponents()
+        {
+            m_components = new();
+
+            UIComponent.Config config = new(c_canvas, Data.PanelSettings);
+
+            foreach (System.Type t in typeof(UIComponent).Assembly.GetTypes())
+            {
+                if (t.IsAbstract)
+                    continue;
+                if (!t.IsSubclassOf(typeof(UIComponent)))
+                    continue;
+                UIComponent component = (UIComponent)System.Activator.CreateInstance(t, new object[] { config });
+                m_components.Add(component);
+            }
+        }
+
+        public UIComponent GetComponent(System.Type t)
+        {
+            if (!t.IsSubclassOf(typeof(UIComponent)))
+                return null;
+            foreach (UIComponent component in m_components)
+            {
+                if (component.GetType().Equals(t))
+                    return component;
+            }
+            return null;
+        }
+
+        public Component GetComponent<Component>()
+            where Component : UIComponent
+        {
+            foreach (UIComponent component in m_components)
+            {
+                if (component.GetType().Equals(typeof(Component)))
+                    return component as Component;
+            }
+            return null;
         }
 
         protected override void Initialize()
         {
             gameStateHandler.GetHandler<InputHandler>().UI_InputTracker.OnInput += (position) =>
             {
-                return _eSystem.IsPointerOverGameObject();
+                return c_eSystem.IsPointerOverGameObject();
                 /*_uiTrackerResults.Clear();
                 PointerEventData ped = new(_eSystem);
                 ped.position = position;

@@ -347,6 +347,21 @@ namespace UnitWarfare.Tools
             return null;
         }
 
+        private void DrawTerritoryInfo(TerritoryIdentifier territory)
+        {
+            GUIStyle style = new();
+            style.alignment = TextAnchor.MiddleCenter;
+
+            if (territory.Owner.Equals(PlayerIdentification.NEUTRAL))
+                style.normal.textColor = Color.white;
+            else if (territory.Owner.Equals(PlayerIdentification.PLAYER))
+                style.normal.textColor = Color.green;
+            else if (territory.Owner.Equals(PlayerIdentification.OTHER_PLAYER))
+                style.normal.textColor = Color.red;
+
+            Handles.Label(territory.transform.position, territory.Owner.ToString(), style);
+        }
+
         private float _mapScale;
 
         /*private void OnInspectorUpdate()
@@ -411,27 +426,60 @@ namespace UnitWarfare.Tools
 
                 Undo.RegisterCreatedObjectUndo(ui.gameObject, ui.Data.DisplayName);
 
-                switch (_selectedTerritories[0].Owner)
-                {
-                    case PlayerIdentification.PLAYER:
-                        ui.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.PlayerUnitMaterial;
-                        break;
+                SetUnitColor(ui, _selectedTerritories[0].Owner);
+            };
 
-                    case PlayerIdentification.OTHER_PLAYER:
-                        ui.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.OtherPlayerUnitMaterial;
-                        break;
-
-                    case PlayerIdentification.NEUTRAL:
-                        ui.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.NeutralUnitMaterial;
-                        break;
-                }
+            rootVisualElement.Q<Button>("unit_update").clicked += () =>
+            {
+                if (_selectedUnit != null)
+                    _selectedUnit.Data = _selectedUnitData;
             };
 
             rootVisualElement.Q<Button>("unit_remove").clicked += () =>
                 {
                     if (_selectedUnit != null)
-                        DestroyImmediate(_selectedUnit);
+                    {
+                        _allUnits.Remove(_selectedUnit);
+                        DestroyImmediate(_selectedUnit.gameObject);
+                    }
                 };
+        }
+
+        private void SetUnitColor(UnitIdentifier unit, PlayerIdentification owner)
+        {
+            switch (owner)
+            {
+                case PlayerIdentification.PLAYER:
+                    unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.PlayerUnitMaterial;
+                    break;
+
+                case PlayerIdentification.OTHER_PLAYER:
+                    unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.OtherPlayerUnitMaterial;
+                    break;
+
+                case PlayerIdentification.NEUTRAL:
+                    unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.NeutralUnitMaterial;
+                    break;
+            }
+        }
+
+        private void DrawUnitInfo(UnitIdentifier unit)
+        {
+            GUIStyle style = new();
+            style.alignment = TextAnchor.MiddleCenter;
+            style.normal.textColor = Color.white;
+
+            Handles.Label(unit.transform.position, unit.Data.DisplayName, style);
+        }
+
+        private void DrawUnitsInfo()
+        {
+            if (_selectedTerritories.Count > 0)
+                DrawTerritoryInfo(_selectedTerritories[0]);
+            foreach (UnitIdentifier ui in _allUnits)
+            {
+                DrawUnitInfo(ui);
+            }
         }
 
         private void DisposeUnitMeshPreviews()
@@ -450,17 +498,7 @@ namespace UnitWarfare.Tools
         {
             foreach (TerritoryIdentifier ti in _allTerritories)
             {
-                GUIStyle style = new();
-                style.alignment = TextAnchor.MiddleCenter;
-
-                if (ti.Owner.Equals(PlayerIdentification.NEUTRAL))
-                    style.normal.textColor = Color.white;
-                else if (ti.Owner.Equals(PlayerIdentification.PLAYER))
-                    style.normal.textColor = Color.green;
-                else if (ti.Owner.Equals(PlayerIdentification.OTHER_PLAYER))
-                    style.normal.textColor = Color.red;
-
-                Handles.Label(ti.transform.position, ti.Owner.ToString(), style);
+                DrawTerritoryInfo(ti);
             }
         }
 
@@ -480,6 +518,14 @@ namespace UnitWarfare.Tools
                     foreach (TerritoryIdentifier ti in _selectedTerritories)
                     {
                         ti.Owner = _selectedTerritoryOwner;
+                        foreach (UnitIdentifier ui in _allUnits)
+                        {
+                            if (ui.StartingTerritory.Equals(ti))
+                            {
+                                SetUnitColor(ui, ti.Owner);
+                                break;
+                            }
+                        }
                     }
                 });
         }
@@ -564,6 +610,10 @@ namespace UnitWarfare.Tools
             else if (_currentMenu.Equals(CreatorMenu.OWNERSHIP))
             {
                 DrawOwnershipInfo();
+            }
+            else if (_currentMenu.Equals(CreatorMenu.UNITS))
+            {
+                DrawUnitsInfo();
             }
         }
 

@@ -14,7 +14,8 @@ namespace UnitWarfare.Core
 
         protected GameHandler(IGameStateHandler game_state_handler)
         {
-            monoBehaviour = new(new GameObject(GetType().Name.ToUpper()));
+            GameObject go = new($"GAME_HANDLER: {GetType().Name.ToUpper()}");
+            monoBehaviour = new(go);
             monoBehaviour.OnUpdate += OnUpdate;
 
             gameStateHandler = game_state_handler;

@@ -9,7 +9,7 @@ namespace UnitWarfare.Units
 {
     public class Antennae : Unit<AntennaeData>, IPassiveUnit
     {
-        public delegate void AntennaeEventHandler(Territory territory, SoldierData recruit_data);
+        public delegate void AntennaeEventHandler(Territory territory);
         public event AntennaeEventHandler OnReinforce;
 
         private const string SIGNAL_LIGHT_NAME = "top_light";
@@ -59,7 +59,7 @@ namespace UnitWarfare.Units
             _currentCommand = command;
             if (command.Order.Equals(AntennaeCommandOrder.GENERATE_UNIT))
                 _emb.StartCoroutine(CallRecruitReinforcment(command));
-            else if (command.Order.Equals(AntennaeCommandOrder.CANCEL))
+            else if (command.Order.Equals(AntennaeCommandOrder.CANCEL) || command.Order.Equals(AntennaeCommandOrder.SKIP))
                 _emb.StartCoroutine(CancelReincforcment());
         }
 
@@ -82,7 +82,7 @@ namespace UnitWarfare.Units
             c_audioSource.clip = Data.SosAudio;
             c_audioSource.Play();
 
-            OnReinforce?.Invoke(command.Target.Territory, Data.RecruitData);
+            OnReinforce?.Invoke(command.Target.Territory);
 
             yield return new WaitForSeconds(1f);
 

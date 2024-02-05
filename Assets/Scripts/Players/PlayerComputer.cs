@@ -1,17 +1,16 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using UnitWarfare.AI;
 using UnitWarfare.Units;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players
 {
     public class PlayerComputer : Player
     {
         private readonly AiBrainData _aiData;
-        private readonly AiBrain<ActiveBrainFeatureHandler> _activeUnitBrain;
+        private readonly AiBrain _brain;
         private readonly IUnitsHandler _unitsHandler;
 
         private IUnit[] _currentUnits;
@@ -23,8 +22,8 @@ namespace UnitWarfare.Players
 
             _unitsHandler = units_handler;
 
-            AiBrain<ActiveBrainFeatureHandler>.Config config = new(ai_data.ReductionFactor, ai_data.IncreasionAmount, ai_data.NormalizationStep);
-            _activeUnitBrain = new AiBrain<ActiveBrainFeatureHandler>(_aiData.BrainFeatures, config);
+            AiBrain.Config config = new(ai_data.ReductionFactor, ai_data.IncreasionAmount, ai_data.NormalizationStep);
+            _brain = new AiBrain(_aiData.BrainFeatures, config);
         }
 
         private Coroutine _unitsRoutine;
@@ -35,19 +34,21 @@ namespace UnitWarfare.Players
         {
             foreach (IUnit unit in _currentUnits)
             {
-                IUnitCommand[] commands = _unitsHandler.InteractionsHandler.GenerateCommands(unit);
-                if (unit is IActiveUnit)
+                yield return new WaitUntil(() =>
                 {
-                    IUnitCommand command = _activeUnitBrain.GetOutcome(unit, commands);
-                    if (command == null)
-                        continue;
-
-
-
-                    unit.StartCommand(command);
-                    yield return new WaitUntil(() => { return !unit.IsCommandActive; });
+                    foreach (Territory t in unit.OccupiedTerritory.NeighborTerritories)
+                    {
+                        if (!t.Interactable)
+                            return false;
+                    }
+                    return true;
+                });
+                IUnitCommand[] commands = _unitsHandler.InteractionsHandler.GenerateCommands(unit);
+                IUnitCommand command = _brain.GetOutcome(unit, commands);
+                if (command == null)
                     continue;
-                }
+                unit.StartCommand(command);
+                yield return new WaitUntil(() => { return !unit.IsCommandActive; });
             }
             OnExplicitMoveEnd?.Invoke(this);
         }

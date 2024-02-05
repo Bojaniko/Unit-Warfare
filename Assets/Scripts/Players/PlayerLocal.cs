@@ -70,7 +70,10 @@ namespace UnitWarfare.Players
                 UnitTarget target = new(selection.Territory);
                 IUnitCommand command = _config.UnitsHandler.InteractionsHandler.GenerateCommand(_selection.Unit, target);
                 StartUnitCommand(_selection.Unit, command);
-                ClearSelection();
+                if (_selection.Unit.IsCommandActive)
+                    ClearSelection();
+                else
+                    ActivateSelection(selection);
                 return;
             }
             ActivateSelection(selection);

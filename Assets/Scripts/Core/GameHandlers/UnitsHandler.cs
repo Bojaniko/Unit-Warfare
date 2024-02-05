@@ -162,13 +162,7 @@ namespace UnitWarfare.Units
             if (unit_type.GetInterface("IActiveUnit") == null)
                 return;
 
-            UnitData data = null;
-
-            foreach (PropertyInfo pi in typeof(UnitsData).GetProperties())
-            {
-                if (pi.PropertyType.Equals(unit_type.BaseType.GetGenericArguments()[0]))
-                    data = (UnitData)pi.GetValue(_data);
-            }
+            UnitData data = _data.GetData(unit_type.BaseType.GetGenericArguments()[0]);
 
             if (data == null)
                 return;
@@ -243,6 +237,7 @@ namespace UnitWarfare.Units
             unit.OnCommandStart -= HandleUnitCommandStart;
             unit.OnCommandEnd -= HandleUnitCommandEnd;
 
+            unit.OccupiedTerritory.SetInteractable(true);
             unit.OccupiedTerritory.Deocuppy();
 
             HandleActiveUnitDestroyed(unit as IActiveUnit);

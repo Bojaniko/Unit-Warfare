@@ -36,14 +36,6 @@ namespace UnitWarfare.Players
         }
     }
 
-    public enum PlayerHandlerState
-    {
-        LOADING,
-        PAUSED,
-        PLAYER_ONE_TURN,
-        PLAYER_TWO_TURN
-    }
-
     public class PlayersHandler : GameHandler, IPlayerHandler
     {
         // ##### PLAYERS DATA ##### \\
@@ -76,17 +68,33 @@ namespace UnitWarfare.Players
 
         public event IPlayerHandler.PlayerEventHandler OnActivePlayerChanged;
 
-        private StateMachine<PlayerHandlerState> _stateController;
-
         private InputHandler _input;
 
         private UnitsHandler _unitsHandler;
+
+        private MatchProgress ui_matchProgress;
+
+        public PlayersHandler(PlayersGameData players_data, IGameStateHandler game_state_handler)
+            : base(game_state_handler)
+        {
+            timerActive = false;
+
+            _playersData = players_data;
+
+            game_state_handler.OnPlayGameStateChanged += (state) =>
+            {
+                if (state.Equals(PlayingGameState.PLAYING))
+                    Resume();
+            };
+        }
 
         protected override void Initialize()
         {
             _input = gameStateHandler.GetHandler<InputHandler>();
 
             _unitsHandler = gameStateHandler.GetHandler<UnitsHandler>();
+
+            ui_matchProgress = gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>();
 
             PlayerLocal.Config localConfig = new(_input.TapInput,
                 gameStateHandler.GetHandler<CameraHandler>().MainCamera,
@@ -107,8 +115,6 @@ namespace UnitWarfare.Players
             };
 
             _neutralPlayer = new PlayerNeutral(_playersData.NeutralPlayerData, this);
-
-            _stateController = new("Players Handler", PlayerHandlerState.LOADING);
         }
 
         private void Pause()
@@ -124,6 +130,13 @@ namespace UnitWarfare.Players
 
         protected override void OnUpdate()
         {
+            if (timerActive)
+            {
+                m_timer -= 1f * Time.deltaTime;
+                if (m_timer <= 0)
+                    timerActive = false;
+            }
+
             if (_unitsHandler.UnitExecutingCommand)
                 return;
             if (_playerOne.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.PLAYER)
@@ -131,13 +144,22 @@ namespace UnitWarfare.Players
                 SwitchActivePlayer();
         }
 
+        // ##### TIMER ##### \\
+
+        private bool timerActive = false;
+
+        private float m_timer;
+        public float Timer => m_timer;
+
         // ##### COROUTINES ##### \\
 
         private Coroutine coroutine_mainLoop;
 
         private IEnumerator MainPlayersLoop()
         {
-            yield return new WaitForSeconds(_playersData.Match.MaxTurnDuration);
+            yield return new WaitUntil(() => !timerActive);
+
+            ui_matchProgress.Hide();
 
             Debug.Log("Switching player");
 
@@ -151,27 +173,25 @@ namespace UnitWarfare.Players
             coroutine_mainLoop = StartCoroutine(MainPlayersLoop());
         }
 
+        private Player player_active;
+
         private void SwitchActivePlayer()
         {
             if (_playerOne.IsActive)
-                OnActivePlayerChanged?.Invoke(_playerTwo);
-            else if (_playerTwo.IsActive)
-                OnActivePlayerChanged?.Invoke(_playerOne);
-            else
-                OnActivePlayerChanged?.Invoke(_playerOne);
-            StartPlayerTimer();
-        }
-        
-        public PlayersHandler(PlayersGameData players_data, IGameStateHandler game_state_handler)
-            : base(game_state_handler)
-        {
-            _playersData = players_data;
-
-            game_state_handler.OnPlayGameStateChanged += (state) =>
             {
-                if (state.Equals(PlayingGameState.PLAYING))
-                    Resume();
-            };
+                player_active = _playerTwo;
+                OnActivePlayerChanged?.Invoke(_playerTwo);
+            }
+            else
+            {
+                player_active = _playerOne;
+                OnActivePlayerChanged?.Invoke(_playerOne);
+            }
+            timerActive = true;
+            m_timer = _playersData.Match.MaxTurnDuration;
+            System.Func<float> timerDelegate = () => { return Timer; };
+            ui_matchProgress.Show(new(player_active.Name, player_active.OwnerIdentification, timerDelegate));
+            StartPlayerTimer();
         }
     }
 }

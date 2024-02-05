@@ -45,3 +45,24 @@
     -unity-font-style: bold;
     text-shadow: 0 0 3px rgba(0, 0, 0, 0.38);
 }
+
+.root:enabled {
+    transition-property: opacity, translate;
+    opacity: 1;
+    transition-duration: 0.2s, 0.2s;
+    translate: 0 0;
+}
+
+.root:disabled {
+    opacity: 0;
+    transition-property: opacity, display, translate;
+    display: none;
+    transition-delay: 0s, 0.2s, 0s;
+    transition-duration: 0.2s, 0s, 0.2s;
+    translate: 0 50px;
+}
+
+.root {
+    opacity: 1;
+    translate: 0 50px;
+}

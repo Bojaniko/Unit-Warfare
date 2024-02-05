@@ -1,12 +1,5 @@
 namespace UnitWarfare.Core.Enums
 {
-    public enum PassiveCommandOrder
-    {
-        CALL,
-        REPAIR,
-        NONE
-    }
-
     public enum ActiveCommandOrder
     {
         ATTACK,
@@ -18,6 +11,7 @@ namespace UnitWarfare.Core.Enums
     public enum AntennaeCommandOrder
     {
         GENERATE_UNIT,
+        SKIP,
         CANCEL
     }
 

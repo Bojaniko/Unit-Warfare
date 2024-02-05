@@ -51,6 +51,7 @@ namespace UnitWarfare.Units
 
         private IEnumerator KillUnit()
         {
+            _occupiedTerritory.SetInteractable(false);
             yield return KillRoutine();
             DestroyUnit();
         }
@@ -88,8 +89,15 @@ namespace UnitWarfare.Units
         public abstract event IUnit.Command OnCommandStart;
         public abstract event IUnit.Command OnCommandEnd;
         public abstract void StartCommand(IUnitCommand command);
+
         public abstract IUnitCommand CurrentCommand { get; }
         public abstract bool IsCommandActive { get; }
+
+        public int CompareTo(IUnit other)
+        {
+            // TODO
+            return 0;
+        }
 
         // ##### INITIALIZATION ##### \\
 
