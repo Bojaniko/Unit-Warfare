@@ -197,10 +197,10 @@ namespace UnitWarfare.Units
             antennae.OnReinforce += HandleAntennaeReinforcements;
         }
 
-        private void HandleAntennaeReinforcements(Territory territory, SoldierData soldier_data)
+        private void HandleAntennaeReinforcements(Territory territory)
         {
             IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.OwnerIdentification);
-            IUnit reinforcement = UnitFactory.GenerateUnit(territory, soldier_data, typeof(Recruit), c_units, unitManager);
+            IUnit reinforcement = UnitFactory.GenerateUnit(territory, _data.GetDataByUnit<Recruit>(), typeof(Recruit), c_units, unitManager);
             InitUnit(reinforcement);
         }
 

@@ -86,7 +86,19 @@ namespace UnitWarfare.AI
             System.Func<IUnit, IUnitCommand, FeatureResponse> scouting = (unit, command) =>
             {
                 if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.OwnerIdentification.Equals(unit.Owner))
-                    return new(true, Mode.REDUCE);
+                {
+                    bool canScout = true;
+                    foreach (Territory t in unit.OccupiedTerritory.NeighborTerritories)
+                    {
+                        if (t.Owner.OwnerIdentification != unit.Owner)
+                        {
+                            canScout = false;
+                            break;
+                        }
+                    }
+                    if (canScout)
+                        return new(true, Mode.REDUCE);
+                }
                 return new(false, Mode.UNALTER);
             };
             featureResponses.Add(new(scouting, AiBrainFeature.SCOUTING));

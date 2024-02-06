@@ -14,6 +14,13 @@ namespace UnitWarfare.Units
         private List<UnitData> c_loadedData;
         public UnitData[] AllData => c_loadedData.ToArray();
 
+        public UnitData GetDataByUnit<Unit>()
+            where Unit : IUnit
+        {
+            System.Type data = typeof(Unit).GetProperty("Data").PropertyType;
+            return GetData(data);
+        }
+
         public UnitData GetData(System.Type type)
         {
             foreach (UnitData data in c_loadedData)
@@ -70,29 +77,6 @@ namespace UnitWarfare.Units
                 if (!containsType)
                     _dataContainer.Add(new(t.GetProperty("Data").PropertyType, t.Name));
             }
-
-            /*List<System.Type> dataTypes = new();
-            foreach (System.Type type in typeof(UnitData).Assembly.GetTypes())
-            {
-                if (type.IsSubclassOf(typeof(UnitData)) && !type.IsAbstract)
-                    dataTypes.Add(type);
-            }
-            if (_dataContainer == null)
-                _dataContainer = new();
-            foreach (System.Type t in dataTypes)
-            {
-                bool containsType = false;
-                foreach (DataContainer dc in _dataContainer)
-                {
-                    if (dc.Type.Contains(t.Name))
-                    {
-                        containsType = true;
-                        break;
-                    }
-                }
-                if (!containsType)
-                    _dataContainer.Add(new(t));
-            }*/
 
             c_loadedData = new();
             foreach (DataContainer dc in _dataContainer)
