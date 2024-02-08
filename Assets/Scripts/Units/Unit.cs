@@ -11,9 +11,6 @@ namespace UnitWarfare.Units
     public abstract class Unit<D> : IUnit
         where D : UnitData
     {
-        private bool _moveAvailable = false;
-        public virtual bool MoveAvailable { get => _moveAvailable; protected set { _moveAvailable = value; } }
-
         // ##### TERRITORY ##### \\
 
         private readonly PlayerIdentification _owner;
@@ -45,6 +42,7 @@ namespace UnitWarfare.Units
             OnDestroy?.Invoke(this);
 
             _emb.Destroy();
+            _emb = null;
         }
         public event UnitsEventHandler OnDestroy;
         protected abstract void OnDestroyed();
@@ -52,6 +50,7 @@ namespace UnitWarfare.Units
         private IEnumerator KillUnit()
         {
             _occupiedTerritory.SetInteractable(false);
+            m_isDoingSomething = true;
             yield return KillRoutine();
             DestroyUnit();
         }
@@ -66,7 +65,7 @@ namespace UnitWarfare.Units
         private readonly int _attack;
         public int Attack => _attack;
 
-        public bool IsDead => _health <= 0;
+        public bool IsDead => (_health <= 0 || _emb == null);
 
         public void Damage(int amount)
         {
@@ -88,10 +87,28 @@ namespace UnitWarfare.Units
 
         public abstract event IUnit.Command OnCommandStart;
         public abstract event IUnit.Command OnCommandEnd;
-        public abstract void StartCommand(IUnitCommand command);
+        public void StartCommand(IUnitCommand command)
+        {
+            if (command == null)
+                return;
+            if (!MoveAvailable)
+                return;
+            if (IsDoingSomething)
+                return;
+            StartCommandRoutine(command);
+        }
 
-        public abstract IUnitCommand CurrentCommand { get; }
-        public abstract bool IsCommandActive { get; }
+        protected abstract void StartCommandRoutine(IUnitCommand command);
+
+        private IUnitCommand m_currentCommand;
+        public IUnitCommand CurrentCommand => m_currentCommand;
+
+        private bool m_isCommandActive = false;
+        private bool m_isDoingSomething = false;
+        public bool IsDoingSomething => (m_isCommandActive || m_isDoingSomething);
+
+        private bool m_moveAvailable = false;
+        public virtual bool MoveAvailable => m_moveAvailable;
 
         public int CompareTo(IUnit other)
         {
@@ -112,14 +129,27 @@ namespace UnitWarfare.Units
             _data = data;
             _emb = new(this, game_object);
 
-            _moveAvailable = false;
+            m_moveAvailable = false;
 
             _attack = data.Attack;
             _health = data.Health;
             _shield = data.Shield;
 
             this.manager = manager;
-            manager.OnRoundStarted += () => { _moveAvailable = true; };
+            manager.OnRoundStarted += () => { m_moveAvailable = true; };
+
+            OnCommandStart += (unit, command) =>
+            {
+                m_isCommandActive = true;
+                m_currentCommand = command;
+                m_moveAvailable = false;
+            };
+
+            OnCommandEnd += (unit, command) =>
+            {
+                m_isCommandActive = false;
+                m_currentCommand = null;
+            };
 
             _owner = start_territory.Owner.OwnerIdentification;
 

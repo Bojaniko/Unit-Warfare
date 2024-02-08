@@ -34,6 +34,8 @@ namespace UnitWarfare.Players
         {
             foreach (IUnit unit in _currentUnits)
             {
+                if (unit.IsDead)
+                    continue;
                 yield return new WaitUntil(() =>
                 {
                     foreach (Territory t in unit.OccupiedTerritory.NeighborTerritories)
@@ -48,7 +50,7 @@ namespace UnitWarfare.Players
                 if (command == null)
                     continue;
                 unit.StartCommand(command);
-                yield return new WaitUntil(() => { return !unit.IsCommandActive; });
+                yield return new WaitUntil(() => { return !unit.IsDoingSomething; });
             }
             OnExplicitMoveEnd?.Invoke(this);
         }

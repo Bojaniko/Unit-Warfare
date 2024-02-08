@@ -18,7 +18,7 @@ namespace UnitWarfare.Units
          * public void Deselect();
          */
 
-        public bool IsCommandActive { get; }
+        public bool IsDoingSomething { get; }
         public IUnitCommand CurrentCommand { get; }
         public void StartCommand(IUnitCommand command);
 

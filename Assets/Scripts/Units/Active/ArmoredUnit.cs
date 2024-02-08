@@ -19,42 +19,43 @@ namespace UnitWarfare.Units
 
         protected override IEnumerator AttackCommandRoutine()
         {
-            throw new System.NotImplementedException();
+            yield return null;
+            OnAttack?.Invoke(this, CurrentCommand.Target);
         }
 
         protected override IEnumerator JoinCommandRoutine()
         {
-            throw new System.NotImplementedException();
+            yield return null;
+            OnJoin?.Invoke(this, CurrentCommand.Target);
         }
 
         protected override IEnumerator MoveCommandRoutine()
         {
-            throw new System.NotImplementedException();
+            yield return null;
+            _emb.transform.position = CurrentCommand.Target.Territory.EMB.transform.position;
+            OnMove?.Invoke(this, CurrentCommand.Target);
         }
 
         protected override IEnumerator CancelCommandRoutine()
         {
-            throw new System.NotImplementedException();
+            yield return null;
         }
 
         protected override IEnumerator KillRoutine()
         {
-            throw new System.NotImplementedException();
+            yield return null;
         }
 
         protected override void OnDestroyed()
         {
-            throw new System.NotImplementedException();
+            
         }
 
-        protected override bool CommandIsReady()
-        {
-            throw new System.NotImplementedException();
-        }
+        protected override bool CommandIsReady() => true;
 
         protected override IEnumerator DamagedRoutine()
         {
-            throw new System.NotImplementedException();
+            yield return null;
         }
     }
 }

@@ -16,3 +16,6 @@ MonoBehaviour:
   - UnitOne: Recruit
     UnitTwo: Recruit
     Result: SoldierUnit
+  - UnitOne: SoldierUnit
+    UnitTwo: SoldierUnit
+    Result: ArmoredUnit

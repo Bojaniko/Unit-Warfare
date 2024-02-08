@@ -10,45 +10,19 @@ namespace UnitWarfare.Units
     public abstract class ActiveUnit<D> : Unit<D>, IActiveUnit
         where D : ActiveUnitData
     {
-        public record ActiveCommandRoutine(System.Func<IEnumerator> RoutineDelegate, ActiveCommandOrder CommandOrder);
-
         protected ActiveUnit(Territory start_territory, GameObject game_object, D data, IUnitTeamManager manager)
             : base(start_territory, game_object, data, manager)
         {
-            InitRoutines();
         }
-
-        private ActiveCommandRoutine[] _routines;
-
-        private void InitRoutines()
-        {
-            _routines = new ActiveCommandRoutine[4];
-            _routines[0] = new(AttackCommandRoutine, ActiveCommandOrder.ATTACK);
-            _routines[1] = new(MoveCommandRoutine, ActiveCommandOrder.MOVE);
-            _routines[2] = new(JoinCommandRoutine, ActiveCommandOrder.JOIN);
-            _routines[3] = new(CancelCommandRoutine, ActiveCommandOrder.CANCEL);
-        }
-
-        private bool _commandActive = false;
-        public override sealed bool IsCommandActive => _commandActive;
-        private UnitCommand<ActiveCommandOrder> _currentCommand;
-        public override sealed IUnitCommand CurrentCommand => _currentCommand;
 
         protected abstract override void OnDestroyed();
 
-        public override sealed void StartCommand(IUnitCommand command)
-        {
-            if (IsCommandActive)
-                return;
+        protected override sealed void StartCommandRoutine(IUnitCommand command) =>
             StartCommand(command as UnitCommand<ActiveCommandOrder>);
-        }
 
         private void StartCommand(UnitCommand<ActiveCommandOrder> command)
         {
             if (command == null)
-                return;
-
-            if (!MoveAvailable)
                 return;
 
             if (command.Order.Equals(ActiveCommandOrder.CANCEL))
@@ -57,33 +31,33 @@ namespace UnitWarfare.Units
                 return;
             }
 
-            ActiveCommandRoutine routine = null;
-            foreach (ActiveCommandRoutine r in _routines)
-            {
-                if (r.CommandOrder.Equals(command.Order))
-                {
-                    routine = r;
-                    break;
-                }
-            }
+            IEnumerator routine = null;
 
+            switch (command.Order)
+            {
+                case ActiveCommandOrder.ATTACK:
+                    routine = AttackCommandRoutine();
+                    break;
+
+                case ActiveCommandOrder.MOVE:
+                    routine = MoveCommandRoutine();
+                    break;
+
+                case ActiveCommandOrder.JOIN:
+                    routine = JoinCommandRoutine();
+                    break;
+            }
             if (routine == null)
                 return;
-
-            MoveAvailable = false;
-            _commandActive = true;
-            _currentCommand = command;
-            _emb.StartCoroutine(CommandRoutine(routine));
+            _emb.StartCoroutine(StartRoutine(routine, command));
         }
 
-        private IEnumerator CommandRoutine(ActiveCommandRoutine command_routine)
+        private IEnumerator StartRoutine(IEnumerator routine, UnitCommand<ActiveCommandOrder> command)
         {
-            OnCommandStart?.Invoke(this, CurrentCommand);
+            OnCommandStart?.Invoke(this, command);
             yield return new WaitUntil(CommandIsReady);
-            yield return command_routine.RoutineDelegate.Invoke();
-            OnCommandEnd?.Invoke(this, CurrentCommand);
-            _commandActive = false;
-            _currentCommand = null;
+            yield return routine;
+            OnCommandEnd?.Invoke(this, command);
         }
 
         public override sealed event IUnit.Command OnCommandStart;

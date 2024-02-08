@@ -98,6 +98,7 @@ namespace UnitWarfare.Players
 
             PlayerLocal.Config localConfig = new(_input.TapInput,
                 gameStateHandler.GetHandler<CameraHandler>().MainCamera,
+                gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>(),
                 gameStateHandler.GetHandler<UIHandler>().GetUIHandler<UnitDisplay>(),
                 gameStateHandler.GetHandler<UnitsHandler>());
             _playerOne = new PlayerLocal(localConfig, _playersData.PlayerOneData, this);

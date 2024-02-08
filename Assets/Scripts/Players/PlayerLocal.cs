@@ -10,7 +10,7 @@ namespace UnitWarfare.Players
 {
     public class PlayerLocal : Player
     {
-        public record Config(TapProcessor TapInput, CameraController MainCamera, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler);
+        public record Config(TapProcessor TapInput, CameraController MainCamera, MatchProgress MatchProgress, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler);
         private readonly Config _config;
 
         public PlayerLocal(Config config, PlayerData data, IPlayerHandler handler)
@@ -19,6 +19,7 @@ namespace UnitWarfare.Players
             _config = config;
 
             _config.TapInput.OnInput += HandleTapInput;
+            _config.MatchProgress.OnSkip += () => OnExplicitMoveEnd?.Invoke(this);
         }
 
         protected override void OnActiveTurn()
@@ -70,7 +71,7 @@ namespace UnitWarfare.Players
                 UnitTarget target = new(selection.Territory);
                 IUnitCommand command = _config.UnitsHandler.InteractionsHandler.GenerateCommand(_selection.Unit, target);
                 StartUnitCommand(_selection.Unit, command);
-                if (_selection.Unit.IsCommandActive)
+                if (_selection.Unit.IsDoingSomething)
                     ClearSelection();
                 else
                     ActivateSelection(selection);
