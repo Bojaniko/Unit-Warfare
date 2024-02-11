@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 using UnitWarfare.Players;
 
@@ -162,7 +164,7 @@ namespace UnitWarfare.Game
             // ### DIFFICULTIES ### \\
             List<string> difficulty_choices = new();
             foreach (AIMatch difficulty in m_data.AiMatches)
-                difficulty_choices.Add(difficulty.AiData.DisplayName);
+                difficulty_choices.Add(difficulty.AIData.DisplayName);
             DropdownField difficultyDropdown = menu_ai.Document.rootVisualElement.Q<DropdownField>(AI_SELECTOR);
             difficultyDropdown.choices = difficulty_choices;
             difficultyDropdown.index = 0;
@@ -204,7 +206,6 @@ namespace UnitWarfare.Game
 
         private void InitSettingsMenu()
         {
-
         }
 
         private Coroutine coroutine_menuSwitch;
@@ -226,9 +227,53 @@ namespace UnitWarfare.Game
             coroutine_menuSwitch = null;
         }
 
+        // TODO: Set nation for player by selection
         private void StartAiGame()
         {
+            if (level_selected == null)
+                return;
+            LevelData level = level_selected.Data;
 
+            Nation nation;
+            if (nation_selected.Equals(m_data.GameData.AllyNation.DisplayName))
+                nation = m_data.GameData.AllyNation;
+            else if (nation_selected.Equals(m_data.GameData.AxisNation.DisplayName))
+                nation = m_data.GameData.AxisNation;
+            else
+                return;
+
+            AIMatch difficulty = null;
+            foreach (AIMatch ai in m_data.AiMatches)
+            {
+                if (difficulty_selected.Equals(ai.AIData.DisplayName))
+                    difficulty = ai;
+            }
+            if (difficulty == null)
+                return;
+
+            Game.Config config = new(m_data.GameData, difficulty.MatchData, level);
+            Game.PvEConfig pveConfig = new(config, difficulty.AIData);
+            Game game = new(pveConfig);
+            LoadGame(game, level);
+        }
+
+        private void LoadGame(Game game, LevelData level)
+        {
+            DontDestroyOnLoad(game.EMB.gameObject);
+            SceneManager.sceneLoaded += (scene, mode) =>
+            {
+                if (game == null)
+                    return;
+                if (scene.name.Equals(level.SceneName))
+                    game.Load();
+            };
+            SceneManager.LoadScene(level.SceneName);
+        }
+
+
+        private IEnumerator GameLoadCoroutine()
+        {
+            yield return null;
         }
 
         private sealed class LevelSelector

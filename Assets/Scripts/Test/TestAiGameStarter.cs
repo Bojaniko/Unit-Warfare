@@ -19,7 +19,7 @@ namespace UnitWarfare.Test
             }
 
             Game.Game.Config config = new(m_data.GameData, m_data.AiMatches[0].MatchData, m_data.Levels[0]);
-            Game.Game.PvEConfig pveConfig = new(config, m_data.AiMatches[0].AiData);
+            Game.Game.PvEConfig pveConfig = new(config, m_data.AiMatches[0].AIData);
             _game = new(pveConfig);
 
             _game.Load();

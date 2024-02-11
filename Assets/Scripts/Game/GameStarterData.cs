@@ -19,9 +19,12 @@ namespace UnitWarfare.Game
     }
     
     [System.Serializable]
-    public struct AIMatch
+    public class AIMatch
     {
-        [SerializeField] public AiBrainData AiData;
-        [SerializeField] public MatchData MatchData;
+        [SerializeField] private AiBrainData m_aiData;
+        [SerializeField] private MatchData m_matchData;
+
+        public AiBrainData AIData => m_aiData;
+        public MatchData MatchData => m_matchData;
     }
 }
