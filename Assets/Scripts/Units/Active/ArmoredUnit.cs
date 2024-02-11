@@ -7,10 +7,18 @@ namespace UnitWarfare.Units
 {
     public class ArmoredUnit : ActiveUnit<ArmoredUnitData>
     {
+        private readonly Mover mover;
+
+        private readonly Animator animator;
+
+        private const string DRIVE_ANIMATION_NAME = "DRIVE";
+        private const string EXIT_ANIMATION_NAME = "IDLE";
+
         public ArmoredUnit(Territory territory, GameObject game_object, ArmoredUnitData data, IUnitTeamManager manager)
             : base(territory, game_object, data, manager)
         {
-
+            animator = game_object.GetComponent<Animator>();
+            mover = new(_emb, data.Speed);
         }
 
         public override event IActiveUnit.Command OnAttack;
@@ -31,8 +39,13 @@ namespace UnitWarfare.Units
 
         protected override IEnumerator MoveCommandRoutine()
         {
-            yield return null;
-            _emb.transform.position = CurrentCommand.Target.Territory.EMB.transform.position;
+            _emb.transform.LookAt(CurrentCommand.Target.Territory.EMB.transform);
+            mover.MoveToDestination(CurrentCommand.Target.Territory.EMB.transform.position);
+            animator.Play(DRIVE_ANIMATION_NAME);
+
+            yield return new WaitUntil(() => mover.CurrentState.Equals(MoverState.WAITING));
+
+            animator.Play(EXIT_ANIMATION_NAME);
             OnMove?.Invoke(this, CurrentCommand.Target);
         }
 
@@ -55,6 +68,7 @@ namespace UnitWarfare.Units
 
         protected override IEnumerator DamagedRoutine()
         {
+            Debug.Log("Armored Unit damaged");
             yield return null;
         }
     }

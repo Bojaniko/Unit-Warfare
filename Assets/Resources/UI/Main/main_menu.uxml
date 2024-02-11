@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Main/main_menu_style.uss?fileID=7433441132597879392&amp;guid=5a134a0cec870d44e90236bcf1404f59&amp;type=3#main_menu_style" />
+    <ui:VisualElement name="root" picking-mode="Ignore">
+        <ui:VisualElement name="content" picking-mode="Ignore">
+            <ui:Label tabindex="-1" text="UNIT WARFARE" parse-escape-sequences="true" display-tooltip-when-elided="true" name="unit_warfare" class="box" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; height: 20%; -unity-text-align: middle-center; font-size: 70%; -unity-font-style: normal;" />
+            <ui:Button text="Play with Bot" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play_ai" class="box boxInteractable" style="font-size: 50px; height: 20%; -unity-font-style: italic;" />
+            <ui:Button text="Play Online" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play_player" class="box boxInteractable" style="height: 20%; font-size: 50px; -unity-font-style: italic;" />
+            <ui:Button text="Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="settings" class="box boxInteractable" style="font-size: 50px; height: 20%; -unity-font-style: italic;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

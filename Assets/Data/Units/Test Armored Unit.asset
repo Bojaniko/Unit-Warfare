@@ -18,4 +18,4 @@ MonoBehaviour:
   _health: 3
   _shield: 3
   _attack: 3
-  _speed: 2
+  _speed: 0.5

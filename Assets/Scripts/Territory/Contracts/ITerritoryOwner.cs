@@ -5,6 +5,6 @@ namespace UnitWarfare.Territories
     public interface ITerritoryOwner
     {
         public string Name { get; }
-        public PlayerIdentification OwnerIdentification { get; }
+        public PlayerIdentification Identification { get; }
     }
 }

@@ -16,16 +16,13 @@ namespace UnitWarfare.Units
 
         private List<IUnit> _units;
 
-        private readonly UnitsData _data;
-
         private PlayersHandler h_players;
 
         // ##### INITIALIZATION ##### \\
 
-        public UnitsHandler(UnitsData data, IGameStateHandler handler) : base(handler)
+        public UnitsHandler(UnitCombinations combinations, IGameStateHandler handler) : base(handler)
         {
-            _data = data;
-            _interactions = new(new(_data.Combinations.Combinations));
+            _interactions = new(new(combinations.Combinations));
 
             c_units = GameObject.Find("UNITS").transform;
 
@@ -162,12 +159,12 @@ namespace UnitWarfare.Units
             if (unit_type.GetInterface("IActiveUnit") == null)
                 return;
 
-            UnitData data = _data.GetData(unit_type.BaseType.GetGenericArguments()[0]);
+            UnitData data = ((Player)territory.Owner).Data.Nation.Units.GetData(unit_type.BaseType.GetGenericArguments()[0]);
 
             if (data == null)
                 return;
 
-            IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.OwnerIdentification);
+            IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.Identification);
             IUnit new_unit = UnitFactory.GenerateUnit(territory, data, c_units, unitManager);
             InitUnit(new_unit);
         }
@@ -199,8 +196,8 @@ namespace UnitWarfare.Units
 
         private void HandleAntennaeReinforcements(Territory territory)
         {
-            IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.OwnerIdentification);
-            IUnit reinforcement = UnitFactory.GenerateUnit(territory, _data.GetDataByUnit<Recruit>(), typeof(Recruit), c_units, unitManager);
+            IUnitTeamManager unitManager = h_players.GetPlayer(territory.Owner.Identification);
+            IUnit reinforcement = UnitFactory.GenerateUnit(territory, ((Player)territory.Owner).Data.Nation.Units.GetDataByUnit<Recruit>(), typeof(Recruit), c_units, unitManager);
             InitUnit(reinforcement);
         }
 

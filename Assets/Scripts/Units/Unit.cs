@@ -151,7 +151,7 @@ namespace UnitWarfare.Units
                 m_currentCommand = null;
             };
 
-            _owner = start_territory.Owner.OwnerIdentification;
+            _owner = start_territory.Owner.Identification;
 
             _occupiedTerritory = start_territory;
             _occupiedTerritory.Occupy(this);

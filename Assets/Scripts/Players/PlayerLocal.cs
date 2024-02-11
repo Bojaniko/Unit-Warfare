@@ -4,6 +4,7 @@ using UnitWarfare.UI;
 using UnitWarfare.Units;
 using UnitWarfare.Input;
 using UnitWarfare.Cameras;
+using UnitWarfare.Core.Enums;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players
@@ -13,8 +14,8 @@ namespace UnitWarfare.Players
         public record Config(TapProcessor TapInput, CameraController MainCamera, MatchProgress MatchProgress, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler);
         private readonly Config _config;
 
-        public PlayerLocal(Config config, PlayerData data, IPlayerHandler handler)
-            : base(data, handler)
+        public PlayerLocal(Config config, PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+            : base(data, identification, handler)
         {
             _config = config;
 
@@ -66,7 +67,7 @@ namespace UnitWarfare.Players
                 ActivateSelection(selection);
                 return;
             }
-            if (_selection.Unit != null && _selection.Territory.Owner.OwnerIdentification.Equals(OwnerIdentification))
+            if (_selection.Unit != null && _selection.Territory.Owner.Identification.Equals(Identification))
             {
                 UnitTarget target = new(selection.Territory);
                 IUnitCommand command = _config.UnitsHandler.InteractionsHandler.GenerateCommand(_selection.Unit, target);

@@ -19,7 +19,7 @@ namespace UnitWarfare.AI
                 {
                     foreach (Territory nt in command.Target.Territory.NeighborTerritories)
                     {
-                        if (nt.Occupant != null && nt.Owner.OwnerIdentification != unit.Owner)
+                        if (nt.Occupant != null && nt.Owner.Identification != unit.Owner)
                             return new(true, Mode.REDUCE);
                     }
                 }

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b9112054bf42f947a1e1ba1ede25412, type: 3}
   m_Name: Test Game
   m_EditorClassIdentifier: 
-  _unitsData: {fileID: 11400000, guid: de0355a4109802e41b069341e26c59e9, type: 2}
-  _cameraData: {fileID: 11400000, guid: 81052963f56102e4cb8b9022b829df63, type: 2}
-  _inputData: {fileID: 11400000, guid: c9c28d2f360518949a8ea9dcb620486e, type: 2}
-  _matchData: {fileID: 11400000, guid: 9188cdcdee28b684cb132a3c7a9713aa, type: 2}
-  _mapData: {fileID: 11400000, guid: 082a4d52212a5ec4987908653210a0ca, type: 2}
+  _combinations: {fileID: 11400000, guid: fdf4b65c7045b854e9467f54b1295e9e, type: 2}
+  m_allyNation: {fileID: 11400000, guid: bb7f433384617c545816ee02bd6ff1e6, type: 2}
+  m_axisNation: {fileID: 11400000, guid: 558ae9fdd5bb1e8458803187d414ddae, type: 2}
+  m_cameraData: {fileID: 11400000, guid: 81052963f56102e4cb8b9022b829df63, type: 2}
+  m_inputData: {fileID: 11400000, guid: c9c28d2f360518949a8ea9dcb620486e, type: 2}
+  m_mapData: {fileID: 11400000, guid: 082a4d52212a5ec4987908653210a0ca, type: 2}
   m_uiData: {fileID: 11400000, guid: 85f92898c4451e84bbe1a06d1fb3c0c8, type: 2}

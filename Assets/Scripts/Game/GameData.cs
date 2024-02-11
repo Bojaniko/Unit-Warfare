@@ -9,23 +9,26 @@ using UnitWarfare.Territories;
 
 namespace UnitWarfare.Game
 {
-    [CreateAssetMenu(menuName = "Game Data")]
-    class GameData : ScriptableObject
+    [CreateAssetMenu(menuName = "Game/Data")]
+    public class GameData : ScriptableObject
     {
-        [SerializeField] UnitsData _unitsData;
-        public UnitsData UnitsData => _unitsData;
+        [SerializeField] private UnitCombinations _combinations;
+        public UnitCombinations Combinations => _combinations;
 
-        [SerializeField] CameraData _cameraData;
-        public CameraData CameraData => _cameraData;
+        [SerializeField] private Nation m_allyNation;
+        public Nation AllyNation => m_allyNation;
 
-        [SerializeField] InputData _inputData;
-        public InputData InputData => _inputData;
+        [SerializeField] private Nation m_axisNation;
+        public Nation AxisNation => m_axisNation;
 
-        [SerializeField] MatchData _matchData;
-        public MatchData MatchData => _matchData;
+        [SerializeField] CameraData m_cameraData;
+        public CameraData CameraData => m_cameraData;
 
-        [SerializeField] MapData _mapData;
-        public MapData MapData => _mapData;
+        [SerializeField] InputData m_inputData;
+        public InputData InputData => m_inputData;
+
+        [SerializeField] MapData m_mapData;
+        public MapData MapData => m_mapData;
 
         [SerializeField] private UIData m_uiData;
         public UIData UIData => m_uiData;

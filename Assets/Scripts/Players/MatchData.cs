@@ -1,15 +1,12 @@
 using UnityEngine;
-using UnitWarfare.AI;
+using UnitWarfare.Units;
 
 namespace UnitWarfare.Players
 {
     [CreateAssetMenu(menuName = "Players/Match Data")]
     public class MatchData : ScriptableObject
     {
-        [SerializeField] private float _maxTurnDuration;
-        public float MaxTurnDuration => _maxTurnDuration;
-
-        [SerializeField] private AiBrainData _aiData;
-        public AiBrainData AiData => _aiData;
+        [SerializeField] private float m_maxTurnDuration;
+        public float MaxTurnDuration => m_maxTurnDuration;
     }
 }

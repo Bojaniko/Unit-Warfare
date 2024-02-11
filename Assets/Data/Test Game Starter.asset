@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d0bc07d13b76694e8887c41e7a3e778, type: 3}
+  m_Name: Test Game Starter
+  m_EditorClassIdentifier: 
+  m_gameData: {fileID: 11400000, guid: 49cbf13447a9dac4dbd0a2e8163fc5cb, type: 2}
+  m_aiMatches:
+  - AiData: {fileID: 11400000, guid: e9482258be875db468855c85bd30a07c, type: 2}
+    MatchData: {fileID: 11400000, guid: 9188cdcdee28b684cb132a3c7a9713aa, type: 2}
+  m_levelData:
+  - {fileID: 11400000, guid: 5f15bc2dc34c29a4d811a8cb6918975a, type: 2}

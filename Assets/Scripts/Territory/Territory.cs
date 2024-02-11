@@ -183,7 +183,7 @@ namespace UnitWarfare.Territories
         {
             _owner = owner;
 
-            switch(owner.OwnerIdentification)
+            switch(owner.Identification)
             {
                 case PlayerIdentification.PLAYER:
                     SetMainColor(_colorScheme.PlayerOne);

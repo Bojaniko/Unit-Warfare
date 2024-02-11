@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Studio28.Utility;
 
+using UnitWarfare.AI;
 using UnitWarfare.UI;
 using UnitWarfare.Core;
 using UnitWarfare.Units;
@@ -11,37 +12,17 @@ using UnitWarfare.Input;
 using UnitWarfare.Cameras;
 using UnitWarfare.Core.Enums;
 
+using System.ComponentModel;
+namespace System.Runtime.CompilerServices
+{
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    internal class IsExternalInit { }
+}
+
 namespace UnitWarfare.Players
 {
-    public sealed class PlayersGameData
-    {
-        private readonly MatchData _matchData;
-        public MatchData Match => _matchData;
-
-        private readonly PlayerData _playerOneData;
-        public PlayerData PlayerOneData => _playerOneData;
-
-        private readonly PlayerData _playerTwoData;
-        public PlayerData PlayerTwoData => _playerTwoData;
-
-        private readonly PlayerData _neutralPlayerData;
-        public PlayerData NeutralPlayerData => _neutralPlayerData;
-
-        public PlayersGameData(MatchData match_data, PlayerData player_one_data, PlayerData player_two_data)
-        {
-            _matchData = match_data;
-            _playerOneData = player_one_data;
-            _playerTwoData = player_two_data;
-            _neutralPlayerData = PlayerData.NeutralPlayer;
-        }
-    }
-
     public class PlayersHandler : GameHandler, IPlayerHandler
     {
-        // ##### PLAYERS DATA ##### \\
-
-        private readonly PlayersGameData _playersData;
-
         private Player _playerOne;
         public Player PlayerOne => _playerOne;
 
@@ -74,12 +55,20 @@ namespace UnitWarfare.Players
 
         private MatchProgress ui_matchProgress;
 
-        public PlayersHandler(PlayersGameData players_data, IGameStateHandler game_state_handler)
+        public record Config(MatchData Match, PlayerData PlayerOne, PlayerData PlayerTwo, PlayerData NeutralPlayer);
+        public record PvEConfig(Config Data, AiBrainData AiData);
+
+        private readonly Config _config;
+
+        private readonly AiBrainData _aiData;
+
+        public PlayersHandler(PvEConfig config, IGameStateHandler game_state_handler)
             : base(game_state_handler)
         {
             timerActive = false;
 
-            _playersData = players_data;
+            _config = config.Data;
+            _aiData = config.AiData;
 
             game_state_handler.OnPlayGameStateChanged += (state) =>
             {
@@ -91,9 +80,7 @@ namespace UnitWarfare.Players
         protected override void Initialize()
         {
             _input = gameStateHandler.GetHandler<InputHandler>();
-
             _unitsHandler = gameStateHandler.GetHandler<UnitsHandler>();
-
             ui_matchProgress = gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>();
 
             PlayerLocal.Config localConfig = new(_input.TapInput,
@@ -101,21 +88,24 @@ namespace UnitWarfare.Players
                 gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>(),
                 gameStateHandler.GetHandler<UIHandler>().GetUIHandler<UnitDisplay>(),
                 gameStateHandler.GetHandler<UnitsHandler>());
-            _playerOne = new PlayerLocal(localConfig, _playersData.PlayerOneData, this);
+            _playerOne = new PlayerLocal(localConfig, _config.PlayerOne, PlayerIdentification.PLAYER, this);
 
             _playerOne.OnExplicitMoveEnd += (Player player) =>
             {
                 SwitchActivePlayer();
             };
 
-            _playerTwo = new PlayerComputer(gameStateHandler.GetHandler<UnitsHandler>(), _playersData.Match.AiData, _playersData.PlayerTwoData, this);
+            if (gameStateHandler.TypeOfGame.Equals(GameType.PLAYER_V_COMPUTER))
+            {
+                _playerTwo = new PlayerComputer(gameStateHandler.GetHandler<UnitsHandler>(), _aiData, _config.PlayerTwo, PlayerIdentification.OTHER_PLAYER, this);
+            }
 
             _playerTwo.OnExplicitMoveEnd += (Player player) =>
             {
                 SwitchActivePlayer();
             };
 
-            _neutralPlayer = new PlayerNeutral(_playersData.NeutralPlayerData, this);
+            _neutralPlayer = new PlayerNeutral(_config.NeutralPlayer, PlayerIdentification.NEUTRAL, this);
         }
 
         private void Pause()
@@ -189,9 +179,9 @@ namespace UnitWarfare.Players
                 OnActivePlayerChanged?.Invoke(_playerOne);
             }
             timerActive = true;
-            m_timer = _playersData.Match.MaxTurnDuration;
+            m_timer = _config.Match.MaxTurnDuration;
             System.Func<float> timerDelegate = () => { return Timer; };
-            ui_matchProgress.Show(new(player_active.Name, player_active.OwnerIdentification, timerDelegate));
+            ui_matchProgress.Show(new(player_active.Name, player_active.Identification, timerDelegate));
             StartPlayerTimer();
         }
     }

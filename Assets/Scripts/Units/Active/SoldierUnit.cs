@@ -55,6 +55,8 @@ namespace UnitWarfare.Units
 
             OnAttack?.Invoke(this, CurrentCommand.Target);
             _animator.SetBool(ANIMATOR_SHOOTING, false);
+
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).IsName(ANIMATION_NAME_IDLE));
         }
 
         protected override IEnumerator MoveCommandRoutine()

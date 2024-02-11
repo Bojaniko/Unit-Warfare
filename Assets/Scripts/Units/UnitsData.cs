@@ -8,9 +8,6 @@ namespace UnitWarfare.Units
     [CreateAssetMenu(menuName = "Units/Data")]
     public class UnitsData : ScriptableObject
     {
-        [SerializeField] private UnitCombinations _combinations;
-        public UnitCombinations Combinations => _combinations;
-
         private List<UnitData> c_loadedData;
         public UnitData[] AllData => c_loadedData.ToArray();
 

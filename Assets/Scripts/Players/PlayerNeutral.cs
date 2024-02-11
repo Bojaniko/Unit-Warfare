@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using UnitWarfare.Core.Enums;
 
 namespace UnitWarfare.Players
 {
     public class PlayerNeutral : Player
     {
-        public PlayerNeutral(PlayerData data, IPlayerHandler handler)
-            : base(data, handler)
+        public PlayerNeutral(PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+            : base(data, identification, handler)
         {
 
         }

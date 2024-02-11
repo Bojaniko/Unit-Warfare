@@ -19,21 +19,21 @@ namespace UnitWarfare.Players
     {
         // ##### DATA ##### \\
 
-        private readonly PlayerData _data;
-        public PlayerData Data => _data;
+        private readonly PlayerData m_data;
+        public PlayerData Data => m_data;
 
-        public string Name => _data.Name;
-        public Color FlagColor => _data.FlagColor;
+        public string Name => m_data.Name;
 
-        public PlayerIdentification OwnerIdentification => _data.Identification;
+        private readonly PlayerIdentification m_identification;
+        public PlayerIdentification Identification => m_identification;
 
         // ##### ? ##### \\
 
-        private bool _isActive;
+        private bool m_isActive;
         /// <summary>
         /// Is the current players turn this round?
         /// </summary>
-        public bool IsActive => _isActive;
+        public bool IsActive => m_isActive;
 
         protected EncapsulatedMonoBehaviour emb;
 
@@ -46,10 +46,12 @@ namespace UnitWarfare.Players
 
         protected readonly IPlayerHandler handler;
 
-        protected Player(PlayerData data, IPlayerHandler handler)
+        protected Player(PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
         {
-            _data = data;
-            _isActive = false;
+            m_data = data;
+            m_isActive = false;
+
+            m_identification = identification;
 
             this.handler = handler;
 
@@ -63,16 +65,16 @@ namespace UnitWarfare.Players
         {
             if (player.Equals(this))
             {
-                _isActive = true;
+                m_isActive = true;
                 OnRoundStarted?.Invoke();
                 OnActiveTurn();
                 return;
             }
-            if (!_isActive)
+            if (!m_isActive)
                 return;
             OnRoundEnded?.Invoke();
             OnInactiveTurn();
-            _isActive = false;
+            m_isActive = false;
         }
 
         /// <summary>

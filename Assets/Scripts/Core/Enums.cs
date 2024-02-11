@@ -17,7 +17,6 @@ namespace UnitWarfare.Core.Enums
 
     public enum GameType
     {
-        TEST,
         PLAYER_V_PLAYER,
         PLAYER_V_COMPUTER
     }

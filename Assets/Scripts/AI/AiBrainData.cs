@@ -10,6 +10,9 @@ namespace UnitWarfare.AI
     [CreateAssetMenu(menuName = "AI/Brain")]
     public class AiBrainData : ScriptableObject
     {
+        [SerializeField] private string _displayName = "Bot";
+        public string DisplayName => _displayName;
+
         [SerializeField] private BrainFeature[] _features;
         public BrainFeature[] BrainFeatures => _features;
 

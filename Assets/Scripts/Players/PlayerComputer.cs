@@ -3,6 +3,7 @@ using UnityEngine;
 
 using UnitWarfare.AI;
 using UnitWarfare.Units;
+using UnitWarfare.Core.Enums;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players
@@ -15,8 +16,8 @@ namespace UnitWarfare.Players
 
         private IUnit[] _currentUnits;
 
-        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, IPlayerHandler handler)
-            : base(data, handler)
+        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+            : base(data, identification, handler)
         {
             _aiData = ai_data;
 
