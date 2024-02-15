@@ -4,7 +4,7 @@ using UnityEngine;
 
 using UnitWarfare.Core;
 using UnitWarfare.Territories;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Units
 {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Players
 {

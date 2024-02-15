@@ -2,7 +2,7 @@ using System.Collections;
 
 using UnityEngine;
 
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 using Studio28.Utility;
 

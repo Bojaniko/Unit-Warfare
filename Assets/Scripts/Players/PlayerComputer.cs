@@ -3,7 +3,7 @@ using UnityEngine;
 
 using UnitWarfare.AI;
 using UnitWarfare.Units;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players

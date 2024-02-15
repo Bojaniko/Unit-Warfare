@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnitWarfare.Core;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Territories
 {

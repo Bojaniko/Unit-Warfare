@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 
 using UnitWarfare.Units;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Test
 {

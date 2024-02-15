@@ -2,7 +2,7 @@ using UnityEngine;
 
 using UnitWarfare.Core;
 using UnitWarfare.Units;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 using System.ComponentModel;

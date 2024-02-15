@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using UnitWarfare.Units;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 using System.ComponentModel;
 namespace System.Runtime.CompilerServices

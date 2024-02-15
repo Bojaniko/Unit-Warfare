@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 
 namespace UnitWarfare.AI

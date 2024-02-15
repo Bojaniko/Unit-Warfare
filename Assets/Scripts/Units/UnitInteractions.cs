@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using UnitWarfare.Territories;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Units
 {

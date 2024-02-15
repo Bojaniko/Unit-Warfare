@@ -1,5 +1,10 @@
-namespace UnitWarfare.Core.Enums
+namespace UnitWarfare.Core.Global
 {
+    public static class GlobalValues
+    {
+        public const string PLAYER_HOST_PROPERTY = "HostPlayer";
+    }
+
     public enum ActiveCommandOrder
     {
         ATTACK,
@@ -32,15 +37,8 @@ namespace UnitWarfare.Core.Enums
     public enum PlayingGameState
     {
         LOADING,
-        PAUSED,
-        PLAYING
-    }
-
-    public enum GameState
-    {
-        LOADING,
         PLAYING,
-        TESTING
+        ENDED
     }
 
     public enum PlayerIdentification

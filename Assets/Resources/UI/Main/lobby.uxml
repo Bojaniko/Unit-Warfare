@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Main/main_menu_style.uss?fileID=7433441132597879392&amp;guid=5a134a0cec870d44e90236bcf1404f59&amp;type=3#main_menu_style" />
+    <ui:VisualElement name="root" style="flex-grow: 1;">
+        <ui:VisualElement name="content" style="flex-grow: 1;">
+            <ui:VisualElement name="searching" style="justify-content: center; align-items: center; width: 100%; height: 100%;">
+                <ui:Label tabindex="-1" text="Finding Players... \t(0:00)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" class="box" style="width: 100%; font-size: 50px; padding-top: 10px; padding-bottom: 10px; margin-bottom: 40px;" />
+                <ui:Button text="Cancel" parse-escape-sequences="true" display-tooltip-when-elided="true" name="back" class="box boxInteractable" style="width: 80%; font-size: 40px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="found" style="justify-content: center; align-items: center; width: 100%; height: 100%; display: none;">
+                <ui:Label tabindex="-1" text="Starting Match!" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" class="box" style="width: 100%; font-size: 50px; padding-top: 10px; padding-bottom: 10px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -8,7 +8,7 @@ namespace UnitWarfare.Test
     {
         [SerializeField] private GameStarterData m_data;
 
-        private Game.Game _game;
+        private GameLocal _game;
 
         private void Awake()
         {
@@ -18,9 +18,9 @@ namespace UnitWarfare.Test
                 return;
             }
 
-            Game.Game.Config config = new(m_data.GameData, m_data.AiMatches[0].MatchData, m_data.Levels[0]);
-            Game.Game.PvEConfig pveConfig = new(config, m_data.AiMatches[0].AIData);
-            _game = new(pveConfig);
+            GameBase.Config configuration = new(m_data.GameData, m_data.AiMatches[0].MatchData, m_data.Levels[0]);
+            GameLocal.Config config = new(configuration, m_data.AiMatches[0].AIData);
+            _game = new(config);
 
             _game.Load();
         }

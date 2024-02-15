@@ -4,7 +4,7 @@ using UnitWarfare.UI;
 using UnitWarfare.Units;
 using UnitWarfare.Input;
 using UnitWarfare.Cameras;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players

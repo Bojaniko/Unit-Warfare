@@ -8,7 +8,7 @@ using UnityEditor.EditorTools;
 using UnityEditor.UIElements;
 
 using UnitWarfare.Units;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Tools

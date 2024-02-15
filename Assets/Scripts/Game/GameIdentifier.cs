@@ -2,7 +2,7 @@ using UnityEngine;
 
 using UnitWarfare.AI;
 using UnitWarfare.Players;
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Game
 {

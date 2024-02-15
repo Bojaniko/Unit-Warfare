@@ -1,4 +1,4 @@
-﻿using UnitWarfare.Core.Enums;
+﻿using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Units

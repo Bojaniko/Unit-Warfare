@@ -1,19 +1,13 @@
 using UnityEngine;
 
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Core
 {
     public interface IGameStateHandler
     {
-        public delegate void PlayGameStateEventHandler(PlayingGameState state);
-        public event PlayGameStateEventHandler OnPlayGameStateChanged;
-
-        public delegate void LoadGameStateEventHandler(LoadingGameState state);
-        public event LoadGameStateEventHandler OnLoadGameStateChanged;
-
-        public delegate void GameStateEventHandler(GameState state);
-        public event GameStateEventHandler OnGameStateChanged;
+        public event System.Action<PlayingGameState> OnPlayGameStateChanged;
+        public event System.Action<LoadingGameState> OnLoadGameStateChanged;
 
         public GameType TypeOfGame { get; }
 

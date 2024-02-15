@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 using UnityEditor;
 
-using UnitWarfare.Core.Enums;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.AI
 {
