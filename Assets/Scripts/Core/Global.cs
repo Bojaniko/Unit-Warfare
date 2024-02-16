@@ -2,7 +2,8 @@ namespace UnitWarfare.Core.Global
 {
     public static class GlobalValues
     {
-        public const string PLAYER_HOST_PROPERTY = "HostPlayer";
+        public const int NETWORK_PLAYERS_HANDLER_VIEW_ID = 2;
+        public const int NETWORK_PLAYER_VIEW_ID = 3;
     }
 
     public enum ActiveCommandOrder

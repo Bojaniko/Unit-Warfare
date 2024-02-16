@@ -1,4 +1,7 @@
-﻿using UnitWarfare.Core.Global;
+﻿using UnitWarfare.Units;
+using UnitWarfare.Core.Global;
+
+using Photon.Pun;
 
 namespace UnitWarfare.Players
 {
@@ -6,10 +9,23 @@ namespace UnitWarfare.Players
     {
         public override event PlayerEventHandler OnExplicitMoveEnd;
 
-        public PlayerNetwork(PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+        private readonly PhotonView network_view;
+
+        public PlayerNetwork(PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
             : base(data, identification, handler)
         {
+            network_view = emb.gameObject.AddComponent<PhotonView>();
+            network_view.ViewID = GlobalValues.NETWORK_PLAYER_VIEW_ID;
+        }
 
+        public void SendUnitCommand()
+        {
+            // TODO: Sending command from local palyer
+        }
+
+        public void ReceiveUnitCommand()
+        {
+            // TODO: Receiving commands from network player
         }
     }
 }

@@ -14,33 +14,33 @@ namespace System.Runtime.CompilerServices
 
 namespace UnitWarfare.Players
 {
-    public abstract class PlayersHandler : GameHandler, IPlayerHandler
+    public abstract class PlayersHandler : GameHandler, IPlayersHandler
     {
-        private Player _playerOne;
-        public Player PlayerOne => _playerOne;
+        private Player m_localPlayer;
+        public Player LocalPlayer => m_localPlayer;
 
-        private Player _playerTwo;
-        public Player PlayerTwo => _playerTwo;
+        private Player m_otherPlayer;
+        public Player OtherPlayer => m_otherPlayer;
 
-        private Player _neutralPlayer;
-        public Player NeutralPlayer => _neutralPlayer;
+        private Player m_neutralPlayer;
+        public Player NeutralPlayer => m_neutralPlayer;
 
         public Player GetPlayer(PlayerIdentification owner_type)
         {
             switch (owner_type)
             {
                 case PlayerIdentification.PLAYER:
-                    return PlayerOne;
+                    return LocalPlayer;
 
                 case PlayerIdentification.OTHER_PLAYER:
-                    return PlayerTwo;
+                    return OtherPlayer;
 
                 default:
                     return NeutralPlayer;
             }
         }
 
-        public abstract event IPlayerHandler.PlayerEventHandler OnActivePlayerChanged;
+        public abstract event System.Action<Player> OnActivePlayerChanged;
 
         protected UnitsHandler _unitsHandler;
         protected MatchProgress ui_matchProgress;
@@ -76,13 +76,13 @@ namespace UnitWarfare.Players
                 gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>(),
                 gameStateHandler.GetHandler<UIHandler>().GetUIHandler<UnitDisplay>(),
                 gameStateHandler.GetHandler<UnitsHandler>());
-            _playerOne = new PlayerLocal(localConfig, _config.PlayerOne, PlayerIdentification.PLAYER, this);
-            _playerOne.OnExplicitMoveEnd += (Player player) => OnPlayerExplicitMoveEnd(player);
+            m_localPlayer = new PlayerLocal(localConfig, _config.PlayerOne, PlayerIdentification.PLAYER, this);
+            m_localPlayer.OnExplicitMoveEnd += (Player player) => OnPlayerExplicitMoveEnd(player);
 
-            _playerTwo = GeneratePlayerTwo();
-            _playerTwo.OnExplicitMoveEnd += (Player player) => OnPlayerExplicitMoveEnd(player);
+            m_otherPlayer = GeneratePlayerTwo();
+            m_otherPlayer.OnExplicitMoveEnd += (Player player) => OnPlayerExplicitMoveEnd(player);
 
-            _neutralPlayer = new PlayerNeutral(_config.NeutralPlayer, PlayerIdentification.NEUTRAL, this);
+            m_neutralPlayer = new PlayerNeutral(_config.NeutralPlayer, PlayerIdentification.NEUTRAL, this);
         }
     }
 }

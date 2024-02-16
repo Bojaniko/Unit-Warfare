@@ -55,8 +55,8 @@ namespace UnitWarfare.Territories
         {
             PlayersHandler playersHandler = gameStateHandler.GetHandler<PlayersHandler>();
 
-            _player = playersHandler.PlayerOne;
-            _otherPlayer = playersHandler.PlayerTwo;
+            _player = playersHandler.LocalPlayer;
+            _otherPlayer = playersHandler.OtherPlayer;
             _neutral = playersHandler.NeutralPlayer;
         }
 

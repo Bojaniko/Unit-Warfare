@@ -16,7 +16,7 @@ namespace UnitWarfare.Players
 
         private IUnit[] _currentUnits;
 
-        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
             : base(data, identification, handler)
         {
             _aiData = ai_data;

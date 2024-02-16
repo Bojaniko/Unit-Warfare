@@ -32,11 +32,11 @@ namespace UnitWarfare.Players
         private float m_timer;
         public float Timer => m_timer;
 
-        public override event IPlayerHandler.PlayerEventHandler OnActivePlayerChanged;
+        public override event System.Action<Player> OnActivePlayerChanged;
 
         protected override void StartMatch()
         {
-            OnActivePlayerChanged?.Invoke(PlayerOne);
+            OnActivePlayerChanged?.Invoke(LocalPlayer);
             timerActive = true;
             StartPlayerTimer();
         }
@@ -52,8 +52,8 @@ namespace UnitWarfare.Players
 
             if (_unitsHandler.UnitExecutingCommand)
                 return;
-            if (PlayerOne.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.PLAYER)
-                || PlayerTwo.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.OTHER_PLAYER))
+            if (LocalPlayer.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.PLAYER)
+                || OtherPlayer.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.OTHER_PLAYER))
                 SwitchActivePlayer();
         }
 
@@ -81,15 +81,15 @@ namespace UnitWarfare.Players
 
         private void SwitchActivePlayer()
         {
-            if (PlayerOne.IsActive)
+            if (LocalPlayer.IsActive)
             {
-                player_active = PlayerTwo;
-                OnActivePlayerChanged?.Invoke(PlayerTwo);
+                player_active = OtherPlayer;
+                OnActivePlayerChanged?.Invoke(OtherPlayer);
             }
             else
             {
-                player_active = PlayerOne;
-                OnActivePlayerChanged?.Invoke(PlayerOne);
+                player_active = LocalPlayer;
+                OnActivePlayerChanged?.Invoke(LocalPlayer);
             }
             timerActive = true;
             m_timer = _config.Configuration.Match.MaxTurnDuration;

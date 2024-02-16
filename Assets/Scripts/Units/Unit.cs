@@ -13,24 +13,24 @@ namespace UnitWarfare.Units
     {
         // ##### TERRITORY ##### \\
 
-        private readonly PlayerIdentification _owner;
-        public PlayerIdentification Owner => _owner;
+        private readonly PlayerIdentification m_owner;
+        public PlayerIdentification Owner => m_owner;
 
-        private Territory _occupiedTerritory;
+        private Territory m_occupiedTerritory;
         public Territory OccupiedTerritory
         {
-            get => _occupiedTerritory;
+            get => m_occupiedTerritory;
             protected set
             {
-                _occupiedTerritory = value;
+                m_occupiedTerritory = value;
             }
         }
 
         public void SetOccupiedTerritory(Territory territory)
         {
-            if (territory.Equals(_occupiedTerritory))
+            if (territory.Equals(m_occupiedTerritory))
                 return;
-            _occupiedTerritory = territory;
+            m_occupiedTerritory = territory;
         }
 
         // ##### DESTRUCTION ##### \\
@@ -49,36 +49,41 @@ namespace UnitWarfare.Units
 
         private IEnumerator KillUnit()
         {
-            _occupiedTerritory.SetInteractable(false);
+            m_occupiedTerritory.SetInteractable(false);
             m_isDoingSomething = true;
             yield return KillRoutine();
             DestroyUnit();
         }
         protected abstract IEnumerator KillRoutine();
 
-        private readonly int _shield;
-        public int Shield => _shield;
+        private readonly int m_shield;
+        public int Shield => m_shield;
 
-        private int _health;
-        public int Health => _health;
+        private int m_health;
+        public int Health => m_health;
 
-        private readonly int _attack;
-        public int Attack => _attack;
+        private int m_healthPercentage;
+        public int HealthPercentage => m_healthPercentage;
 
-        public bool IsDead => (_health <= 0 || _emb == null);
+        private readonly int m_attack;
+        public int Attack => m_attack;
+
+        public bool IsDead => (m_health <= 0 || _emb == null);
 
         public void Damage(int amount)
         {
-            amount -= _shield;
+            amount -= m_shield;
             if (amount < 0)
                 amount = 0;
-            _health -= amount;
-            if (_health <= 0)
-            {
-                _health = 0;
+            m_health -= amount;
+            if (m_health <= 0)
+                m_health = 0;
+            m_healthPercentage = m_health / _data.Health;
+
+            if (m_health == 0)
                 _emb.StartCoroutine(KillUnit());
-            }
-            else _emb.StartCoroutine(DamagedRoutine());
+            else
+                _emb.StartCoroutine(DamagedRoutine());
         }
 
         protected abstract IEnumerator DamagedRoutine();
@@ -131,9 +136,9 @@ namespace UnitWarfare.Units
 
             m_moveAvailable = false;
 
-            _attack = data.Attack;
-            _health = data.Health;
-            _shield = data.Shield;
+            m_attack = data.Attack;
+            m_health = data.Health;
+            m_shield = data.Shield;
 
             this.manager = manager;
             manager.OnRoundStarted += () => { m_moveAvailable = true; };
@@ -151,28 +156,24 @@ namespace UnitWarfare.Units
                 m_currentCommand = null;
             };
 
-            _owner = start_territory.Owner.Identification;
+            m_owner = start_territory.Owner.Identification;
 
-            _occupiedTerritory = start_territory;
-            _occupiedTerritory.Occupy(this);
+            m_occupiedTerritory = start_territory;
+            m_occupiedTerritory.Occupy(this);
         }
-
-        // ##### MONO BEHAVIOUR ##### \\
 
         protected UnitEMB _emb;
         public UnitEMB EMB => _emb;
-
-        public int HealthPercentage => throw new System.NotImplementedException();
     }
 
     public class UnitEMB : EncapsulatedMonoBehaviour
     {
-        private readonly IUnit _unit;
-        public IUnit Unit => _unit;
+        private readonly IUnit m_unit;
+        public IUnit Unit => m_unit;
 
         public UnitEMB(IUnit unit, GameObject game_object) : base(game_object)
         {
-            _unit = unit;
+            m_unit = unit;
         }
     }
 }

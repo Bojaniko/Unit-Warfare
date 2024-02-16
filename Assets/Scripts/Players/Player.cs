@@ -44,9 +44,9 @@ namespace UnitWarfare.Players
         public event IUnitTeamManager.UnitOwnerEventHandler OnRoundStarted;
         public event IUnitTeamManager.UnitOwnerEventHandler OnRoundEnded;
 
-        protected readonly IPlayerHandler handler;
+        protected readonly IPlayersHandler handler;
 
-        protected Player(PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+        protected Player(PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
         {
             m_data = data;
             m_isActive = false;

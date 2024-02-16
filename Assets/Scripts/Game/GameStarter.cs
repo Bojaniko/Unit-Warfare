@@ -455,8 +455,6 @@ namespace UnitWarfare.Game
                 RoomOptions options = new();
                 options.MaxPlayers = 2;
                 ExitGames.Client.Photon.Hashtable properties = new();
-                properties.Add(GlobalValues.PLAYER_HOST_PROPERTY, PhotonNetwork.LocalPlayer);
-                options.CustomRoomProperties = properties;
                 PhotonNetwork.CreateRoom(null, options);
 
                 yield return new WaitUntil(() => (_failedCreateRoom || PhotonNetwork.CurrentRoom != null));

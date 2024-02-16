@@ -14,7 +14,7 @@ namespace UnitWarfare.Players
         public record Config(TapProcessor TapInput, CameraController MainCamera, MatchProgress MatchProgress, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler);
         private readonly Config _config;
 
-        public PlayerLocal(Config config, PlayerData data, PlayerIdentification identification, IPlayerHandler handler)
+        public PlayerLocal(Config config, PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
             : base(data, identification, handler)
         {
             _config = config;
