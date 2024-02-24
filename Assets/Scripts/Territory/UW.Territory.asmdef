@@ -2,7 +2,8 @@
     "name": "UW.Territory",
     "rootNamespace": "UnitWarfare.Territories",
     "references": [
-        "GUID:07f93d16adf9e2b4697274e8bb146f9f"
+        "GUID:07f93d16adf9e2b4697274e8bb146f9f",
+        "GUID:57c32fc907df0f54e8e6e8f0d2488336"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

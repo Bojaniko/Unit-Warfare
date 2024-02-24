@@ -24,7 +24,7 @@ namespace UnitWarfare.Units
             return identifier;
         }
 
-        public static IUnit GenerateUnit(Territory territory, UnitData data, System.Type type, Transform unit_container, IUnitTeamManager unit_manager)
+        public static IUnit GenerateUnit(Territory territory, UnitData data, System.Type type, Transform unit_container, IUnitOwner unit_manager)
         {
             _ = territory ?? throw new System.ArgumentException("Generated unit requires a Territory object.");
             _ = data ?? throw new System.ArgumentException("Generated unit requires a UnitData object.");
@@ -38,7 +38,7 @@ namespace UnitWarfare.Units
             return unit;
         }
 
-        public static IUnit GenerateUnit(Territory territory, UnitData data, Transform unit_container, IUnitTeamManager unit_manager)
+        public static IUnit GenerateUnit(Territory territory, UnitData data, Transform unit_container, IUnitOwner unit_manager)
         {
             foreach (System.Type t in _unitTypes)
             {

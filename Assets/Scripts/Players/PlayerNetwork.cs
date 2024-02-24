@@ -11,11 +11,11 @@ namespace UnitWarfare.Players
 
         private readonly PhotonView network_view;
 
-        public PlayerNetwork(PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
-            : base(data, identification, handler)
+        public PlayerNetwork(PlayerData data, IPlayersHandler handler)
+            : base(data, handler)
         {
             network_view = emb.gameObject.AddComponent<PhotonView>();
-            network_view.ViewID = GlobalValues.NETWORK_PLAYER_VIEW_ID;
+            //network_view.ViewID = GlobalValues.NETWORK_PLAYER_VIEW_ID;
         }
 
         public void SendUnitCommand()

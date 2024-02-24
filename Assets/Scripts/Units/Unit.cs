@@ -11,11 +11,6 @@ namespace UnitWarfare.Units
     public abstract class Unit<D> : IUnit
         where D : UnitData
     {
-        // ##### TERRITORY ##### \\
-
-        private readonly PlayerIdentification m_owner;
-        public PlayerIdentification Owner => m_owner;
-
         private Territory m_occupiedTerritory;
         public Territory OccupiedTerritory
         {
@@ -25,6 +20,8 @@ namespace UnitWarfare.Units
                 m_occupiedTerritory = value;
             }
         }
+
+        public ITerritoryOwner Owner => manager;
 
         public void SetOccupiedTerritory(Territory territory)
         {
@@ -127,9 +124,9 @@ namespace UnitWarfare.Units
         UnitData IUnit.Data => Data;
         public D Data => _data;
 
-        protected readonly IUnitTeamManager manager;
+        protected readonly IUnitOwner manager;
 
-        protected Unit(Territory start_territory, GameObject game_object, D data, IUnitTeamManager manager)
+        protected Unit(Territory start_territory, GameObject game_object, D data, IUnitOwner manager)
         {
             _data = data;
             _emb = new(this, game_object);
@@ -155,8 +152,6 @@ namespace UnitWarfare.Units
                 m_isCommandActive = false;
                 m_currentCommand = null;
             };
-
-            m_owner = start_territory.Owner.Identification;
 
             m_occupiedTerritory = start_territory;
             m_occupiedTerritory.Occupy(this);

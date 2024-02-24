@@ -14,7 +14,7 @@ namespace UnitWarfare.Units
         private const string DRIVE_ANIMATION_NAME = "DRIVE";
         private const string EXIT_ANIMATION_NAME = "IDLE";
 
-        public ArmoredUnit(Territory territory, GameObject game_object, ArmoredUnitData data, IUnitTeamManager manager)
+        public ArmoredUnit(Territory territory, GameObject game_object, ArmoredUnitData data, IUnitOwner manager)
             : base(territory, game_object, data, manager)
         {
             animator = game_object.GetComponent<Animator>();

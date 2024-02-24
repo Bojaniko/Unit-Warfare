@@ -27,7 +27,7 @@ namespace UnitWarfare.Units
 
         protected const int ANIMATION_VARIATIONS_SHOOT = 2;
 
-        public SoldierUnit(Territory starting_territory, GameObject game_object, SoldierData data, IUnitTeamManager manager)
+        public SoldierUnit(Territory starting_territory, GameObject game_object, SoldierData data, IUnitOwner manager)
             : base(starting_territory, game_object, data, manager)
         {
             _animator = game_object.GetComponent<Animator>();

@@ -17,10 +17,10 @@ namespace UnitWarfare.Units
         private readonly AntennaeSignalLight c_signalLight;
         private readonly AudioSource c_audioSource;
 
-        private readonly IUnitTeamManager.UnitOwnerEventHandler f_enableSignal;
-        private readonly IUnitTeamManager.UnitOwnerEventHandler f_disableSignal;
+        private readonly IUnitOwner.UnitOwnerEventHandler f_enableSignal;
+        private readonly IUnitOwner.UnitOwnerEventHandler f_disableSignal;
 
-        public Antennae(Territory start_territory, GameObject game_object, AntennaeData data, IUnitTeamManager manager)
+        public Antennae(Territory start_territory, GameObject game_object, AntennaeData data, IUnitOwner manager)
             : base(start_territory, game_object, data, manager)
         {
             foreach (Transform t in _emb.transform)

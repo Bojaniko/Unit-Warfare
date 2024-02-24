@@ -84,7 +84,7 @@ namespace UnitWarfare.UI
         public record Config(Canvas Canvas, PanelSettings PanelSettings);
 
         private readonly Config config;
-        public Config Data => config;
+        public Config Configuration => config;
 
         private readonly UIDocument document;
         protected VisualElement root => document.rootVisualElement;

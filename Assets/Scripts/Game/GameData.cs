@@ -27,8 +27,8 @@ namespace UnitWarfare.Game
         [SerializeField] InputData m_inputData;
         public InputData InputData => m_inputData;
 
-        [SerializeField] MapData m_mapData;
-        public MapData MapData => m_mapData;
+        [SerializeField] MapColorSchemeData m_mapData;
+        public MapColorSchemeData MapData => m_mapData;
 
         [SerializeField] private UIData m_uiData;
         public UIData UIData => m_uiData;

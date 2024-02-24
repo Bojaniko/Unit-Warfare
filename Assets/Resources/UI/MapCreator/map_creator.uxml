@@ -21,7 +21,7 @@
             <ui:ScrollView name="territory_types" class="selection_scroll_view" />
         </ui:VisualElement>
         <ui:VisualElement name="ownership_container" class="option_container">
-            <uie:EnumField label="Select owner" name="owner_options" type="UnitWarfare.Core.Enums.PlayerIdentification, UW.Core" />
+            <uie:EnumField label="Select owner" name="owner_options" type="UnitWarfare.Core.Global.PlayerIdentifiers, UW.Core" />
             <ui:Button text="Set Owner" display-tooltip-when-elided="true" enable-rich-text="true" name="owner_change_button" style="width: 50%;" />
         </ui:VisualElement>
         <ui:VisualElement name="units_container" class="option_container">

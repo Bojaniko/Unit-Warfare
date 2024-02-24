@@ -4,14 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnitWarfare.Core;
-using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Territories
 {
     public class Territory
     {
-        // TO-DO: TerritoryManager loaded when all territories are loaded
-
         private MeshRenderer c_mRenderer;
 
         private readonly MapColorScheme _colorScheme;
@@ -23,8 +20,13 @@ namespace UnitWarfare.Territories
         private readonly TerritoryData _territoryData;
         private readonly ITerritoryHandler _handler;
 
-        public Territory(MapColorScheme color_scheme, TerritoryIdentifier identifier, ITerritoryHandler handler)
+        private readonly byte m_id;
+        public byte ID => m_id;
+
+        public Territory(MapColorScheme color_scheme, TerritoryIdentifier identifier, ITerritoryHandler handler, ITerritoryOwner owner)
         {
+            m_id = identifier.ID;
+
             _interactable = true;
 
             _colorScheme = color_scheme;
@@ -38,7 +40,7 @@ namespace UnitWarfare.Territories
 
             _handler = handler;
 
-            SetOwner(identifier.Owner);
+            SetOwner(owner);
 
             handler.OnStateChanged += (state) =>
             {
@@ -161,42 +163,16 @@ namespace UnitWarfare.Territories
         private ITerritoryOwner _owner;
         public ITerritoryOwner Owner => _owner;
 
-        public void SetOwner(PlayerIdentification owner_type)
-        {
-            switch (owner_type)
-            {
-                case PlayerIdentification.PLAYER:
-                    SetOwner(_handler.Player);
-                    break;
-
-                case PlayerIdentification.OTHER_PLAYER:
-                    SetOwner(_handler.OtherPlayer);
-                    break;
-
-                case PlayerIdentification.NEUTRAL:
-                    SetOwner(_handler.Neutral);
-                    break;
-            }
-        }
-
-        public void SetOwner(ITerritoryOwner owner)
+        private void SetOwner(ITerritoryOwner owner)
         {
             _owner = owner;
 
-            switch(owner.Identification)
-            {
-                case PlayerIdentification.PLAYER:
-                    SetMainColor(_colorScheme.PlayerOne);
-                    break;
-
-                case PlayerIdentification.OTHER_PLAYER:
-                    SetMainColor(_colorScheme.PlayerTwo);
-                    break;
-
-                case PlayerIdentification.NEUTRAL:
-                    SetMainColor(_colorScheme.NeutralPlayer);
-                    break;
-            }
+            if (owner.Equals(_handler.Player))
+                SetMainColor(_colorScheme.PlayerOne);
+            else if (owner.Equals(_handler.OtherPlayer))
+                SetMainColor(_colorScheme.PlayerTwo);
+            else
+                SetMainColor(_colorScheme.NeutralPlayer);
         }
 
         // ##### SURROUNDING TERRITORIES ##### \\

@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -10,6 +9,12 @@ namespace UnitWarfare.Units
     {
         private List<UnitData> c_loadedData;
         public UnitData[] AllData => c_loadedData.ToArray();
+
+        public UnitData GetDataByUnit(System.Type type)
+        {
+            System.Type data = type.GetProperty("Data").PropertyType;
+            return GetData(data);
+        }
 
         public UnitData GetDataByUnit<Unit>()
             where Unit : IUnit

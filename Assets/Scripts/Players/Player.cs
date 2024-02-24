@@ -1,9 +1,5 @@
-using UnityEngine;
-
 using UnitWarfare.Core;
 using UnitWarfare.Units;
-using UnitWarfare.Core.Global;
-using UnitWarfare.Territories;
 
 using System.ComponentModel;
 
@@ -15,19 +11,17 @@ namespace System.Runtime.CompilerServices
 
 namespace UnitWarfare.Players
 {
-    public abstract class Player : ITerritoryOwner, IUnitTeamManager
+    public abstract class Player : IUnitOwner
     {
         // ##### DATA ##### \\
 
         private readonly PlayerData m_data;
         public PlayerData Data => m_data;
-
         public string Name => m_data.Name;
 
-        private readonly PlayerIdentification m_identification;
-        public PlayerIdentification Identification => m_identification;
-
         // ##### ? ##### \\
+
+        public int Points { get; }
 
         private bool m_isActive;
         /// <summary>
@@ -35,23 +29,25 @@ namespace UnitWarfare.Players
         /// </summary>
         public bool IsActive => m_isActive;
 
+        public UnitsData UnitsData => Data.Nation.Units;
+
+        public virtual bool IsNeutral => false;
+
         protected EncapsulatedMonoBehaviour emb;
 
         public delegate void PlayerEventHandler(Player player);
 
         public abstract event PlayerEventHandler OnExplicitMoveEnd;
 
-        public event IUnitTeamManager.UnitOwnerEventHandler OnRoundStarted;
-        public event IUnitTeamManager.UnitOwnerEventHandler OnRoundEnded;
+        public event IUnitOwner.UnitOwnerEventHandler OnRoundStarted;
+        public event IUnitOwner.UnitOwnerEventHandler OnRoundEnded;
 
         protected readonly IPlayersHandler handler;
 
-        protected Player(PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
+        protected Player(PlayerData data, IPlayersHandler handler)
         {
             m_data = data;
             m_isActive = false;
-
-            m_identification = identification;
 
             this.handler = handler;
 

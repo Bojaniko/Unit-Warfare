@@ -10,7 +10,7 @@ namespace UnitWarfare.Units
     public abstract class ActiveUnit<D> : Unit<D>, IActiveUnit
         where D : ActiveUnitData
     {
-        protected ActiveUnit(Territory start_territory, GameObject game_object, D data, IUnitTeamManager manager)
+        protected ActiveUnit(Territory start_territory, GameObject game_object, D data, IUnitOwner manager)
             : base(start_territory, game_object, data, manager)
         {
         }

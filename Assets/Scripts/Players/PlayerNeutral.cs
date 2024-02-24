@@ -4,8 +4,10 @@ namespace UnitWarfare.Players
 {
     public class PlayerNeutral : Player
     {
-        public PlayerNeutral(PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
-            : base(data, identification, handler)
+        public override bool IsNeutral => true;
+
+        public PlayerNeutral(PlayerData data, IPlayersHandler handler)
+            : base(data, handler)
         {
 
         }

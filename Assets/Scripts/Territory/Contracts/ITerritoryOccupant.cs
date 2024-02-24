@@ -1,10 +1,8 @@
-﻿using UnitWarfare.Core.Global;
-
-namespace UnitWarfare.Territories
+﻿namespace UnitWarfare.Territories
 {
     public interface ITerritoryOccupant
     {
-        public PlayerIdentification Owner { get; }
+        public ITerritoryOwner Owner { get; }
 
         public Territory OccupiedTerritory { get; }
 

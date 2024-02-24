@@ -13,11 +13,6 @@ namespace UnitWarfare.Units
 
     public interface IUnit : ITerritoryOccupant, System.IComparable<IUnit>
     {
-        /* TODO
-         * public void Select();
-         * public void Deselect();
-         */
-
         public bool IsDoingSomething { get; }
         public IUnitCommand CurrentCommand { get; }
         public void StartCommand(IUnitCommand command);

@@ -36,7 +36,7 @@ namespace UnitWarfare.UI
             emb.OnUpdate += Update;
         }
 
-        public record Data(string PlayerName, PlayerIdentification Player, System.Func<float> Timer);
+        public record Data(string PlayerName, System.Func<float> Timer, bool ShowSkipButton);
 
         protected override string documentPath => "UI/Match/match_timer";
 
@@ -45,7 +45,7 @@ namespace UnitWarfare.UI
             timer = data.Timer;
             startTime = timer.Invoke();
             l_name.text = data.PlayerName;
-            if (data.Player.Equals(PlayerIdentification.PLAYER))
+            if (data.ShowSkipButton)
                 b_skip.style.display = DisplayStyle.Flex;
             else
                 b_skip.style.display = DisplayStyle.None;

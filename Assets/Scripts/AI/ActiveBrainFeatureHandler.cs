@@ -24,8 +24,8 @@ namespace UnitWarfare.AI
                     return new(true, Mode.REDUCE);
                 if (command.OrderRef.Equals(ActiveCommandOrder.MOVE))
                 {
-                    if (!command.Target.Territory.Owner.Identification.Equals(unit.Owner) &&
-                    !command.Target.Territory.Owner.Identification.Equals(PlayerIdentification.NEUTRAL))
+                    if (!command.Target.Territory.Owner.Equals(unit.Owner) &&
+                    !command.Target.Territory.Owner.IsNeutral)
                         return new(true, Mode.INCREASE);
                 }
                 return new(false, Mode.UNALTER);
@@ -39,7 +39,7 @@ namespace UnitWarfare.AI
                     return new(true, Mode.REDUCE);
                 if (command.OrderRef.Equals(ActiveCommandOrder.MOVE))
                 {
-                    if (command.Target.Territory.Owner.Identification.Equals(unit.Owner))
+                    if (command.Target.Territory.Owner.Equals(unit.Owner))
                     {
                         foreach (Territory t in command.Target.Territory.NeighborTerritories)
                         {
@@ -55,12 +55,12 @@ namespace UnitWarfare.AI
             // ### COWARDICE ### \\
             System.Func<IUnit, IUnitCommand, FeatureResponse> cowardice = (unit, command) =>
             {
-                if (command.Target.Territory.Owner.Identification.Equals(unit.Owner))
+                if (command.Target.Territory.Owner.Equals(unit.Owner))
                 {
                     bool canRetreat = false;
                     foreach (Territory t in command.Target.Territory.NeighborTerritories)
                     {
-                        if (t.Occupant != null && !t.Occupant.Owner.Equals(unit.Owner) && !t.Occupant.Owner.Equals(PlayerIdentification.NEUTRAL))
+                        if (t.Occupant != null && !t.Occupant.Owner.Equals(unit.Owner) && !t.Occupant.Owner.IsNeutral)
                         {
                             canRetreat = true;
                             break;
@@ -76,7 +76,7 @@ namespace UnitWarfare.AI
             // ### EXPANDIONARY ### \\
             System.Func<IUnit, IUnitCommand, FeatureResponse> expandionary = (unit, command) =>
             {
-                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.Identification.Equals(PlayerIdentification.NEUTRAL))
+                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.IsNeutral)
                     return new(true, Mode.REDUCE);
                 return new(false, Mode.UNALTER);
             };
@@ -85,12 +85,12 @@ namespace UnitWarfare.AI
             // ### SCOUTING ### \\
             System.Func<IUnit, IUnitCommand, FeatureResponse> scouting = (unit, command) =>
             {
-                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.Identification.Equals(unit.Owner))
+                if (command.OrderRef.Equals(ActiveCommandOrder.MOVE) && command.Target.Territory.Owner.Equals(unit.Owner))
                 {
                     bool canScout = true;
                     foreach (Territory t in unit.OccupiedTerritory.NeighborTerritories)
                     {
-                        if (t.Owner.Identification != unit.Owner)
+                        if (t.Owner != unit.Owner)
                         {
                             canScout = false;
                             break;

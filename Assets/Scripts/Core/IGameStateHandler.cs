@@ -1,5 +1,3 @@
-using UnityEngine;
-
 using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Core
@@ -9,8 +7,8 @@ namespace UnitWarfare.Core
         public event System.Action<PlayingGameState> OnPlayGameStateChanged;
         public event System.Action<LoadingGameState> OnLoadGameStateChanged;
 
-        public GameType TypeOfGame { get; }
-
         public Handler GetHandler<Handler>() where Handler : GameHandler;
+
+        public GameType GameType { get; }
     }
 }

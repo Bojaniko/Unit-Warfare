@@ -3,28 +3,33 @@ using UnityEngine;
 
 using UnitWarfare.AI;
 using UnitWarfare.Units;
-using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 namespace UnitWarfare.Players
 {
     public class PlayerComputer : Player
     {
-        private readonly AiBrainData _aiData;
-        private readonly AiBrain _brain;
-        private readonly IUnitsHandler _unitsHandler;
+        public record Config(AiBrainData AiData, IUnitsHandler UnitsHandler);
+
+        private AiBrain _brain;
 
         private IUnit[] _currentUnits;
 
-        public PlayerComputer(IUnitsHandler units_handler, AiBrainData ai_data, PlayerData data, PlayerIdentification identification, IPlayersHandler handler)
-            : base(data, identification, handler)
+        private Config _config;
+
+        public PlayerComputer(PlayerData data, IPlayersHandler handler)
+            : base(data, handler)
         {
-            _aiData = ai_data;
+        }
 
-            _unitsHandler = units_handler;
+        public void Configure(Config configuration)
+        {
+            if (_config != null)
+                return;
+            _config = configuration;
 
-            AiBrain.Config config = new(ai_data.ReductionFactor, ai_data.IncreasionAmount, ai_data.NormalizationStep);
-            _brain = new AiBrain(_aiData.BrainFeatures, config);
+            AiBrain.Config aiConfig = new(_config.AiData.ReductionFactor, _config.AiData.IncreasionAmount, _config.AiData.NormalizationStep);
+            _brain = new AiBrain(_config.AiData.BrainFeatures, aiConfig);
         }
 
         private Coroutine _unitsRoutine;
@@ -46,7 +51,7 @@ namespace UnitWarfare.Players
                     }
                     return true;
                 });
-                IUnitCommand[] commands = _unitsHandler.InteractionsHandler.GenerateCommands(unit);
+                IUnitCommand[] commands = _config.UnitsHandler.InteractionsHandler.GenerateCommands(unit);
                 IUnitCommand command = _brain.GetOutcome(unit, commands);
                 if (command == null)
                     continue;
@@ -58,8 +63,9 @@ namespace UnitWarfare.Players
 
         protected override void OnActiveTurn()
         {
-            Debug.Log("Computer player's turn.");
-            _currentUnits = _unitsHandler.GetUnitsForOwner(this);
+            if (_config == null)
+                throw new UnityException("Computer player must be configurated!");
+            _currentUnits = _config.UnitsHandler.GetUnits(this);
             _unitsRoutine = emb.StartCoroutine(UnitsRoutine());
         }
 

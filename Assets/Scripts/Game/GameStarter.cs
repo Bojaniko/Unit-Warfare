@@ -8,9 +8,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
-using UnitWarfare.Players;
+using UnitWarfare.AI;
 using UnitWarfare.Core;
-using UnitWarfare.Core.Global;
+using UnitWarfare.Players;
+using UnitWarfare.Network;
+using UnitWarfare.Game.UI;
 
 namespace UnitWarfare.Game
 {
@@ -35,11 +37,6 @@ namespace UnitWarfare.Game
         private string nation_selected;
 
         private const float TRANSITION_BETWEEN_MENUS = 0.4f;
-
-        private const string LEVEL_SELECTOR_PATH = "UI/Main/level_selection";
-        private const string LEVEL_SELECTOR_NAME_LABEL = "name";
-        private const string LEVEL_SELECTOR_IMAGE = "image";
-        private const string LEVEL_SELECTOR_IMAGE_SELECTED = "image_selected";
 
         private const string CANVAS_GAMEOBJECT_NAME = "Canvas";
         private const string MAIN_MENU_UI_PATH = "UI/Main/main_menu";
@@ -72,6 +69,11 @@ namespace UnitWarfare.Game
             menu_main.SetActive(true);
             menu_main.SetVisible(true);
             menu_active = menu_main;
+
+            NetworkHandler.CreateInstance();
+
+            // Remove this
+            PhotonNetwork.KeepAliveInBackground = 120;
         }
 
         private void InitMenus()
@@ -80,8 +82,8 @@ namespace UnitWarfare.Game
                 throw new UnityException("The game starter needs a data object assigned!");
             if (m_data.GameData == null)
                 throw new UnityException("The game starter data needs a game data object assigned!");
-            if (m_data.AiMatches.Length == 0)
-                throw new UnityException("There is no AI match data in the game started data!");
+            if (m_data.AiBrains.Length == 0)
+                throw new UnityException("There is no AI brains data in the game started data!");
             if (m_data.Levels.Length == 0)
                 throw new UnityException("There are no levels in the game starter data!");
 
@@ -214,8 +216,8 @@ namespace UnitWarfare.Game
 
             // ### DIFFICULTIES ### \\
             List<string> difficulty_choices = new();
-            foreach (AIMatch difficulty in m_data.AiMatches)
-                difficulty_choices.Add(difficulty.AIData.DisplayName);
+            foreach (AiBrainData difficulty in m_data.AiBrains)
+                difficulty_choices.Add(difficulty.DisplayName);
             DropdownField difficultyDropdown = menu_ai.Document.rootVisualElement.Q<DropdownField>(AI_SELECTOR);
             difficultyDropdown.choices = difficulty_choices;
             difficultyDropdown.index = 0;
@@ -227,12 +229,9 @@ namespace UnitWarfare.Game
 
             // ### LEVELS ### \\
             ListView levels = menu_ai.Document.rootVisualElement.Q<ListView>(AI_LEVELS);
-            VisualTreeAsset levelSelectionVta = (VisualTreeAsset)Resources.Load(LEVEL_SELECTOR_PATH);
             foreach (LevelData level in m_data.Levels)
             {
-                VisualElement selectorVisual = new();
-                levelSelectionVta.CloneTree(selectorVisual);
-                LevelSelector selector = new(selectorVisual, level);
+                LevelSelector selector = new(level);
                 selector.Button.clicked += () =>
                 {
                     if (level_selected != null)
@@ -245,28 +244,24 @@ namespace UnitWarfare.Game
                     level_selected = selector;
                     level_selected.SetSelection(true);
                 }
-
-                levels.Q("unity-content-container").hierarchy.Add(selector.Visual);
+                levels.Q("unity-content-container").hierarchy.Add(selector);
             }
         }
-
-        private MatchmackingHandler matchmacking;
 
         private void InitConnectingMenu()
         {
             // TODO: Coroutine to wait for connection
             menu_connecting.OnShow += () =>
             {
-                if (PhotonNetwork.ConnectUsingSettings())
+                NetworkHandler.Instance.Connection.ConnectedToMaster += () =>
                 {
-                    matchmacking = new();
-                    PhotonNetwork.AddCallbackTarget(matchmacking);
                     SwitchMenu(menu_lobby);
-                }
-                else
+                };
+
+                NetworkHandler.Instance.Connection.FailedToConnect += () =>
                 {
                     SwitchMenu(menu_connectionFailed);
-                }
+                };
             };
         }
 
@@ -277,25 +272,30 @@ namespace UnitWarfare.Game
 
             menu_lobby.Document.rootVisualElement.Q<Button>(LOBBY_CANCEL_BUTTON).clicked += () =>
             {
-                PhotonNetwork.RemoveCallbackTarget(matchmacking);
+                NetworkHandler.Instance.Matchmacking.StopMatching();
                 SwitchMenu(menu_main);
             };
 
             menu_lobby.OnShow += () =>
             {
-                matchmacking.OnFail += () =>
+                NetworkHandler.Instance.Matchmacking.OnFail += () =>
                 {
-                    PhotonNetwork.Disconnect();
                     SwitchMenu(menu_connectionFailed);
                 };
 
-                matchmacking.OnMatched += (other_player) =>
+                NetworkHandler.Instance.Matchmacking.OnMatched += () =>
                 {
                     // TODO: TRANSITION
                     menu_lobby.Document.rootVisualElement.Q(LOBBY_SEARCHING_MENU).SetEnabled(false);
                     menu_lobby.Document.rootVisualElement.Q(LOBBY_STARTING_GAME_MENU).SetEnabled(true);
-                    StartNetworkGame(other_player);
                 };
+
+                NetworkHandler.Instance.RoomHandler.OnGameStarted += (level, other_player) =>
+                {
+                    StartNetworkGame(other_player, level);
+                };
+
+                NetworkHandler.Instance.Matchmacking.FindMatch();
             };
         }
 
@@ -348,24 +348,28 @@ namespace UnitWarfare.Game
             else
                 return;
 
-            AIMatch difficulty = null;
-            foreach (AIMatch ai in m_data.AiMatches)
+            AiBrainData difficulty = null;
+            foreach (AiBrainData ai in m_data.AiBrains)
             {
-                if (difficulty_selected.Equals(ai.AIData.DisplayName))
+                if (difficulty_selected.Equals(ai.DisplayName))
                     difficulty = ai;
             }
             if (difficulty == null)
                 return;
 
-            GameBase.Config configuration = new(m_data.GameData, difficulty.MatchData, level);
-            GameLocal.Config config = new(configuration, difficulty.AIData);
+            GameBase.Config configuration = new(m_data.GameData, level);
+            GameLocal.Config config = new(configuration, difficulty);
             GameLocal game = new(config);
             LoadGame(game, level);
         }
 
-        private void StartNetworkGame(Photon.Realtime.Player network_player)
+        private void StartNetworkGame(Photon.Realtime.Player network_player, byte level)
         {
-
+            // TODO: Random map
+            GameBase.Config configuration = new(m_data.GameData, m_data.Levels[level]);
+            GameNetwork.Config config = new(network_player, configuration);
+            GameNetwork game = new(config);
+            LoadGame(game, m_data.Levels[0]);
         }
 
         private void LoadGame(GameBase game, LevelData level)
@@ -379,158 +383,6 @@ namespace UnitWarfare.Game
                     game.Load();
             };
             SceneManager.LoadScene(level.SceneName);
-        }
-
-
-        private IEnumerator GameLoadCoroutine()
-        {
-            yield return null;
-        }
-
-        private sealed class MatchmackingHandler : IMatchmakingCallbacks
-        {
-            public event System.Action OnFail;
-            public event System.Action<Photon.Realtime.Player> OnMatched;
-
-            private readonly EncapsulatedMonoBehaviour emb;
-
-            public MatchmackingHandler()
-            {
-                emb = new(new("MATCHMACKING_HANDLER"));
-            }
-
-            private Coroutine coroutine_matchFinder;
-
-            private bool _failedJoinRoom = false;
-            private bool _failedCreateRoom = false;
-
-            public void FindMatch()
-            {
-                _failedJoinRoom = false;
-                _failedCreateRoom = false;
-
-                coroutine_matchFinder = emb.StartCoroutine(FindMatchRoutine());
-            }
-
-            public void StopMatching()
-            {
-                if (PhotonNetwork.CurrentRoom != null)
-                    return;
-                emb.StopCoroutine(coroutine_matchFinder);
-                coroutine_matchFinder = null;
-            }
-
-            private IEnumerator FindMatchRoutine()
-            {
-                yield return FindRoomRoutine();
-
-                if (PhotonNetwork.CurrentRoom == null)
-                    yield return CreateRoomRoutine();
-
-                if (PhotonNetwork.CurrentRoom == null)
-                    OnFail?.Invoke();
-                else
-                {
-                    yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount == 2);
-                    foreach (Photon.Realtime.Player player in PhotonNetwork.CurrentRoom.Players.Values)
-                    {
-                        if (player != PhotonNetwork.LocalPlayer)
-                        {
-                            OnMatched?.Invoke(player);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            private IEnumerator FindRoomRoutine()
-            {
-                PhotonNetwork.JoinRandomRoom();
-
-                yield return new WaitUntil(() => (_failedJoinRoom || PhotonNetwork.CurrentRoom != null));
-            }
-
-            private IEnumerator CreateRoomRoutine()
-            {
-                RoomOptions options = new();
-                options.MaxPlayers = 2;
-                ExitGames.Client.Photon.Hashtable properties = new();
-                PhotonNetwork.CreateRoom(null, options);
-
-                yield return new WaitUntil(() => (_failedCreateRoom || PhotonNetwork.CurrentRoom != null));
-            }
-
-            public void OnCreatedRoom()
-            {
-
-            }
-
-            public void OnCreateRoomFailed(short returnCode, string message)
-            {
-                _failedCreateRoom = true;
-            }
-
-            public void OnFriendListUpdate(List<FriendInfo> friendList)
-            {
-
-            }
-
-            public void OnJoinedRoom()
-            {
-
-            }
-
-            public void OnJoinRandomFailed(short returnCode, string message)
-            {
-                _failedJoinRoom = true;
-            }
-
-            public void OnJoinRoomFailed(short returnCode, string message)
-            {
-
-            }
-
-            public void OnLeftRoom()
-            {
-
-            }
-        }
-
-        private sealed class LevelSelector
-        {
-            private readonly Button m_button;
-            public Button Button => m_button;
-
-            private readonly VisualElement m_visual;
-            public VisualElement Visual => m_visual;
-
-            private readonly LevelData m_data;
-            public LevelData Data => m_data;
-
-            private readonly VisualElement c_selected;
-
-            public LevelSelector(VisualElement visual, LevelData data)
-            {
-                m_visual = visual;
-                m_button = m_visual.Q<Button>();
-                m_data = data;
-
-                m_visual.Q<Label>(LEVEL_SELECTOR_NAME_LABEL).text = data.DisplayName;
-                StyleBackground background = new(data.Icon);
-                VisualElement image = m_visual.Q<VisualElement>(LEVEL_SELECTOR_IMAGE);
-                image.style.backgroundImage = background;
-
-                c_selected = m_visual.Q(LEVEL_SELECTOR_IMAGE_SELECTED);
-                c_selected.style.display = DisplayStyle.None;
-            }
-
-            public void SetSelection(bool selected)
-            {
-                if (selected)
-                    c_selected.style.display = DisplayStyle.Flex;
-                else
-                    c_selected.style.display = DisplayStyle.None;
-            }
         }
 
         private sealed class Menu

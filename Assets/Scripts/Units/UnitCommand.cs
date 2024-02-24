@@ -1,5 +1,16 @@
 namespace UnitWarfare.Units
 {
+    public class NetworkUnitCommand
+    {
+        public byte Order { get; set; }
+        public byte TerritoryID { get; set; }
+
+        public NetworkUnitCommand(IUnitCommand command)
+        {
+
+        }
+    }
+
     public class UnitCommand<CommandOrders> : IUnitCommand
         where CommandOrders : System.Enum
     {

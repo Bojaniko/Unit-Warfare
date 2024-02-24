@@ -32,7 +32,8 @@ namespace UnitWarfare.Tools
     [EditorTool("Map Creator")]
     public class MapCreator : EditorWindow
     {
-        private const string ui_path = "UI/MapCreator/map_creator";
+        private const string MAP_NAME = "MAP";
+        private const string UI_PATH = "UI/MapCreator/map_creator";
 
         [SerializeField] private MapCreatorData _data;
 
@@ -315,9 +316,40 @@ namespace UnitWarfare.Tools
             }
         }
 
+        private byte GetCurrentTileId()
+        {
+            byte current = 0;
+            for (byte i = 0; i <= byte.MaxValue; i++)
+            {
+                bool available = true;
+                foreach (TerritoryIdentifier ti in _allTerritories)
+                {
+                    if (ti.ID.Equals(current))
+                    {
+                        available = false;
+                        break;
+                    }
+                }
+                if (available)
+                    return current;
+            }
+            throw new System.ArithmeticException("Can't have more than 256 tiles per level.");
+        }
+
         private void CreateNewTile(Vector3 position)
         {
-            TerritoryIdentifier ti = TerritoryFactory.CreateTerritory(_data.TileData, _selectedTerritoryType.TerritoryData, position);
+            byte current_id = 0;
+
+            try
+            {
+                current_id = GetCurrentTileId();
+            }
+            catch
+            {
+                Debug.LogError("Max territories per level is 256.");
+            }
+
+            TerritoryIdentifier ti = TerritoryFactory.CreateTerritoryIdentifier(_data.TileData, _selectedTerritoryType.TerritoryData, position, GetCurrentTileId());
 
             Undo.RegisterCreatedObjectUndo(ti.gameObject, "Tile created");
 
@@ -352,11 +384,11 @@ namespace UnitWarfare.Tools
             GUIStyle style = new();
             style.alignment = TextAnchor.MiddleCenter;
 
-            if (territory.Owner.Equals(PlayerIdentification.NEUTRAL))
+            if (territory.Owner.Equals(PlayerIdentifiers.NEUTRAL))
                 style.normal.textColor = Color.white;
-            else if (territory.Owner.Equals(PlayerIdentification.PLAYER))
+            else if (territory.Owner.Equals(PlayerIdentifiers.PLAYER_ONE))
                 style.normal.textColor = Color.green;
-            else if (territory.Owner.Equals(PlayerIdentification.OTHER_PLAYER))
+            else if (territory.Owner.Equals(PlayerIdentifiers.PLAYER_TWO))
                 style.normal.textColor = Color.red;
 
             Handles.Label(territory.transform.position, territory.Owner.ToString(), style);
@@ -445,19 +477,19 @@ namespace UnitWarfare.Tools
                 };
         }
 
-        private void SetUnitColor(UnitIdentifier unit, PlayerIdentification owner)
+        private void SetUnitColor(UnitIdentifier unit, PlayerIdentifiers owner)
         {
             switch (owner)
             {
-                case PlayerIdentification.PLAYER:
+                case PlayerIdentifiers.PLAYER_ONE:
                     unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.PlayerUnitMaterial;
                     break;
 
-                case PlayerIdentification.OTHER_PLAYER:
+                case PlayerIdentifiers.PLAYER_TWO:
                     unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.OtherPlayerUnitMaterial;
                     break;
 
-                case PlayerIdentification.NEUTRAL:
+                case PlayerIdentifiers.NEUTRAL:
                     unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = _data.NeutralUnitMaterial;
                     break;
             }
@@ -492,7 +524,7 @@ namespace UnitWarfare.Tools
 
         // ##### OWNERSHIP ##### \\
 
-        private PlayerIdentification _selectedTerritoryOwner;
+        private PlayerIdentifiers _selectedTerritoryOwner;
 
         private void DrawOwnershipInfo()
         {
@@ -507,7 +539,7 @@ namespace UnitWarfare.Tools
             rootVisualElement.Q<EnumField>("owner_options").RegisterCallback<ChangeEvent<System.Enum>>(
                 evt =>
                 {
-                    _selectedTerritoryOwner = (PlayerIdentification)evt.newValue;
+                    _selectedTerritoryOwner = (PlayerIdentifiers)evt.newValue;
                 });
 
             rootVisualElement.Q<Button>("owner_change_button").RegisterCallback<MouseUpEvent>(
@@ -621,7 +653,7 @@ namespace UnitWarfare.Tools
 
         private void Awake()
         {
-            c_map = GameObject.Find("MAP");
+            c_map = GameObject.Find(MAP_NAME);
             if (c_map == null)
             {
                 Debug.LogError("First create a 'MAP' game object and attach it a TerritoryManager script!");
@@ -646,7 +678,7 @@ namespace UnitWarfare.Tools
 
         private void CreateGUI()
         {
-            Object o = Resources.Load(ui_path);
+            Object o = Resources.Load(UI_PATH);
             VisualTreeAsset asset = (VisualTreeAsset)o;
             asset.CloneTree(rootVisualElement);
 
@@ -703,6 +735,35 @@ namespace UnitWarfare.Tools
         {
             var window = GetWindow<MapCreator>();
             window.titleContent = new GUIContent("Map Creator");
+        }
+
+        [MenuItem("Unit Warfare/Reload Tile IDs")]
+        public static void ReloadIDs()
+        {
+            GameObject map = GameObject.Find(MAP_NAME);
+            if (map == null)
+            {
+                Debug.LogError($"There is no gameobject in the scene named {MAP_NAME} that parents all tiles. Please create a new map 'Unit Warfare/New Map' or check if your level is valid.");
+                return;
+            }
+            byte currentId = 0;
+            foreach (Transform t in map.transform)
+            {
+                TerritoryIdentifier ti = t.GetComponent<TerritoryIdentifier>();
+                if (ti != null)
+                {
+                    try
+                    {
+                        ti.SetID(currentId);
+                        currentId++;
+                    }
+                    catch
+                    {
+                        Debug.LogError("Max tiles for map is 256.");
+                        DestroyImmediate(ti);
+                    }
+                }
+            }
         }
 
         // ##### MENUS ##### \\

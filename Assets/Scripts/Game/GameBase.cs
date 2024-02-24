@@ -4,9 +4,6 @@ using UnityEngine;
 
 using Studio28.Utility;
 
-using Photon.Realtime;
-
-using UnitWarfare.AI;
 using UnitWarfare.UI;
 using UnitWarfare.Core;
 using UnitWarfare.Units;
@@ -40,16 +37,18 @@ namespace UnitWarfare.Game
 
     public abstract class GameBase : IGameStateHandler
     {
-        public record Config(GameData Data, MatchData Match, LevelData Level);
+        public record Config(GameData Data, LevelData Level);
 
-        private readonly Config _config;
+        private readonly Config m_config;
 
         private readonly GameEMB m_emb;
         public GameEMB EMB => m_emb;
 
+        public abstract GameType GameType { get; }
+
         protected GameBase(Config config)
         {
-            _config = config;
+            m_config = config;
             m_emb = new(this, new("GAME"));
             InitStateControllers();
         }
@@ -66,11 +65,11 @@ namespace UnitWarfare.Game
             stateMachine_play.OnStateChanged += (state) => { OnPlayGameStateChanged?.Invoke(state); };
         }
 
-        public abstract GameType TypeOfGame { get; }
-
         private StateMachine<LoadingGameState> stateMachine_load;
+        public LoadingGameState LoadingState => stateMachine_load.CurrentState;
 
         protected StateMachine<PlayingGameState> stateMachine_play;
+        public PlayingGameState PlayingState => stateMachine_play.CurrentState;
 
         public void Load()
         {
@@ -90,64 +89,40 @@ namespace UnitWarfare.Game
 
         protected abstract void OnLoadFinished();
 
-        private List<GameHandler> _gameHandlers;
+        private List<GameHandler> m_gameHandlers;
 
         private void InitGameHandlers()
         {
-            _gameHandlers = new();
+            m_gameHandlers = new();
 
-            UIHandler uiHandler = new(_config.Data.UIData, this);
-            _gameHandlers.Add(uiHandler);
+            UIHandler uiHandler = new(m_config.Data.UIData, this);
+            m_gameHandlers.Add(uiHandler);
 
-            CameraHandler camHandler = new(_config.Data.CameraData, this);
-            _gameHandlers.Add(camHandler);
+            CameraHandler camHandler = new(m_config.Data.CameraData, this);
+            m_gameHandlers.Add(camHandler);
 
-            InputHandler inputHandler = new(_config.Data.InputData, this);
-            _gameHandlers.Add(inputHandler);
+            InputHandler inputHandler = new(m_config.Data.InputData, this);
+            m_gameHandlers.Add(inputHandler);
+
+            TerritoryManager territoryHandler = new(m_config.Data.MapData, this);
+            m_gameHandlers.Add(territoryHandler);
+
+            UnitsHandler unitsHandler = new(m_config.Data.Combinations, this);
+            m_gameHandlers.Add(unitsHandler);
 
             PlayersHandler playersHandler = GeneratePlayersHandler();
-            _gameHandlers.Add(playersHandler);
-
-            TerritoryManager territoryHandler = new(_config.Data.MapData, this);
-            _gameHandlers.Add(territoryHandler);
-
-            UnitsHandler unitsHandler = new(_config.Data.Combinations, this);
-            _gameHandlers.Add(unitsHandler);
+            m_gameHandlers.Add(playersHandler);
         }
 
         protected abstract PlayersHandler GeneratePlayersHandler();
 
         // TODO: Get player name from Google Play Services
-        // TODO: Network players
         // TODO: Random nation
         // TODO: Neutral nation
-        /*private PlayersHandler GeneratePlayersHandler()
-        {
-            PlayerData neutral = new("Neutral", _config.Data.AllyNation);
-            if (TypeOfGame.Equals(GameType.PLAYER_V_COMPUTER))
-            {
-                PlayerData playerOne = new("Player", _config.Data.AllyNation);
-                PlayerData playeTwo = new("Bot", _config.Data.AxisNation);
-                PlayersHandler.Config config = new(_config.Match, playerOne, playeTwo, neutral);
-                PlayersHandler.PvEConfig pveConfig = new PlayersHandler.PvEConfig(config, _aiData);
-                PlayersHandler playersHandler = new(pveConfig, this);
-                return playersHandler;
-            }
-            if (TypeOfGame.Equals(GameType.PLAYER_V_PLAYER))
-            {
-                PlayerData playerOne = new("Player", _config.Data.AllyNation);
-                PlayerData playeTwo = new(_networkPlayer.NickName, _config.Data.AxisNation);
-                PlayersHandler.Config config = new(_config.Match, playerOne, playeTwo, neutral);
-                PlayersHandler.PvEConfig pveConfig = new PlayersHandler.PvEConfig(config, _aiData);
-                PlayersHandler playersHandler = new(pveConfig, this);
-                return playersHandler;
-            }
-            throw new UnityException("Invalid type of game.");
-        }*/
 
         public Handler GetHandler<Handler>() where Handler : GameHandler
         {
-            foreach (GameHandler handler in _gameHandlers)
+            foreach (GameHandler handler in m_gameHandlers)
             {
                 if (handler.GetType().Equals(typeof(Handler))
                     || handler.GetType().IsSubclassOf(typeof(Handler))

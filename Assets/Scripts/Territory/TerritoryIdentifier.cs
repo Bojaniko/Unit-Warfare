@@ -6,16 +6,20 @@ namespace UnitWarfare.Territories
 {
     public class TerritoryIdentifier : MonoBehaviour
     {
-        [SerializeField, HideInInspector] private PlayerIdentification _owner = PlayerIdentification.NEUTRAL;
-        public PlayerIdentification Owner
+        [SerializeField] private byte _id;
+        public byte ID => _id;
+        public void SetID(byte id) => _id = id;
+
+        [SerializeField, HideInInspector] private PlayerIdentifiers m_owner = PlayerIdentifiers.NEUTRAL;
+        public PlayerIdentifiers Owner
         {
             get
             {
-                return _owner;
+                return m_owner;
             }
             set
             {
-                _owner = value;
+                m_owner = value;
             }
         }
 

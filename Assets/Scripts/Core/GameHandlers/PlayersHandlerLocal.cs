@@ -2,10 +2,12 @@
 
 using UnityEngine;
 
+using UnitWarfare.UI;
 using UnitWarfare.AI;
 using UnitWarfare.Core;
 using UnitWarfare.Units;
-using UnitWarfare.Core.Global;
+using UnitWarfare.Input;
+using UnitWarfare.Cameras;
 
 namespace UnitWarfare.Players
 {
@@ -19,13 +21,31 @@ namespace UnitWarfare.Players
         {
             _config = config;
 
-            m_timer = config.Configuration.Match.MaxTurnDuration;
+            m_timer = config.Configuration.Level.MaxRoundDuration;
             timerActive = false;
+        }
+
+        protected override Player GeneratePlayerOne()
+        {
+            return new PlayerLocal(_config.Configuration.PlayerLocal, this);
         }
 
         protected override Player GeneratePlayerTwo()
         {
-            return new PlayerComputer(gameStateHandler.GetHandler<UnitsHandler>(), _config.AiData, _config.Configuration.PlayerTwo, PlayerIdentification.OTHER_PLAYER, this);
+            return new PlayerComputer(_config.Configuration.PlayerOther, this);
+        }
+
+        protected override void SubInitialize()
+        {
+            PlayerLocal.Config localConfig = new(gameStateHandler.GetHandler<InputHandler>().TapInput,
+                gameStateHandler.GetHandler<CameraHandler>().MainCamera,
+                gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>(),
+                gameStateHandler.GetHandler<UIHandler>().GetUIHandler<UnitDisplay>(),
+                gameStateHandler.GetHandler<UnitsHandler>());
+            ((PlayerLocal)LocalPlayer).Configure(localConfig);
+
+            PlayerComputer.Config aiConfig = new(_config.AiData, gameStateHandler.GetHandler<UnitsHandler>());
+            ((PlayerComputer)OtherPlayer).Configure(aiConfig);
         }
 
         private bool timerActive = false;
@@ -52,8 +72,8 @@ namespace UnitWarfare.Players
 
             if (_unitsHandler.UnitExecutingCommand)
                 return;
-            if (LocalPlayer.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.PLAYER)
-                || OtherPlayer.IsActive && !_unitsHandler.HasMovableUnits(PlayerIdentification.OTHER_PLAYER))
+            if (LocalPlayer.IsActive && !_unitsHandler.HasMovableUnits(LocalPlayer)
+                || OtherPlayer.IsActive && !_unitsHandler.HasMovableUnits(OtherPlayer))
                 SwitchActivePlayer();
         }
 
@@ -92,9 +112,9 @@ namespace UnitWarfare.Players
                 OnActivePlayerChanged?.Invoke(LocalPlayer);
             }
             timerActive = true;
-            m_timer = _config.Configuration.Match.MaxTurnDuration;
+            m_timer = _config.Configuration.Level.MaxRoundDuration;
             System.Func<float> timerDelegate = () => { return Timer; };
-            ui_matchProgress.Show(new(player_active.Name, player_active.Identification, timerDelegate));
+            ui_matchProgress.Show(new(player_active.Name, timerDelegate, true));
             StartPlayerTimer();
         }
 

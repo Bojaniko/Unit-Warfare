@@ -1,7 +1,7 @@
 using UnityEngine;
 
 using UnitWarfare.AI;
-using UnitWarfare.Players;
+using UnitWarfare.Core;
 
 namespace UnitWarfare.Game
 {
@@ -11,20 +11,10 @@ namespace UnitWarfare.Game
         [SerializeField] private GameData m_gameData;
         public GameData GameData => m_gameData;
 
-        [SerializeField] private AIMatch[] m_aiMatches;
-        public AIMatch[] AiMatches => m_aiMatches;
+        [SerializeField] private AiBrainData[] m_aiBrains;
+        public AiBrainData[] AiBrains => m_aiBrains;
 
         [SerializeField] private LevelData[] m_levelData;
         public LevelData[] Levels => m_levelData;
-    }
-    
-    [System.Serializable]
-    public class AIMatch
-    {
-        [SerializeField] private AiBrainData m_aiData;
-        [SerializeField] private MatchData m_matchData;
-
-        public AiBrainData AIData => m_aiData;
-        public MatchData MatchData => m_matchData;
     }
 }

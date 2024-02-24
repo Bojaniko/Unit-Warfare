@@ -7,11 +7,9 @@
         READY
     }
 
-    public delegate void TerritoryHandlerStateEventHandler(TerritoryHandlerState state);
-
     public interface ITerritoryHandler
     {
-        public event TerritoryHandlerStateEventHandler OnStateChanged;
+        public event System.Action<TerritoryHandlerState> OnStateChanged;
 
         public ITerritoryOwner Player { get; }
         public ITerritoryOwner OtherPlayer { get; }
