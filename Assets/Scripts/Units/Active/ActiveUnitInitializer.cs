@@ -52,9 +52,9 @@ namespace UnitWarfare.Units
         {
             System.Type result = handler.InteractionsHandler.CombinationsManager.GetResult(unit.GetType(), target.Unit.GetType());
             Territory territory = target.Territory;
-            handler.Spawner.Despawn(unit);
-            handler.Spawner.Despawn(target.Unit);
-            handler.Spawner.Spawn(territory, result);
+            handler.Despawn(unit);
+            handler.Despawn(target.Unit);
+            handler.Spawn(territory, result);
         }
     }
 }

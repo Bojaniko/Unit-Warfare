@@ -63,6 +63,8 @@ namespace UnitWarfare.Territories
         }
 
         private List<Territory> _territories;
+        public Territory[] Territories => _territories.ToArray();
+
         private void CreateTerritories()
         {
             _territories = new();

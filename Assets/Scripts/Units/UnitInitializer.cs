@@ -18,7 +18,9 @@
 
         public bool InitUnit(IUnit unit)
         {
-            if (!(unit.GetType() is T))
+            if (!(unit.GetType() is T)
+                && !unit.GetType().IsAssignableFrom(typeof(T))
+                && unit.GetType().GetInterface(typeof(T).Name) == null)
                 return false;
             unit.OnDestroy += HandleUnitDestroy;
             unit.OnCommandStart += HandleUnitCommandStart;

@@ -14,5 +14,7 @@
         public ITerritoryOwner Player { get; }
         public ITerritoryOwner OtherPlayer { get; }
         public ITerritoryOwner Neutral { get; }
+
+        public Territory[] Territories { get; }
     }
 }

@@ -13,6 +13,11 @@ namespace UnitWarfare.Players
 {
     public class PlayersHandlerLocal : PlayersHandler
     {
+        private readonly PlayerLocal m_playerLocal;
+        public override Player LocalPlayer => m_playerLocal;
+        private readonly PlayerComputer m_playerComputer;
+        public override Player OtherPlayer => m_playerComputer;
+
         public new record Config(PlayersHandler.Config Configuration, AiBrainData AiData);
         private readonly Config _config;
 
@@ -20,19 +25,11 @@ namespace UnitWarfare.Players
             : base(config.Configuration, game_state_handler)
         {
             _config = config;
+            m_playerLocal = new PlayerLocal(_config.Configuration.PlayerLocal, this);
+            m_playerComputer = new PlayerComputer(_config.Configuration.PlayerOther, this);
 
             m_timer = config.Configuration.Level.MaxRoundDuration;
             timerActive = false;
-        }
-
-        protected override Player GeneratePlayerOne()
-        {
-            return new PlayerLocal(_config.Configuration.PlayerLocal, this);
-        }
-
-        protected override Player GeneratePlayerTwo()
-        {
-            return new PlayerComputer(_config.Configuration.PlayerOther, this);
         }
 
         protected override void SubInitialize()
@@ -41,7 +38,7 @@ namespace UnitWarfare.Players
                 gameStateHandler.GetHandler<CameraHandler>().MainCamera,
                 gameStateHandler.GetHandler<UIHandler>().GetComponent<MatchProgress>(),
                 gameStateHandler.GetHandler<UIHandler>().GetUIHandler<UnitDisplay>(),
-                gameStateHandler.GetHandler<UnitsHandler>());
+                gameStateHandler.GetHandler<UnitsHandler>(), false);
             ((PlayerLocal)LocalPlayer).Configure(localConfig);
 
             PlayerComputer.Config aiConfig = new(_config.AiData, gameStateHandler.GetHandler<UnitsHandler>());
@@ -70,7 +67,7 @@ namespace UnitWarfare.Players
                     timerActive = false;
             }
 
-            if (_unitsHandler.UnitExecutingCommand)
+            if (_unitsHandler.UnitsExecutingCommand.Length > 0)
                 return;
             if (LocalPlayer.IsActive && !_unitsHandler.HasMovableUnits(LocalPlayer)
                 || OtherPlayer.IsActive && !_unitsHandler.HasMovableUnits(OtherPlayer))

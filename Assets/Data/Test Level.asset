@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe1697f91d1983a48874026b20a89225, type: 3}
+  m_Script: {fileID: 11500000, guid: 5fcea0b480a0ee247b010bbe135c146b, type: 3}
   m_Name: Test Level
   m_EditorClassIdentifier: 
+  m_maxManpower: 0
+  m_maxRoundDuration: 20
   m_scene: SampleScene
   m_displayName: Test
   m_icon: {fileID: 0}

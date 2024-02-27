@@ -84,6 +84,8 @@ namespace UnitWarfare.AI
             }
 
             BrainFeatureHandler.Outcome[] outcomes = GetOutcomesForUnit(unit, commands);
+            if (outcomes.Length == 0)
+                return null;
 
             AiBrainFeature[] features = new AiBrainFeature[outcomes.Length];
             for (int i = 0; i < outcomes.Length; i++)

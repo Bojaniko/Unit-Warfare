@@ -1,10 +1,15 @@
-﻿namespace UnitWarfare.Units
+﻿using Type = System.Type;
+
+using UnitWarfare.Territories;
+
+namespace UnitWarfare.Units
 {
     public interface IUnitsHandler
     {
-        public UnitSpawner Spawner { get; }
-
         public UnityEngine.Transform UnitContainer { get; }
+
+        public IUnit Spawn(Territory territory, Type type);
+        public void Despawn(IUnit unit);
 
         public IUnit[] GetUnits(IUnitOwner owner);
         public UnitData GetUnitDataByUnit(IUnitOwner owner, System.Type unit_type);
@@ -12,6 +17,6 @@
 
         public UnitInteractions InteractionsHandler { get; }
 
-        public bool UnitExecutingCommand { get; }
+        public IUnit[] UnitsExecutingCommand { get; }
     }
 }

@@ -25,6 +25,7 @@ namespace UnitWarfare.Units
 
     public interface IUnitCommand
     {
+        public byte OrderId { get; }
         public object OrderRef { get; }
         public UnitTarget Target { get; }
     }

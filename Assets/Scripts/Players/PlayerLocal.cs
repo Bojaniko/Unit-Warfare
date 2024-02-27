@@ -4,39 +4,17 @@ using UnitWarfare.UI;
 using UnitWarfare.Units;
 using UnitWarfare.Input;
 using UnitWarfare.Cameras;
+using UnitWarfare.Network;
 using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
-using Photon.Realtime;
-using Photon.Pun;
 using ExitGames.Client.Photon;
 
 namespace UnitWarfare.Players
 {
-
-
-    public class PlayerLocalNetwork : PlayerLocal, IOnEventCallback
-    {
-        public PlayerLocalNetwork(PlayerData data, IPlayersHandler handler)
-            : base(data, handler)
-        {
-        }
-
-        public void OnEvent(EventData photonEvent)
-        {
-            if (!photonEvent.Code.Equals(GlobalValues.NETWORK_UNIT_COMMAND_CODE))
-                return;
-        }
-
-        protected override void StartUnitCommand(IUnit unit, IUnitCommand command)
-        {
-            //PhotonNetwork.RaiseEvent(GlobalValues.NETWORK_UNIT_COMMAND_CODE, )
-        }
-    }
-
     public class PlayerLocal : Player
     {
-        public record Config(TapProcessor TapInput, CameraController MainCamera, MatchProgress MatchProgress, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler);
+        public record Config(TapProcessor TapInput, CameraController MainCamera, MatchProgress MatchProgress, UnitDisplay UnitDisplay, IUnitsHandler UnitsHandler, bool IsNetwork);
         protected Config config;
 
         public PlayerLocal(PlayerData data, IPlayersHandler handler)
@@ -54,13 +32,13 @@ namespace UnitWarfare.Players
             config.MatchProgress.OnSkip += () => OnExplicitMoveEnd?.Invoke(this);
         }
 
-        protected sealed override void OnActiveTurn()
+        protected override void OnActiveTurn()
         {
             if (config == null)
                 throw new UnityException("Configuration not setup for local player.");
         }
 
-        protected sealed override void OnInactiveTurn()
+        protected override void OnInactiveTurn()
         {
             ClearSelection();
         }
@@ -78,7 +56,7 @@ namespace UnitWarfare.Players
 
         private SelectionTarget _selection;
 
-        public sealed override event PlayerEventHandler OnExplicitMoveEnd;
+        public override event PlayerEventHandler OnExplicitMoveEnd;
 
         private void HandleSelection(SelectionTarget selection)
         {
@@ -94,7 +72,7 @@ namespace UnitWarfare.Players
                 ClearSelection();
                 return;
             }
-            if (config.UnitsHandler.UnitExecutingCommand)
+            if (config.UnitsHandler.UnitsExecutingCommand.Length > 0)
             {
                 ActivateSelection(selection);
                 return;
@@ -113,9 +91,14 @@ namespace UnitWarfare.Players
             ActivateSelection(selection);
         }
 
-        protected virtual void StartUnitCommand(IUnit unit, IUnitCommand command)
+        private void StartUnitCommand(IUnit unit, IUnitCommand command)
         {
             unit.StartCommand(command);
+            if (config.IsNetwork)
+            {
+                NetworkUnitCommand nuc = new(unit, command);
+                NetworkHandler.Instance.GameEvents.RaiseEvent(GlobalValues.NETWORK_UNIT_COMMAND_CODE, nuc, null, SendOptions.SendReliable);
+            }
         }
 
         private void ActivateSelection(SelectionTarget selection)

@@ -93,7 +93,7 @@ namespace UnitWarfare.Units
 
         protected override IEnumerator DamagedRoutine()
         {
-            return null;
+            yield return null;
         }
     }
 }

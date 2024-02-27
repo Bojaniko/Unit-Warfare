@@ -19,9 +19,6 @@ namespace UnitWarfare.Units
         private readonly Transform m_unitsContainer;
         public Transform UnitContainer => m_unitsContainer;
 
-        private readonly UnitSpawner m_spawner;
-        public UnitSpawner Spawner => m_spawner;
-
         public UnitData GetUnitDataByUnit(IUnitOwner owner, System.Type unit_type)
         {
             if (handler_players.LocalPlayer.Equals(owner))
@@ -42,14 +39,12 @@ namespace UnitWarfare.Units
 
         // ##### INITIALIZATION ##### \\
 
+        private UnitInitializerMediator _initializer;
+
         public UnitsHandler(UnitCombinations combinations, IGameStateHandler handler) : base(handler)
         {
-            if (handler.GameType.Equals(GameType.NETWORK))
-                m_spawner = new NetworkUnitSpawner(this);
-            else
-                m_spawner = new LocalUnitSpawner(this);
-
             _interactions = new(new(combinations.Combinations));
+            _unitsExecutingCommand = new();
 
             m_unitsContainer = GameObject.Find(GlobalValues.MAP_UNITS_CONTAINER).transform;
             if (m_unitsContainer == null)
@@ -58,6 +53,8 @@ namespace UnitWarfare.Units
 
         protected override void Initialize()
         {
+            _initializer = new(this);
+
             handler_players = gameStateHandler.GetHandler<PlayersHandler>();
 
             InitUnits();
@@ -73,7 +70,7 @@ namespace UnitWarfare.Units
             _units = new();
             _identifiers = new();
             TerritoryManager t_manager = gameStateHandler.GetHandler<TerritoryManager>();
-            
+
             foreach (Transform unit in m_unitsContainer)
             {
                 UnitIdentifier i = unit.GetComponent<UnitIdentifier>();
@@ -83,9 +80,7 @@ namespace UnitWarfare.Units
                 IUnitOwner unitManager = GetOwnerForInstantiation(i);
 
                 IUnit u = UnitFactory.GenerateUnit(t_manager.GetByIdentifier(i.StartingTerritory), i.Data, m_unitsContainer, unitManager);
-                _units.Add(u);
                 _identifiers.Add(i, u);
-
                 InitUnit(u);
             }
         }
@@ -149,7 +144,7 @@ namespace UnitWarfare.Units
         /// <summary>
         /// Order of n
         /// </summary>
-        
+
         public IUnit[] GetUnits(IUnitOwner owner)
         {
             List<IUnit> units = new();
@@ -166,8 +161,6 @@ namespace UnitWarfare.Units
         private readonly UnitInteractions _interactions;
         public UnitInteractions InteractionsHandler => _interactions;
 
-        public bool UnitExecutingCommand => _unitsExecutingCommands.Count > 0;
-
         public bool HasMovableUnits(IUnitOwner owner)
         {
             if (!owner.IsActive)
@@ -182,42 +175,8 @@ namespace UnitWarfare.Units
 
         // ##### UNITS ##### \\
 
-        private List<IUnit> _unitsExecutingCommands;
-
-        private void InitUnit(IUnit unit)
-        {
-            _units.Add(unit);
-
-            _unitsExecutingCommands = new();
-
-            unit.OnDestroy += HandleUnitDestroy;
-            unit.OnCommandStart += HandleUnitCommandStart;
-            unit.OnCommandEnd += HandleUnitCommandEnd;
-        }
-
-        private void HandleUnitDestroy(IUnit unit)
-        {
-            _unitsExecutingCommands.Remove(unit);
-
-            unit.OnDestroy -= HandleUnitDestroy;
-            unit.OnCommandStart -= HandleUnitCommandStart;
-            unit.OnCommandEnd -= HandleUnitCommandEnd;
-
-            unit.OccupiedTerritory.SetInteractable(true);
-            unit.OccupiedTerritory.Deocuppy();
-
-            _units.Remove(unit);
-        }
-
-        private void HandleUnitCommandStart(IUnit unit, IUnitCommand command)
-        {
-            _unitsExecutingCommands.Add(unit);
-        }
-
-        private void HandleUnitCommandEnd(IUnit unit, IUnitCommand command)
-        {
-            _unitsExecutingCommands.Remove(unit);
-        }
+        private readonly List<IUnit> _unitsExecutingCommand;
+        public IUnit[] UnitsExecutingCommand => _unitsExecutingCommand.ToArray();
 
         // ##### IDENTIFIERS ##### \\
         private Dictionary<UnitIdentifier, IUnit> _identifiers;
@@ -234,6 +193,47 @@ namespace UnitWarfare.Units
             if (_identifiers == null)
                 return null;
             return _identifiers[identifier];
+        }
+
+        private void InitUnit(IUnit unit)
+        {
+            _initializer.InitUnit(unit);
+            _units.Add(unit);
+
+            unit.OnDestroy += RemoveUnitFromList;
+            unit.OnCommandStart += LogUnitCommandStarted;
+            unit.OnCommandEnd += LogUnitCommandEnded;
+        }
+
+        private void RemoveUnitFromList(IUnit unit)
+        {
+            _units.Remove(unit);
+            _unitsExecutingCommand.Remove(unit);
+            unit.OnDestroy -= RemoveUnitFromList;
+            unit.OnCommandStart -= LogUnitCommandStarted;
+            unit.OnCommandEnd -= LogUnitCommandEnded;
+        }
+
+        private void LogUnitCommandStarted(IUnit unit, IUnitCommand command) =>
+            _unitsExecutingCommand.Add(unit);
+
+        private void LogUnitCommandEnded(IUnit unit, IUnitCommand command) =>
+            _unitsExecutingCommand.Remove(unit);
+
+        public IUnit Spawn(Territory territory, System.Type type)
+        {
+            IUnitOwner owner = (IUnitOwner)territory.Owner;
+            if (owner == null)
+                throw new UnityException("Territory owners must always be IUnitOwner and Player types.");
+            UnitData data = GetUnitDataByUnit(owner, type);
+            IUnit unit = UnitFactory.GenerateUnit(territory, data, type, UnitContainer, owner);
+            InitUnit(unit);
+            return unit;
+        }
+
+        public void Despawn(IUnit unit)
+        {
+            unit.DestroyUnit();
         }
     }
 }

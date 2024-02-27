@@ -44,6 +44,9 @@ namespace UnitWarfare.Players
 
         protected readonly IPlayersHandler handler;
 
+        /// <summary>
+        /// Player classes must have only the PlayerData and IPlayersHandler argumetns (in order).
+        /// </summary>
         protected Player(PlayerData data, IPlayersHandler handler)
         {
             m_data = data;

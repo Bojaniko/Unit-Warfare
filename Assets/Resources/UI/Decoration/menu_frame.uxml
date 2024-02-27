@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Decoration/menu_frame_style.uss?fileID=7433441132597879392&amp;guid=0625e6d94ed5ffb4ba6d0f7ae443665e&amp;type=3#menu_frame_style" />
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="false" focusable="false" class="button">
+        <ui:VisualElement name="frame" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%; background-image: url(&apos;project://database/Assets/Graphics/Textures/UI/metal-scratched-seamless-64x64.jpg?fileID=2800000&amp;guid=974a77bd7dd89f74d935af2b4f3d75f1&amp;type=3#metal-scratched-seamless-64x64&apos;); -unity-background-scale-mode: scale-and-crop; -unity-background-image-tint-color: rgb(143, 186, 141); padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px; border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-bottom-left-radius: 2px;">
+            <ui:VisualElement name="content" picking-mode="Ignore" style="flex-grow: 1; -unity-text-align: middle-center; background-color: rgb(65, 85, 64);">
+                <ui:Label tabindex="-1" text="QUICK GAME" parse-escape-sequences="true" display-tooltip-when-elided="true" picking-mode="Ignore" class="label emboss" style="font-size: 45px; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:Button>
+</ui:UXML>

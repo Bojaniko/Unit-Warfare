@@ -18,7 +18,7 @@ namespace UnitWarfare.Network
 
         private Player player_other;
 
-        public RoomHandler()
+        internal RoomHandler()
         {
             PhotonNetwork.AddCallbackTarget(this);
         }

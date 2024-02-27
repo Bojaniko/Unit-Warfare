@@ -18,8 +18,8 @@ namespace UnitWarfare.Test
                 return;
             }
 
-            GameBase.Config configuration = new(m_data.GameData, m_data.AiMatches[0].MatchData, m_data.Levels[0]);
-            GameLocal.Config config = new(configuration, m_data.AiMatches[0].AIData);
+            GameBase.Config configuration = new(m_data.GameData, m_data.Levels[0]);
+            GameLocal.Config config = new(configuration, m_data.AiBrains[0]);
             _game = new(config);
 
             _game.Load();

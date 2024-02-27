@@ -64,15 +64,15 @@ namespace UnitWarfare.Game
 
         private void Awake()
         {
+            NetworkHandler.CreateInstance();
+
             InitMenus();
 
             menu_main.SetActive(true);
             menu_main.SetVisible(true);
             menu_active = menu_main;
 
-            NetworkHandler.CreateInstance();
-
-            // Remove this
+            // TODO: Remove this
             PhotonNetwork.KeepAliveInBackground = 120;
         }
 
@@ -250,18 +250,20 @@ namespace UnitWarfare.Game
 
         private void InitConnectingMenu()
         {
+            NetworkHandler.Instance.Connection.ConnectedToMaster += () =>
+            {
+                SwitchMenu(menu_lobby);
+            };
+
+            NetworkHandler.Instance.Connection.FailedToConnect += () =>
+            {
+                SwitchMenu(menu_connectionFailed);
+            };
+
             // TODO: Coroutine to wait for connection
             menu_connecting.OnShow += () =>
             {
-                NetworkHandler.Instance.Connection.ConnectedToMaster += () =>
-                {
-                    SwitchMenu(menu_lobby);
-                };
-
-                NetworkHandler.Instance.Connection.FailedToConnect += () =>
-                {
-                    SwitchMenu(menu_connectionFailed);
-                };
+                NetworkHandler.Instance.Connection.Connect();
             };
         }
 
@@ -273,28 +275,31 @@ namespace UnitWarfare.Game
             menu_lobby.Document.rootVisualElement.Q<Button>(LOBBY_CANCEL_BUTTON).clicked += () =>
             {
                 NetworkHandler.Instance.Matchmacking.StopMatching();
+                NetworkHandler.Instance.Connection.Disconnect();
                 SwitchMenu(menu_main);
+            };
+
+            NetworkHandler.Instance.Matchmacking.OnFail += () =>
+            {
+                SwitchMenu(menu_connectionFailed);
+            };
+
+            NetworkHandler.Instance.Matchmacking.OnMatched += () =>
+            {
+                // TODO: TRANSITION
+                menu_lobby.Document.rootVisualElement.Q(LOBBY_SEARCHING_MENU).SetEnabled(false);
+                menu_lobby.Document.rootVisualElement.Q(LOBBY_STARTING_GAME_MENU).SetEnabled(true);
+                // TODO: Level
+                NetworkHandler.Instance.RoomHandler.StartGame(0);
+            };
+
+            NetworkHandler.Instance.RoomHandler.OnGameStarted += (level, other_player) =>
+            {
+                StartNetworkGame(other_player, level);
             };
 
             menu_lobby.OnShow += () =>
             {
-                NetworkHandler.Instance.Matchmacking.OnFail += () =>
-                {
-                    SwitchMenu(menu_connectionFailed);
-                };
-
-                NetworkHandler.Instance.Matchmacking.OnMatched += () =>
-                {
-                    // TODO: TRANSITION
-                    menu_lobby.Document.rootVisualElement.Q(LOBBY_SEARCHING_MENU).SetEnabled(false);
-                    menu_lobby.Document.rootVisualElement.Q(LOBBY_STARTING_GAME_MENU).SetEnabled(true);
-                };
-
-                NetworkHandler.Instance.RoomHandler.OnGameStarted += (level, other_player) =>
-                {
-                    StartNetworkGame(other_player, level);
-                };
-
                 NetworkHandler.Instance.Matchmacking.FindMatch();
             };
         }

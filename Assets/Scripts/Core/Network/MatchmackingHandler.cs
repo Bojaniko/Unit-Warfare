@@ -21,10 +21,11 @@ namespace UnitWarfare.Network
 
         private Coroutine coroutine_matchFinder;
 
-        public MatchmackingHandler()
+        internal MatchmackingHandler()
         {
             PhotonNetwork.AddCallbackTarget(this);
-            emb = new(new("MATCHMACKING_HANDLER"));
+            emb = new(new("HANDLER:MATCHMACKING"));
+            emb.transform.parent = NetworkHandler.Instance.transform;
         }
 
         private bool _failedJoinRoom = false;
@@ -88,7 +89,7 @@ namespace UnitWarfare.Network
                 {
                     if (player.ActorNumber != PhotonNetwork.LocalPlayer.ActorNumber)
                     {
-                        OnMatched?.Invoke(player);
+                        OnMatched?.Invoke();
                         return;
                     }
                 }
@@ -96,7 +97,7 @@ namespace UnitWarfare.Network
         }
 
         public void OnPlayerEnteredRoom(Player newPlayer) =>
-            OnMatched?.Invoke(newPlayer);
+            OnMatched?.Invoke();
 
         // Unused callbacks.
         public void OnCreatedRoom() { }

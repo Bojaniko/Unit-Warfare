@@ -12,7 +12,7 @@ namespace UnitWarfare.Units
 
         private void HandleAntennaeReinforcements(Territory territory)
         {
-            handler.Spawner.Spawn(territory, typeof(Recruit));
+            handler.Spawn(territory, typeof(Recruit));
         }
 
         protected override void OnCommandEnd(Antennae unit, UnitCommand<AntennaeCommandOrder> command)

@@ -550,6 +550,7 @@ namespace UnitWarfare.Tools
                     foreach (TerritoryIdentifier ti in _selectedTerritories)
                     {
                         ti.Owner = _selectedTerritoryOwner;
+                        Undo.RegisterCompleteObjectUndo(ti, "Changed ownership.");
                         foreach (UnitIdentifier ui in _allUnits)
                         {
                             if (ui.StartingTerritory.Equals(ti))
@@ -764,6 +765,7 @@ namespace UnitWarfare.Tools
                     }
                 }
             }
+            Undo.RegisterFullObjectHierarchyUndo(map.transform, "Reloaded territory ids.");
         }
 
         // ##### MENUS ##### \\
