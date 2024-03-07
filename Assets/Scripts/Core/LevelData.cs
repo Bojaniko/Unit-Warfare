@@ -5,8 +5,8 @@ namespace UnitWarfare.Core
 	[CreateAssetMenu(menuName = "Game/Level")]
 	public class LevelData : ScriptableObject
 	{
-		[SerializeField] private float m_maxManpower;
-		public float MaxManpower => m_maxManpower;
+		[SerializeField] private int m_maxManpower;
+		public int MaxManpower => m_maxManpower;
 
 		[SerializeField] private float m_maxRoundDuration;
 		public float MaxRoundDuration => m_maxRoundDuration;

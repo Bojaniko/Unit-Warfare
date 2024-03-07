@@ -27,6 +27,8 @@ namespace UnitWarfare.Players
         protected UnitsHandler _unitsHandler;
         protected MatchProgress ui_matchProgress;
 
+        public int MaxManpower => _config.Level.MaxManpower;
+
         public record Config(LevelData Level, PlayerData PlayerLocal, PlayerData PlayerOther, PlayerData NeutralPlayer);
         private readonly Config _config;
 

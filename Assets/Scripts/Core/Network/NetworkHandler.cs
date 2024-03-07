@@ -9,7 +9,6 @@ namespace System.Runtime.CompilerServices
     internal class IsExternalInit { }
 }
 
-
 namespace UnitWarfare.Network
 {
     public class NetworkHandler : MonoBehaviour

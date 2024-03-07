@@ -175,6 +175,9 @@ namespace UnitWarfare.Units
 
         // ##### UNITS ##### \\
 
+        public event System.Action<IUnit> OnUnitSpawned;
+        public event System.Action<IUnit> OnUnitDespawned;
+
         private readonly List<IUnit> _unitsExecutingCommand;
         public IUnit[] UnitsExecutingCommand => _unitsExecutingCommand.ToArray();
 
@@ -203,6 +206,8 @@ namespace UnitWarfare.Units
             unit.OnDestroy += RemoveUnitFromList;
             unit.OnCommandStart += LogUnitCommandStarted;
             unit.OnCommandEnd += LogUnitCommandEnded;
+
+            OnUnitSpawned?.Invoke(unit);
         }
 
         private void RemoveUnitFromList(IUnit unit)
@@ -212,6 +217,8 @@ namespace UnitWarfare.Units
             unit.OnDestroy -= RemoveUnitFromList;
             unit.OnCommandStart -= LogUnitCommandStarted;
             unit.OnCommandEnd -= LogUnitCommandEnded;
+
+            OnUnitDespawned?.Invoke(unit);
         }
 
         private void LogUnitCommandStarted(IUnit unit, IUnitCommand command) =>

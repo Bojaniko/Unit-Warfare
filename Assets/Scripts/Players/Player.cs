@@ -13,20 +13,11 @@ namespace UnitWarfare.Players
 {
     public abstract class Player : IUnitOwner
     {
-        // ##### DATA ##### \\
-
         private readonly PlayerData m_data;
         public PlayerData Data => m_data;
         public string Name => m_data.Name;
 
-        // ##### ? ##### \\
-
-        public int Points { get; }
-
         private bool m_isActive;
-        /// <summary>
-        /// Is the current players turn this round?
-        /// </summary>
         public bool IsActive => m_isActive;
 
         public UnitsData UnitsData => Data.Nation.Units;

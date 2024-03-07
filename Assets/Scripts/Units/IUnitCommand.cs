@@ -2,7 +2,7 @@ using UnitWarfare.Territories;
 
 namespace UnitWarfare.Units
 {
-    public readonly struct UnitTarget
+	public readonly struct UnitTarget
     {
         private readonly Territory _territory;
         public Territory Territory => _territory;
@@ -28,5 +28,5 @@ namespace UnitWarfare.Units
         public byte OrderId { get; }
         public object OrderRef { get; }
         public UnitTarget Target { get; }
-    }
+	}
 }

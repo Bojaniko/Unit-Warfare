@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
 using UnitWarfare.AI;
+using UnitWarfare.Units;
 using UnitWarfare.Core;
 using UnitWarfare.Players;
 using UnitWarfare.Network;
@@ -71,6 +72,8 @@ namespace UnitWarfare.Game
             menu_main.SetActive(true);
             menu_main.SetVisible(true);
             menu_active = menu_main;
+
+            ExitGames.Client.Photon.PhotonPeer.RegisterType(typeof(NetworkUnitCommand), 0, NetworkUnitCommand.Serialize, NetworkUnitCommand.Deserialize);
 
             // TODO: Remove this
             PhotonNetwork.KeepAliveInBackground = 120;

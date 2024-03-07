@@ -61,7 +61,7 @@ namespace UnitWarfare.Players
             catch
             {
                 // TODO: Handle this.
-                throw;
+                //throw;
             }
             if (command == null)
                 return;

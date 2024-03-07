@@ -7,5 +7,7 @@
         public Player LocalPlayer { get; }
         public Player OtherPlayer { get; }
         public Player NeutralPlayer { get; }
+
+        public int MaxManpower { get; }
     }
 }

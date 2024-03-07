@@ -12,6 +12,7 @@ using UnitWarfare.Cameras;
 using UnitWarfare.Players;
 using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
+using UnitWarfare.Core.Handlers;
 
 using System.ComponentModel;
 
@@ -94,6 +95,13 @@ namespace UnitWarfare.Game
         private void InitGameHandlers()
         {
             m_gameHandlers = new();
+
+            GameStatsHandler statsHandler = new(m_config.Level, this);
+            statsHandler.OnPlayerLocalPointsChanged += (amount) =>
+                stateMachine_play.SetState(PlayingGameState.ENDED);
+            statsHandler.OnPlayerOtherPointsChanged += (amount) =>
+                stateMachine_play.SetState(PlayingGameState.ENDED);
+            m_gameHandlers.Add(statsHandler);
 
             UIHandler uiHandler = new(m_config.Data.UIData, this);
             m_gameHandlers.Add(uiHandler);

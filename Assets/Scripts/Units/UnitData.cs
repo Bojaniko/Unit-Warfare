@@ -13,6 +13,9 @@ namespace UnitWarfare.Units
         [SerializeField] private Texture2D _displayTexture;
         public Texture2D DisplayTexture => _displayTexture;
 
+        [SerializeField] private int m_manpower;
+        public int Manpower => m_manpower;
+
         [SerializeField] private int _health;
         public int Health => _health;
 

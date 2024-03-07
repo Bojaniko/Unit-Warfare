@@ -34,6 +34,7 @@ namespace UnitWarfare.Players
             m_playerLocal = new PlayerLocal(_config.Configuration.PlayerLocal, this);
             m_playerNetwork = new PlayerNetwork(_config.Configuration.PlayerOther, this);
             PhotonNetwork.AddCallbackTarget(this);
+            PhotonNetwork.AddCallbackTarget(m_playerNetwork);
         }
 
         // TODO: Timer
