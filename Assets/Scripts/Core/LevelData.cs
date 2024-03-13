@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using UnitWarfare.Core.Global;
+
 namespace UnitWarfare.Core
 {
 	[CreateAssetMenu(menuName = "Game/Level")]
@@ -19,5 +21,8 @@ namespace UnitWarfare.Core
 
 		[SerializeField] private Texture2D m_icon;
 		public Texture2D Icon => m_icon;
+
+		[SerializeField] private LevelTheme m_theme;
+		public LevelTheme Theme => m_theme;
 	}
 }

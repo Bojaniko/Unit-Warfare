@@ -9,7 +9,7 @@ namespace UnitWarfare.Input
         public record Config(InputAction TapAction, InputAction TapPosition);
         private readonly Config _config;
 
-        public TapProcessor(Config config, ref UserInterfaceInputTrackerEventHandler ui_interaction) : base(ref ui_interaction)
+        public TapProcessor(Config config)
         {
             _config = config;
             _config.TapAction.performed += (ctx) =>

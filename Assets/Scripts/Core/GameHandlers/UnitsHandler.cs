@@ -242,5 +242,8 @@ namespace UnitWarfare.Units
         {
             unit.DestroyUnit();
         }
+
+        protected override void Enable() { }
+        protected override void Disable() { }
     }
 }

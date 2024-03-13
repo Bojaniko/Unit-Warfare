@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
-
-using System.ComponentModel;
-
+﻿using System.ComponentModel;
 namespace System.Runtime.CompilerServices
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -14,24 +10,17 @@ namespace UnitWarfare.Input
     public abstract class InputPostProcessor<Output>
         where Output : IInputPostProcessorOutput
     {
-        public delegate void InputPostProcessorEventHandler(Output output);
-        public event InputPostProcessorEventHandler OnInput;
-
-        private bool _enabled = true;
-
-        protected InputPostProcessor(ref UserInterfaceInputTrackerEventHandler ui_interaction)
-        {
-            ui_interaction += (interacting) =>
-            {
-                _enabled = !interacting;
-            };
-        }
+        public event System.Action<Output> OnInput;
 
         protected void SendInput(Output output)
         {
             if (_enabled)
                 OnInput?.Invoke(output);
         }
+
+        private bool _enabled = false;
+        public void Enable() => _enabled = true;
+        public void Disable() => _enabled = false;
     }
 
     public interface IInputPostProcessorOutput { }

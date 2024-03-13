@@ -1,50 +1,30 @@
-﻿using UnityEngine;
+﻿using EventSystem = UnityEngine.EventSystems.EventSystem;
 using UnityEngine.InputSystem;
-
-using UnitWarfare.Core;
 
 namespace UnitWarfare.Input
 {
-    public delegate bool UserInterfaceInputEventHandler(Vector2 position);
-
-    public delegate void UserInterfaceInputTrackerEventHandler(bool ui_interaction);
-
     public class UserInterfaceInputTracker
     {
-        private bool _inputing;
+        private bool _inputed = false;
 
-        private readonly InputAction _position;
+        public event System.Action<bool> OnUIInteraction;
+        private readonly EventSystem _eventSystem;
 
-        public event UserInterfaceInputEventHandler OnInput;
-        public event UserInterfaceInputTrackerEventHandler OnUIInteractionChanged;
-
-        public UserInterfaceInputTracker(InputAction tap, InputAction position)
+        public UserInterfaceInputTracker(InputAction tap, EventSystem engine_events)
         {
-            EncapsulatedMonoBehaviour monoBehaviour = new(new GameObject("USER_INTERFACE_INPUT_TRACKER"));
-            monoBehaviour.OnUpdate += OnUpdate;
+            _eventSystem = engine_events;
+            _eventSystem.IsPointerOverGameObject();
 
-            _inputing = false;
-
-            _position = position;
-
-            tap.performed += (ctx) =>
-            {
-                _inputing = !_inputing;
-            };
+            tap.performed += HandleTap;
         }
 
-        private void OnUpdate()
+        private void HandleTap(InputAction.CallbackContext context)
         {
-            if (_inputing)
-            {
-                bool? inputed = OnInput?.Invoke(_position.ReadValue<Vector2>());
-                if (!inputed.HasValue)
-                {
-                    OnUIInteractionChanged?.Invoke(false);
-                    return;
-                }
-                OnUIInteractionChanged?.Invoke(inputed.Value);
-            }
+            _inputed = !_inputed;
+            if (_inputed && _eventSystem.IsPointerOverGameObject())
+                OnUIInteraction?.Invoke(true);
+            else if (_inputed)
+                OnUIInteraction?.Invoke(false);
         }
     }
 }

@@ -61,7 +61,10 @@ namespace UnitWarfare.Players
         private void HandleSelection(SelectionTarget selection)
         {
             if (selection == null)
+            {
+                ClearSelection();
                 return;
+            }
             if (_selection == null)
             {
                 ActivateSelection(selection);
@@ -106,6 +109,7 @@ namespace UnitWarfare.Players
             ClearSelection();
             _selection = selection;
 
+            config.MainCamera.SetTarget(_selection.Territory.EMB.transform);
             _selection.Territory.EnableSelection(Territory.SelectionType.ACTIVE);
 
             IUnit au = _selection.Unit;
@@ -118,6 +122,7 @@ namespace UnitWarfare.Players
             if (_selection == null)
                 return;
 
+            config.MainCamera.SetTarget(null);
             _selection.Territory.DisableSelection();
             config.UnitDisplay.HideDisplay();
 

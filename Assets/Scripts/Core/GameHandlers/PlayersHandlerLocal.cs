@@ -51,15 +51,11 @@ namespace UnitWarfare.Players
 
         public override event System.Action<Player> OnActivePlayerChanged;
 
-        protected override void StartMatch()
-        {
-            OnActivePlayerChanged?.Invoke(LocalPlayer);
-            timerActive = true;
-            StartPlayerTimer();
-        }
-
         protected override void OnUpdate()
         {
+            if (!_enabled)
+                return;
+
             if (timerActive)
             {
                 m_timer -= 1f * Time.deltaTime;
@@ -120,6 +116,23 @@ namespace UnitWarfare.Players
             if (!player.IsActive)
                 return;
             SwitchActivePlayer();
+        }
+
+        private bool _enabled = false;
+
+        protected override void Enable()
+        {
+            if (_enabled)
+                return;
+            _enabled = true;
+            OnActivePlayerChanged?.Invoke(LocalPlayer);
+            timerActive = true;
+            StartPlayerTimer();
+        }
+
+        protected override void Disable()
+        {
+            _enabled = false;
         }
     }
 }

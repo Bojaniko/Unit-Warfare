@@ -22,8 +22,7 @@ namespace UnitWarfare.Input
 		public delegate void PintchEventHandler();
 		public event PintchEventHandler OnPintchEnd;
 
-		public PintchProcessor(Config config, ref UserInterfaceInputTrackerEventHandler ui_interaction)
-			: base(ref ui_interaction)
+		public PintchProcessor(Config config)
 		{
 			_config = config;
 

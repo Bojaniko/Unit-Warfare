@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 238b9476b20129a43a2419f6d0d5f4ce, type: 3}
   m_Name: Test Camera Data
   m_EditorClassIdentifier: 
+  m_centeringSpeed: 7
   _distanceSpeed: 15
   _distance: 5
   _distanceEase: 0.2
   _distanceLimit: {x: 2.5, y: 5}
-  _yawSpeed: 4.5
+  _yawSpeed: 4
   _startYaw: 0.5
   _yawEase: 0.3
   _pitchSpeed: 14

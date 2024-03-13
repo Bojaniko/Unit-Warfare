@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-using UnityEngine;
-
 using Studio28.Utility;
 
 using UnitWarfare.UI;
@@ -25,32 +23,23 @@ namespace System.Runtime.CompilerServices
 
 namespace UnitWarfare.Game
 {
-    public class GameEMB : EncapsulatedMonoBehaviour
-    {
-        private readonly GameBase m_game;
-        public GameBase Game => m_game;
-
-        public GameEMB(GameBase game, GameObject game_object) : base(game_object)
-        {
-            m_game = game;
-        }
-    }
-
-    public abstract class GameBase : IGameStateHandler
+    public abstract class GameBase : IGame
     {
         public record Config(GameData Data, LevelData Level);
-
         private readonly Config m_config;
 
-        private readonly GameEMB m_emb;
-        public GameEMB EMB => m_emb;
+        public LevelData Level => m_config.Level;
+
+        private readonly GameEncapsulatedMonoBehaviour m_emb;
+        public GameEncapsulatedMonoBehaviour EMB => m_emb;
+        EncapsulatedMonoBehaviour IGame.EMB => m_emb;
 
         public abstract GameType GameType { get; }
 
         protected GameBase(Config config)
         {
             m_config = config;
-            m_emb = new(this, new("GAME"));
+            m_emb = new(this, new(GlobalValues.GAME_HANDLER_NAME));
             InitStateControllers();
         }
 

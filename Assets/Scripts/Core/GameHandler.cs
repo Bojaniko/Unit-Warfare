@@ -4,8 +4,6 @@ using UnityEngine;
 
 using UnitWarfare.Core.Global;
 
-using Studio28.Utility;
-
 namespace UnitWarfare.Core
 {
     public abstract class GameHandler
@@ -29,6 +27,21 @@ namespace UnitWarfare.Core
 
             gameStateHandler = game_state_handler;
             gameStateHandler.OnLoadGameStateChanged += HandleLoadGameState;
+            gameStateHandler.OnPlayGameStateChanged += HandlePlayGameState;
+        }
+
+        private void HandlePlayGameState(PlayingGameState state)
+        {
+            switch (state)
+            {
+                case PlayingGameState.PLAYING:
+                    Enable();
+                    break;
+
+                case PlayingGameState.ENDED:
+                    Disable();
+                    break;
+            }
         }
 
         private void HandleLoadGameState(LoadingGameState state)
@@ -46,12 +59,21 @@ namespace UnitWarfare.Core
                 case LoadingGameState.FINAL:
                     OnFinalLoad();
                     break;
+
+                case LoadingGameState.UNLOAD:
+                    Unload();
+                    break;
             }
         }
 
+        protected abstract void Enable();
+        protected abstract void Disable();
+
         protected abstract void Initialize();
+        protected virtual void Unload() { }
         protected virtual void OnPostLoad() { }
         protected virtual void OnFinalLoad() { }
+        protected virtual void OnGameEnded() { }
 
         // ##### MONO BEHAVIOUR ##### \\
 

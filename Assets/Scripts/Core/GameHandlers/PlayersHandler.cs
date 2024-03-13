@@ -37,14 +37,8 @@ namespace UnitWarfare.Players
         {
             _config = config;
             m_neutralPlayer = new PlayerNeutral(_config.NeutralPlayer, this);
-            game_state_handler.OnPlayGameStateChanged += (state) =>
-            {
-                if (state.Equals(PlayingGameState.PLAYING))
-                    StartMatch();
-            };
         }
 
-        protected abstract void StartMatch();
         protected abstract void OnPlayerExplicitMoveEnd(Player player);
 
         protected override sealed void Initialize()

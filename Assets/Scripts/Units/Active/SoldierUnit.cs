@@ -9,8 +9,8 @@ namespace UnitWarfare.Units
     public class SoldierUnit : ActiveUnit<SoldierData>
     {
         private readonly Mover _mover;
-
         private readonly Animator _animator;
+        private readonly GameObject _muzzleFlash;
 
         private const string WALK_SPEED_MULT = "walk_speed";
 
@@ -30,7 +30,13 @@ namespace UnitWarfare.Units
         public SoldierUnit(Territory starting_territory, GameObject game_object, SoldierData data, IUnitOwner manager)
             : base(starting_territory, game_object, data, manager)
         {
-            _animator = game_object.GetComponent<Animator>();
+            ActiveUnitStarter starter = game_object.GetComponent<ActiveUnitStarter>();
+            if (starter == null)
+                throw new UnityException("Soldier unit prefab not properly setup. Prefab root gameobject requires an ActiveUnitStarter.");
+
+            _animator = starter.Animator;
+            _muzzleFlash = starter.MuzzleFlash;
+
             _mover = new(_emb, data.Speed);
             _mover.SetSpeedMultiplier(GetWalkSpeedMultiplier);
         }

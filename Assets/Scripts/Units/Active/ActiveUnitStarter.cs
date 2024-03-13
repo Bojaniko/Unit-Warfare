@@ -4,7 +4,10 @@ namespace UnitWarfare.Units
 {
     public class ActiveUnitStarter : MonoBehaviour
     {
-        [SerializeField] private GameObject _muzzleFlash;
-        public GameObject MuzzleFlash => _muzzleFlash;
+        [SerializeField] private GameObject m_muzzleFlash;
+        public GameObject MuzzleFlash => m_muzzleFlash;
+
+        [SerializeField] private Animator m_animator;
+        public Animator Animator => m_animator;
     }
 }

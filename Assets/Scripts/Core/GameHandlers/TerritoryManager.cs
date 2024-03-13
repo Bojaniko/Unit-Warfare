@@ -28,13 +28,13 @@ namespace UnitWarfare.Territories
         public event System.Action<TerritoryHandlerState> OnStateChanged;
 
         public TerritoryManager(MapColorSchemeData map_data, IGameStateHandler game_state_handler)
-            : base(game_state_handler, GameObject.Find("MAP"))
+            : base(game_state_handler, GameObject.Find(GlobalValues.MAP_TERRITORIES_CONTAINER))
         {
+            if (gameObject == null)
+                throw new UnityException($"GameObject container for territories with name {GlobalValues.MAP_TERRITORIES_CONTAINER} not found.\nAll territories must be parented to this GameObject.");
             m_mapData = map_data;
             stateController = new("Territory Manager State Controller", TerritoryHandlerState.PRE_LOADING);
             stateController.OnStateChanged += (state) => { OnStateChanged?.Invoke(state); };
-
-            GetMapCenter();
         }
 
         protected override void OnFinalLoad()
@@ -93,9 +93,9 @@ namespace UnitWarfare.Territories
                 _identifiers.Add(ti, t);
                 _territories.Add(t);
             }
-
             if (_territories.Count == 0)
                 throw new UnityException("Map is empty or data is invalid.");
+            GetMapCenter();
         }
 
         private ITerritoryOwner GetOwner(PlayerIdentifiers identifier)
@@ -134,12 +134,20 @@ namespace UnitWarfare.Territories
 
         private void GetMapCenter()
         {
-            // TODO: Calculate map center
-            _mapCenter = Vector3.zero;
+            float xSum = 0f;
+            float ySum = 0f;
+            float zSum = 0f;
+            foreach(Territory t in _territories)
+            {
+                xSum += t.EMB.transform.position.x;
+                ySum += t.EMB.transform.position.y;
+                zSum += t.EMB.transform.position.z;
+            }
+            m_mapCenter = new Vector3(xSum / _territories.Count, ySum / _territories.Count, zSum / _territories.Count);
         }
 
-        private Vector3 _mapCenter;
-        public Vector3 MapCenter => _mapCenter;
+        private Vector3 m_mapCenter;
+        public Vector3 MapCenter => m_mapCenter;
 
         // ##### IDENTIFIERS ##### \\
         private Dictionary<TerritoryIdentifier, Territory> _identifiers;
@@ -158,5 +166,8 @@ namespace UnitWarfare.Territories
                 return null;
             return _identifiers[identifier];
         }
+
+        protected override void Enable() { }
+        protected override void Disable() { }
     }
 }

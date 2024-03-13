@@ -21,7 +21,7 @@ namespace UnitWarfare.Input
         private bool _pressed;
         private Vector2 _previousPosition;
 
-        public MoveProcessor(Config config, ref UserInterfaceInputTrackerEventHandler ui_interaction) : base (ref ui_interaction)
+        public MoveProcessor(Config config)
         {
             _config = config;
             _pressed = false;

@@ -1,4 +1,6 @@
-﻿namespace UnitWarfare.Territories
+﻿using Vector3 = UnityEngine.Vector3;
+
+namespace UnitWarfare.Territories
 {
     public enum TerritoryHandlerState
     {
@@ -16,5 +18,7 @@
         public ITerritoryOwner Neutral { get; }
 
         public Territory[] Territories { get; }
+
+        public Vector3 MapCenter { get; }
     }
 }

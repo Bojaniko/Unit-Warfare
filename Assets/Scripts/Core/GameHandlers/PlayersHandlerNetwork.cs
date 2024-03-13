@@ -37,8 +37,6 @@ namespace UnitWarfare.Players
             PhotonNetwork.AddCallbackTarget(m_playerNetwork);
         }
 
-        // TODO: Timer
-
         public override event System.Action<Player> OnActivePlayerChanged;
 
         protected override void SubInitialize()
@@ -60,12 +58,6 @@ namespace UnitWarfare.Players
         {
             if (player.Equals(LocalPlayer))
                 SwitchActiveNetworkPlayer(_config.NetworkPlayer);
-        }
-
-        protected override void StartMatch()
-        {
-            if (PhotonNetwork.LocalPlayer.ActorNumber.Equals(PhotonNetwork.CurrentRoom.MasterClientId))
-                SwitchActiveNetworkPlayer(PhotonNetwork.LocalPlayer);
         }
 
         private Coroutine coroutine_playerOneRound;
@@ -113,6 +105,21 @@ namespace UnitWarfare.Players
                 if (OtherPlayer.IsActive)
                     return;
                 OnActivePlayerChanged?.Invoke(OtherPlayer);
+            }
+        }
+
+        protected override void Enable()
+        {
+            if (PhotonNetwork.LocalPlayer.ActorNumber.Equals(PhotonNetwork.CurrentRoom.MasterClientId))
+                SwitchActiveNetworkPlayer(PhotonNetwork.LocalPlayer);
+        }
+
+        protected override void Disable()
+        {
+            if (coroutine_playerOneRound != null)
+            {
+                StopCoroutine(coroutine_playerOneRound);
+                coroutine_playerOneRound = null;
             }
         }
     }

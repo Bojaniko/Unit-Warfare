@@ -5,6 +5,11 @@ namespace UnitWarfare.Cameras
     [CreateAssetMenu(menuName = "Camera")]
     public class CameraData : ScriptableObject
     {
+        [Header("Center")]
+
+        [SerializeField] private float m_centeringSpeed = 3f;
+        public float CenteringSpeed => m_centeringSpeed;
+
         [Header("Distance")]
 
         [SerializeField] private float _distanceSpeed = 3f;

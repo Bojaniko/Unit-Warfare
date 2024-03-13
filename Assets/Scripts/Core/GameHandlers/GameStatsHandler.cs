@@ -54,5 +54,9 @@ namespace UnitWarfare.Core.Handlers
                 OnPlayerOtherPointsChanged?.Invoke(amount);
             }
         }
+
+        protected override void Enable() { }
+
+        protected override void Disable() { }
     }
 }

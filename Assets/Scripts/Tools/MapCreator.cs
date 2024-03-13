@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.UIElements;
+using UnityEditor.SceneManagement;
 
 using UnitWarfare.Units;
 using UnitWarfare.Core.Global;
@@ -32,8 +33,8 @@ namespace UnitWarfare.Tools
     [EditorTool("Map Creator")]
     public class MapCreator : EditorWindow
     {
-        private const string MAP_NAME = "MAP";
         private const string UI_PATH = "UI/MapCreator/map_creator";
+        private const string DATA_PATH = "MapCreator Data Path";
 
         [SerializeField] private MapCreatorData _data;
 
@@ -654,18 +655,18 @@ namespace UnitWarfare.Tools
 
         private void Awake()
         {
-            c_map = GameObject.Find(MAP_NAME);
+            c_map = GameObject.Find(GlobalValues.MAP_TERRITORIES_CONTAINER);
             if (c_map == null)
             {
-                Debug.LogError("First create a 'MAP' game object and attach it a TerritoryManager script!");
+                Debug.LogError($"First create a '{GlobalValues.MAP_TERRITORIES_CONTAINER}' game object!");
                 Close();
                 return;
             }
 
-            c_units = GameObject.Find("UNITS");
+            c_units = GameObject.Find(GlobalValues.MAP_UNITS_CONTAINER);
             if (c_units == null)
             {
-                Debug.LogError("First create a 'UNITS' game object!");
+                Debug.LogError($"First create a '{GlobalValues.MAP_UNITS_CONTAINER}' game object!");
                 Close();
                 return;
             }
@@ -709,19 +710,26 @@ namespace UnitWarfare.Tools
         private void SaveSelectedData()
         {
             if (_data != null)
-                EditorPrefs.SetString("MapCreator Data Path", AssetDatabase.GetAssetPath(_data.GetInstanceID()));
+                EditorPrefs.SetString(DATA_PATH, AssetDatabase.GetAssetPath(_data.GetInstanceID()));
+        }
+
+        private static MapCreatorData GetSavedData()
+        {
+            MapCreatorData data = null;
+            string dataPath = EditorPrefs.GetString(DATA_PATH);
+            if (!string.IsNullOrEmpty(dataPath))
+            {
+                data = (MapCreatorData)AssetDatabase.LoadAssetAtPath(dataPath, typeof(MapCreatorData));
+                if (data == null)
+                    data = (MapCreatorData)AssetDatabase.FindAssets("t: MapCreatorData").GetValue(0);
+            }
+            return data;
         }
 
         private void AttachSavedDataObject()
         {
-            string dataPath = EditorPrefs.GetString("MapCreator Data Path");
-            if (!string.IsNullOrEmpty(dataPath))
-            {
-                _data = (MapCreatorData)AssetDatabase.LoadAssetAtPath(dataPath, typeof(MapCreatorData));
-                if (_data == null)
-                    _data = (MapCreatorData)AssetDatabase.FindAssets("t: MapCreatorData").GetValue(0);
-                rootVisualElement.Q<ObjectField>("data_field").value = _data;
-            }
+            _data = GetSavedData();
+            rootVisualElement.Q<ObjectField>("data_field").value = _data;
         }
 
         private void OnValidate()
@@ -741,10 +749,10 @@ namespace UnitWarfare.Tools
         [MenuItem("Unit Warfare/Reload Tile IDs")]
         public static void ReloadIDs()
         {
-            GameObject map = GameObject.Find(MAP_NAME);
+            GameObject map = GameObject.Find(GlobalValues.MAP_TERRITORIES_CONTAINER);
             if (map == null)
             {
-                Debug.LogError($"There is no gameobject in the scene named {MAP_NAME} that parents all tiles. Please create a new map 'Unit Warfare/New Map' or check if your level is valid.");
+                Debug.LogError($"There is no gameobject in the scene named {GlobalValues.MAP_TERRITORIES_CONTAINER} that parents all tiles. Please create a new map 'Unit Warfare/New Map' or check if your level is valid.");
                 return;
             }
             byte currentId = 0;
@@ -766,6 +774,25 @@ namespace UnitWarfare.Tools
                 }
             }
             Undo.RegisterFullObjectHierarchyUndo(map.transform, "Reloaded territory ids.");
+        }
+
+        [MenuItem("Unit Warfare/New Map")]
+        public static void CreateNewMap()
+        {
+            MapCreatorData data = GetSavedData();
+            if (data == null)
+            {
+                Debug.LogError("Please assign a MapCreatorData object in the MapCreator tool.");
+                return;
+            }
+            if (data.MapTemplate == null)
+            {
+                Debug.LogError("Please assign a map template in your MapCreatorData object.");
+                return;
+            }
+            EditorSceneManager.SaveOpenScenes();
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(data.MapTemplate), OpenSceneMode.Additive);
         }
 
         // ##### MENUS ##### \\

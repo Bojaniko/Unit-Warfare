@@ -2,6 +2,7 @@ using UnityEngine;
 
 using UnitWarfare.Core;
 using UnitWarfare.Input;
+using UnitWarfare.Core.Global;
 using UnitWarfare.Territories;
 
 using System.ComponentModel;
@@ -15,7 +16,7 @@ namespace UnitWarfare.Cameras
 {
     public class CameraController
     {
-        public record CameraConfig(Camera Camera, CameraData Data, Vector3 MapCenter, MoveProcessor MoveInput, PintchProcessor PintchInput);
+        public record CameraConfig(Camera Camera, CameraData Data, ITerritoryHandler TerritoryHandler, MoveProcessor MoveInput, PintchProcessor PintchInput, IGameStateHandler GameStateHandler);
 
         private readonly CameraConfig _config;
 
@@ -46,15 +47,26 @@ namespace UnitWarfare.Cameras
             _emb = new(_config.Camera.gameObject);
             _emb.OnUpdate += Update;
 
-            _config.MoveInput.OnInput += HandleMoveInput;
-            _config.PintchInput.OnInput += HandlePintchInput;
-            _config.PintchInput.OnPintchEnd += () =>
-                _pintching = false;
-
             _pintching = false;
 
             _minPitch = _config.Data.PitchAngleLimits.x / 360f;
             _maxPitch = _config.Data.PitchAngleLimits.y / 360f;
+
+            _initialized = false;
+
+            _config.GameStateHandler.OnPlayGameStateChanged += (state) =>
+            {
+                if (state.Equals(PlayingGameState.PLAYING) && !_initialized)
+                    throw new UnityException("Camera controller not initialized.");
+            };
+        }
+
+        private bool _initialized;
+        public void Initialize()
+        {
+            if (_initialized)
+                return;
+            _initialized = true;
 
             _distance = _config.Data.StartDistance;
             _distanceTarget = 0f;
@@ -65,11 +77,35 @@ namespace UnitWarfare.Cameras
             _yaw = _config.Data.StartYaw;
             _yawTarget = 0f;
 
+            _centerTarget = _config.TerritoryHandler.MapCenter;
+            _center = _config.TerritoryHandler.MapCenter;
+
             UpdateYawVector();
             UpdatePitchVector();
             UpdateRotation();
         }
 
+        private bool _enabled = false;
+        public void Disable()
+        {
+            if (!_enabled)
+                return;
+            _config.MoveInput.OnInput -= HandleMoveInput;
+            _config.PintchInput.OnInput -= HandlePintchInput;
+            _config.PintchInput.OnPintchEnd -= StopPintch;
+            _enabled = false;
+        }
+        public void Enable()
+        {
+            if (_enabled)
+                return;
+            _config.MoveInput.OnInput += HandleMoveInput;
+            _config.PintchInput.OnInput += HandlePintchInput;
+            _config.PintchInput.OnPintchEnd += StopPintch;
+            _enabled = true;
+        }
+
+        private void StopPintch() => _pintching = false;
         private void HandlePintchInput(PintchProcessor.Output output)
         {
             if (!_pintching)
@@ -91,7 +127,7 @@ namespace UnitWarfare.Cameras
 
         private void Update()
         {
-            if (_yawTarget == 0f && _pitchTarget == 0f && _distanceTarget == 0f)
+            if (_yawTarget == 0f && _pitchTarget == 0f && _distanceTarget == 0f && _center.Equals(_centerTarget))
                 return;
 
             if (_yawTarget != 0f)
@@ -106,6 +142,8 @@ namespace UnitWarfare.Cameras
             }
             if (_distanceTarget != 0f)
                 UpdateDistance();
+            if (!_center.Equals(_centerTarget))
+                UpdateCenter();
 
             UpdateRotation();
         }
@@ -154,12 +192,15 @@ namespace UnitWarfare.Cameras
             if (_distance < _config.Data.DistanceLimit.x)
                 _distance = _config.Data.DistanceLimit.x;
         }
+
+        private void UpdateCenter() =>
+            _center = Vector3.MoveTowards(_center, _centerTarget, _config.Data.CenteringSpeed * Time.deltaTime);
         
         private void UpdateRotation()
         {
             Vector3 yawpitch = new Vector3(v3_yaw.x * v3_pitch.x, v3_pitch.y, v3_yaw.z * v3_pitch.z);
-            _emb.transform.position = _config.MapCenter + yawpitch * _distance;
-            _emb.transform.LookAt(_config.MapCenter);
+            _emb.transform.position = _center + yawpitch * _distance;
+            _emb.transform.LookAt(_center);
         }
 
         private float GetTarget(float current, float target, float ease, float speed)
@@ -178,6 +219,18 @@ namespace UnitWarfare.Cameras
             }
 
             return current;
+        }
+
+        private Vector3 _centerTarget;
+        private Vector3 _center;
+        public void SetTarget(Transform transform)
+        {
+            if (transform == null)
+            {
+                _centerTarget = _config.TerritoryHandler.MapCenter;
+                return;
+            }
+            _centerTarget = transform.position;
         }
 
         public SelectionTarget GetTargetFromScreenPosition(Vector2 position)

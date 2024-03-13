@@ -1,4 +1,8 @@
+using EventSystem = UnityEngine.EventSystems.EventSystem;
+using UnityEngine;
+
 using UnitWarfare.Core;
+using UnitWarfare.Core.Global;
 
 namespace UnitWarfare.Input
 {
@@ -7,7 +11,9 @@ namespace UnitWarfare.Input
         private readonly InputData _data;
         public InputData Data => _data;
 
-        private DefaultInput _input;
+        private readonly DefaultInput _input;
+
+        private UserInterfaceInputTracker ui_inputTracker;
 
         protected override void Initialize()
         {
@@ -15,11 +21,6 @@ namespace UnitWarfare.Input
         }
 
         // ##### POST PROCESSORS ##### \\
-
-        private UserInterfaceInputTracker _uiTracker;
-        public UserInterfaceInputTracker UI_InputTracker => _uiTracker;
-
-        private event UserInterfaceInputTrackerEventHandler OnUIInteractionChanged;
 
         private PintchProcessor pp_pintch;
         public PintchProcessor PintchInput => pp_pintch;
@@ -32,26 +33,37 @@ namespace UnitWarfare.Input
 
         private void InitPostProcessors()
         {
-            _uiTracker = new(_input.UI.Click, _input.UI.Point);
-            _uiTracker.OnUIInteractionChanged += (interaction) => { OnUIInteractionChanged?.Invoke(interaction); };
-
             PintchProcessor.Config pintchConfig = new(
                 _input.Touch.PintchTouchOne,
                 _input.Touch.PintchTouchTwo,
                 _input.Touch.PintchPositionOne,
                 _input.Touch.PintchPositionTwo, _data.PintchData);
-            pp_pintch = new(pintchConfig, ref OnUIInteractionChanged);
+            pp_pintch = new(pintchConfig);
 
             MoveProcessor.Config moveConfig = new(
                 _input.Touch.MoveTouch,
                 _input.Touch.Position,
                 _data.MoveData);
-            pp_move = new(moveConfig, ref OnUIInteractionChanged);
+            pp_move = new(moveConfig);
 
             TapProcessor.Config tapConfig = new(
                 _input.Touch.Touch,
                 _input.Touch.Position);
-            pp_tap = new(tapConfig, ref OnUIInteractionChanged);
+            pp_tap = new(tapConfig);
+        }
+
+        protected override void Enable()
+        {
+            pp_pintch.Enable();
+            pp_move.Enable();
+            pp_tap.Enable();
+        }
+
+        protected override void Disable()
+        {
+            pp_pintch.Disable();
+            pp_move.Disable();
+            pp_tap.Disable();
         }
 
         // ##### INSTANCE #####
@@ -62,6 +74,18 @@ namespace UnitWarfare.Input
             _data = data;
 
             _input = new();
+
+            EventSystem eventSystem = GameObject.Find(GlobalValues.GAME_EVENT_SYSTEM_NAME).GetComponent<EventSystem>();
+            if (eventSystem == null)
+                throw new UnityException($"InputHandler requires an event system present in the level with the name {GlobalValues.GAME_EVENT_SYSTEM_NAME}.");
+            ui_inputTracker = new(_input.UI.Click, eventSystem);
+            ui_inputTracker.OnUIInteraction += (interacting) =>
+            {
+                if (interacting)
+                    Disable();
+                else
+                    Enable();
+            };
 
             InitPostProcessors();
         }
